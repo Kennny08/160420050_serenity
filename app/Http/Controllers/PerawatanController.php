@@ -14,7 +14,9 @@ class PerawatanController extends Controller
      */
     public function index()
     {
-        //
+        $perawatansAktif = Perawatan::where('status', 'aktif')->get();
+        $perawatansNonaktif = Perawatan::where('status', 'nonaktif')->get();
+        return view('admin.perawatan.index', compact('perawatansAktif', 'perawatansNonaktif'));
     }
 
     /**
@@ -88,5 +90,28 @@ class PerawatanController extends Controller
         $idPerawatan = $_POST['idPerawatan'];
         $perawatan = Perawatan::find($idPerawatan);
         return response()->json(array('msg' => view('admin.reservasi.detailperawatan', compact('perawatan'))->render()), 200);
+    }
+
+    public function getDetailPerawatanList()
+    {
+
+        $idPerawatan = $_POST['idPerawatan'];
+        $perawatan = Perawatan::find($idPerawatan);
+        $jmlhReservasi = 0;
+        $jmlTanpaReservasi = 0;
+        foreach ($perawatan->penjualanperawatans as $pp) {
+            if ($pp->penjualan->reservasi != null) {
+                if ($pp->penjualan->reservasi->status == 'selesai') {
+                    $jmlhReservasi++;
+                }
+            } else {
+                if ($pp->penjualan->status_selesai == 'selesai') {
+                    $jmlTanpaReservasi++;
+                }
+            }
+        }
+        $perawatan['jmlh_reservasi'] = $jmlhReservasi;
+        $perawatan['jmlh_tanpa_reservasi'] = $jmlTanpaReservasi;
+        return response()->json(array('msg' => view('admin.perawatan.detailperawatan', compact('perawatan'))->render()), 200);
     }
 }

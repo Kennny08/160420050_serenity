@@ -242,7 +242,7 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            $('#tabelDaftarProdukAktif').DataTable();
+            $('#tabelDaftarProdukAktif').DataTable({ordering:false});
             $('#tabelDaftarProdukNonaktif').DataTable();
         });
 

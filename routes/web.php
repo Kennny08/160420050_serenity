@@ -79,3 +79,6 @@ Route::post('/rekomendasiproduk/proses', [AprioriController::class, "prosesAprio
 
 //Karyawan
 Route::post('/admin/karyawan/getDetailKaryawan', [KaryawanController::class, "getDetailKaryawan"])->name("admin.getdetailkaryawan");
+
+//Perawatan
+Route::post('/admin/perawatan/getDetailPerawatan', [PerawatanController::class, "getDetailPerawatanList"])->name("admin.getdetailperawatan");
