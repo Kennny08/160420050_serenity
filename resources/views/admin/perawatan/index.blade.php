@@ -164,6 +164,9 @@
                                         <td>{{ $pn->durasi }}</td>
                                         <td>{{ $pn->komisi }}</td>
                                         <td>{{ $pn->status_komplemen }}</td>
+                                        <td hidden>{{ $pn->deskripsi }}</td>
+                                        <td hidden>{{ date('d-m-Y', strtotime($pn->created_at)) }}</td>
+                                        <td hidden>{{ date('d-m-Y', strtotime($pn->updated_at)) }}</td>
                                         <td class="text-center"><button data-toggle="modal"
                                                 data-target="#modalDetailPerawatan" idPerawatan="{{ $pn->id }}"
                                                 namaPerawatan ="{{ $pn->nama }}"
@@ -197,7 +200,11 @@
                     </button>
                 </div>
                 <div class="modal-body" id="contentDetailPerawatan">
-
+                    <div class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup</button>
@@ -213,11 +220,11 @@
     <script>
         $(document).ready(function() {
             $('#tabelDaftarPerawatanAktif').DataTable({
-
+                ordering: false
             });
 
             $('#tabelDaftarPerawatanNonaktif').DataTable({
-
+                ordering: false
             });
 
         });

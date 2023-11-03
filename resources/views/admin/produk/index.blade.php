@@ -73,6 +73,9 @@
                                 <th>Merek</th>
                                 <th>Kategori</th>
                                 <th>Kondisi</th>
+                                <th hidden>Tanggal Pembuatan</th>
+                                <th hidden>Tanggal Edit Terakhir</th>
+                                <th hidden>Deskripsi</th>
                                 <th>Detail</th>
                                 <th>Edit</th>
                                 <th>Hapus</th>
@@ -80,62 +83,81 @@
                         </thead>
 
                         <tbody>
-                            @foreach ($produksAktifMinimumStok as $p)
-                                <tr id="tr_{{ $p->id }}">
-                                    <td>{{ $p->kode_produk }}</td>
-                                    <td>{{ $p->nama }}</td>
-                                    <td>{{ $p->harga_jual }}</td>
-                                    <td>{{ $p->harga_beli }}</td>
-                                    <td class="text-danger font-weight-bold">{{ $p->stok }}</td>
-                                    <td class="text-danger font-weight-bold">{{ $p->minimum_stok }}</td>
-                                    <td>{{ $p->status_jual }}</td>
-                                    <td>{{ $p->merek->nama }}</td>
-                                    <td>{{ $p->kategori->nama }}</td>
-                                    <td class="text-left">
-                                        <ul>
-                                            @foreach ($p->kondisis as $kondisi)
-                                                <li>{{ $kondisi->keterangan }}</li>
-                                            @endforeach
-                                        </ul>
+                            @if (count($produksAktifMinimumStok) != 0 || count($produksAktifLebihMinimumStok) != 0)
+                                @foreach ($produksAktifMinimumStok as $p)
+                                    <tr id="tr_{{ $p->id }}">
+                                        <td>{{ $p->kode_produk }}</td>
+                                        <td>{{ $p->nama }}</td>
+                                        <td>{{ $p->harga_jual }}</td>
+                                        <td>{{ $p->harga_beli }}</td>
+                                        <td class="text-danger font-weight-bold">{{ $p->stok }}</td>
+                                        <td class="text-danger font-weight-bold">{{ $p->minimum_stok }}</td>
+                                        <td>{{ $p->status_jual }}</td>
+                                        <td>{{ $p->merek->nama }}</td>
+                                        <td>{{ $p->kategori->nama }}</td>
+                                        <td class="text-left">
+                                            <ul>
+                                                @foreach ($p->kondisis as $kondisi)
+                                                    <li>{{ $kondisi->keterangan }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </td>
+                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
+                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
+                                        <td hidden>{{ $p->deskripsi }}</td>
+                                        <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
+                                                deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
+                                                createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
+                                                updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
+                                                class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
+                                        </td>
+                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
+                                    </tr>
+                                @endforeach
+                                @foreach ($produksAktifLebihMinimumStok as $p)
+                                    <tr id="tr_{{ $p->id }}">
+                                        <td>{{ $p->kode_produk }}</td>
+                                        <td>{{ $p->nama }}</td>
+                                        <td>{{ $p->harga_jual }}</td>
+                                        <td>{{ $p->harga_beli }}</td>
+                                        <td>{{ $p->stok }}</td>
+                                        <td>{{ $p->minimum_stok }}</td>
+                                        <td>{{ $p->status_jual }}</td>
+                                        <td>{{ $p->merek->nama }}</td>
+                                        <td>{{ $p->kategori->nama }}</td>
+                                        <td class="text-left">
+                                            <ul>
+                                                @foreach ($p->kondisis as $kondisi)
+                                                    <li>{{ $kondisi->keterangan }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </td>
+                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
+                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
+                                        <td hidden>{{ $p->deskripsi }}</td>
+                                        <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
+                                                deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
+                                                createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
+                                                updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
+                                                class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
+                                        </td>
+                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr class="text-center">
+                                    <td colspan="13">
+                                        Tidak ada produk yang aktif!
                                     </td>
-                                    <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
-                                            deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
-                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
-                                    </td>
-                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
                                 </tr>
-                            @endforeach
-                            @foreach ($produksAktifLebihMinimumStok as $p)
-                                <tr id="tr_{{ $p->id }}">
-                                    <td>{{ $p->kode_produk }}</td>
-                                    <td>{{ $p->nama }}</td>
-                                    <td>{{ $p->harga_jual }}</td>
-                                    <td>{{ $p->harga_beli }}</td>
-                                    <td>{{ $p->stok }}</td>
-                                    <td>{{ $p->minimum_stok }}</td>
-                                    <td>{{ $p->status_jual }}</td>
-                                    <td>{{ $p->merek->nama }}</td>
-                                    <td>{{ $p->kategori->nama }}</td>
-                                    <td class="text-left">
-                                        <ul>
-                                            @foreach ($p->kondisis as $kondisi)
-                                                <li>{{ $kondisi->keterangan }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </td>
-                                    <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
-                                            deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
-                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
-                                    </td>
-                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
-                                </tr>
-                            @endforeach
+                            @endif
+
                         </tbody>
                     </table>
 
@@ -172,6 +194,9 @@
                                 <th>Merek</th>
                                 <th>Kategori</th>
                                 <th>Kondisi</th>
+                                <th hidden>Tanggal Pembuatan</th>
+                                <th hidden>Tanggal Edit Terakhir</th>
+                                <th hidden>Deskripsi</th>
                                 <th>Detail</th>
                                 <th>Edit</th>
                                 <th>Hapus</th>
@@ -179,34 +204,48 @@
                         </thead>
 
                         <tbody>
-                            @foreach ($produksNonaktif as $p)
-                                <tr id="tr_{{ $p->id }}">
-                                    <td>{{ $p->kode_produk }}</td>
-                                    <td>{{ $p->nama }}</td>
-                                    <td>{{ $p->harga_jual }}</td>
-                                    <td>{{ $p->harga_beli }}</td>
-                                    <td>{{ $p->stok }}</td>
-                                    <td>{{ $p->minimum_stok }}</td>
-                                    <td>{{ $p->status_jual }}</td>
-                                    <td>{{ $p->merek->nama }}</td>
-                                    <td>{{ $p->kategori->nama }}</td>
-                                    <td class="text-left">
-                                        <ul>
-                                            @foreach ($p->kondisis as $kondisi)
-                                                <li>{{ $kondisi->keterangan }}</li>
-                                            @endforeach
-                                        </ul>
+                            @if (count($produksNonaktif) != 0)
+                                @foreach ($produksNonaktif as $p)
+                                    <tr id="tr_{{ $p->id }}">
+                                        <td>{{ $p->kode_produk }}</td>
+                                        <td>{{ $p->nama }}</td>
+                                        <td>{{ $p->harga_jual }}</td>
+                                        <td>{{ $p->harga_beli }}</td>
+                                        <td>{{ $p->stok }}</td>
+                                        <td>{{ $p->minimum_stok }}</td>
+                                        <td>{{ $p->status_jual }}</td>
+                                        <td>{{ $p->merek->nama }}</td>
+                                        <td>{{ $p->kategori->nama }}</td>
+                                        <td class="text-left">
+                                            <ul>
+                                                @foreach ($p->kondisis as $kondisi)
+                                                    <li>{{ $kondisi->keterangan }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </td>
+                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
+                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
+                                        <td hidden>{{ $p->deskripsi }}</td>
+                                        <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
+                                                deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
+                                                createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
+                                                updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
+                                                class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
+                                        </td>
+                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr class="text-center">
+                                    <td colspan="13">
+                                        Tidak ada produk yang nonaktif!
                                     </td>
-                                    <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
-                                            deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
-                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
-                                    </td>
-                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
                                 </tr>
-                            @endforeach
+                            @endif
+
                         </tbody>
                     </table>
 
@@ -227,7 +266,11 @@
                     </button>
                 </div>
                 <div class="modal-body" id="contentDetailProduk">
-
+                    <div class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup</button>
@@ -242,15 +285,19 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            $('#tabelDaftarProdukAktif').DataTable({ordering:false});
+            $('#tabelDaftarProdukAktif').DataTable({
+                ordering: false
+            });
             $('#tabelDaftarProdukNonaktif').DataTable();
         });
 
         $('.btnDetailProduk').on('click', function() {
             var deskripsiProduk = $(this).attr('deskripsi');
             var namaProduk = $(this).attr('namaProduk');
+            var createdAt = $(this).attr('createdAt');
+            var updatedAt = $(this).attr('updatedAt');
             $("#modalNamaProduk").text(" Detail Produk " + namaProduk);
-            $("#contentDetailProduk").html("<h6>Deskripsi Produk:</h6><p>" + deskripsiProduk + "</p>");
+            $("#contentDetailProduk").html("<div class='form-group row text-center'><div class='form-group col-md-6'><h6>Tanggal Pembuatan</h6><p>" + createdAt + "</p></div><div class='form-group col-md-6'><h6>Tanggal Terakhir Diubah</h6><p>" + updatedAt + "</p></div></div><div class='form-group row text-center'><div class='form-group col-md-12'><h6>Deskripsi Produk</h6><p>" + deskripsiProduk + "</p></div></div>");
 
         });
 

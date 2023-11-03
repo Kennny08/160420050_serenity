@@ -11,17 +11,17 @@ class Produk extends Model
 
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class, 'kategori_id');
+        return $this->belongsTo(Kategori::class, 'kategori_id')->withTrashed();
     }
 
     public function merek()
     {
-        return $this->belongsTo(Merek::class, 'merek_id');
+        return $this->belongsTo(Merek::class, 'merek_id')->withTrashed();
     }
 
     public function kondisis()
     {
-        return $this->belongsToMany(Kondisi::class, 'kondisi_produk', 'produk_id', 'kondisi_id');
+        return $this->belongsToMany(Kondisi::class, 'kondisi_produk', 'produk_id', 'kondisi_id')->withTrashed();
     }
 
     public function perawatans()

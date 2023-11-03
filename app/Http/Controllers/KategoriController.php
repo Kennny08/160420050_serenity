@@ -97,7 +97,6 @@ class KategoriController extends Controller
     {
         $objCategory = $kategori;
         try {
-
             $objCategory->delete();
             return redirect()->route('kategoris.index')->with('status', 'Kategori ' . $objCategory->nama . ' telah berhasil dihapus');
         } catch (\PDOException $ex) {

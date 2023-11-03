@@ -89,7 +89,7 @@
     </div>
 
     <div id="modalDetailKaryawan" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
-        aria-labelledby="mySmallModalLabel" aria-hidden="true" >
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 600px;">
             <div class="modal-content ">
                 <div class="modal-header">
@@ -99,6 +99,11 @@
                     </button>
                 </div>
                 <div class="modal-body" id="contentDetailKaryawan">
+                    <div class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
 
                 </div>
                 <div class="modal-footer">

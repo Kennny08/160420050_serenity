@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Perawatan;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 
 class PerawatanController extends Controller
@@ -26,7 +27,8 @@ class PerawatanController extends Controller
      */
     public function create()
     {
-        //
+        $produks = Produk::where('status', 'aktif')->where('status_jual', 'tidak')->orderBy('nama')->get();
+        return view('admin.perawatan.tambahperawatan', compact('produks'));
     }
 
     /**
@@ -37,7 +39,63 @@ class PerawatanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        date_default_timezone_set("Asia/Jakarta");
+        $validatedData = $request->validate(
+            [
+                'namaPerawatan' => 'required|max:255',
+                'kode_perawatan' => 'required|unique:perawatans',
+                'hargaPerawatan' => 'required|numeric|min:1',
+                'durasi' => 'required|numeric|min:15',
+                'komisiKaryawan' => 'required|numeric|min:1|max:100',
+            ],
+            [
+                'namaPerawatan.required' => 'Nama perawatan tidak boleh kosong!',
+                'kode_perawatan.required' => 'Kode perawatan tidak boleh kosong!',
+                'kode_perawatan.unique' => 'Kode perawatan sudah pernah dipakai, mohon gunakan kode yang lain!',
+                'hargaPerawatan.required' => 'Harga perawatan tidak boleh kosong!',
+                'hargaPerawatan.numeric' => 'Harga perawatan harus berupa angka!',
+                'hargaPerawatan.min' => 'Harga perawatan harus lebih dari Rp. 0!',
+                'durasi.required' => 'Durasi perawatan produk tidak boleh kosong',
+                'durasi.numeric' => 'Harga Beli produk harus berupa angka',
+                'durasi.min' => 'Durasi perawatan minimal 30 menit!',
+                'komisiKaryawan.required' => 'Stok produk tidak boleh kosong',
+                'komisiKaryawan.numeric' => 'Stok produk harus berupa angka',
+                'komisiKaryawan.min' => 'Minimal komisi karyawan adalah 1%!',
+                'komisiKaryawan.max' => 'Maksimal komisi karyawan adalah 100%!',
+            ]
+        );
+
+        $namaPerawatan = $request->get('namaPerawatan');
+        $kodePerawatan = $request->get('kode_perawatan');
+        $hargaPerawatan = $request->get('hargaPerawatan');
+        $durasiPerawatan = $request->get('durasi');
+        $komisiKaryawan = $request->get('komisiKaryawan');
+        $deskripsiPerawatan = $request->get('deskripsiPerawatan');
+        $statusKeaktifan = $request->get('radioStatusPerawatan');
+        $statusKomplemen = $request->get('radioStatusKomplemenPerawatan');
+        $arrayIdProduk = $request->get('arrayprodukid');
+
+        $newPerawatan = new Perawatan();
+        $newPerawatan->nama = $namaPerawatan;
+        $newPerawatan->kode_perawatan = $kodePerawatan;
+        $newPerawatan->harga = $hargaPerawatan;
+        $newPerawatan->durasi = $durasiPerawatan;
+        $newPerawatan->deskripsi = $deskripsiPerawatan;
+        $newPerawatan->status = $statusKeaktifan;
+        $newPerawatan->status_komplemen = $statusKomplemen;
+        $newPerawatan->komisi = $komisiKaryawan;
+        $newPerawatan->created_at = date('Y-m-d H:i:s');
+        $newPerawatan->updated_at = date('Y-m-d H:i:s');
+        $newPerawatan->save();
+
+        if ($arrayIdProduk != null) {
+            foreach ($arrayIdProduk as $idProduk) {
+                $newPerawatan->produks()->attach($idProduk);
+            }
+        }
+
+        return redirect()->route('perawatans.index')->with('status', 'Berhasil menambah perawatan ' . $namaPerawatan . '!');
     }
 
     /**
@@ -59,7 +117,8 @@ class PerawatanController extends Controller
      */
     public function edit(Perawatan $perawatan)
     {
-        //
+        $produksDigunakan = Produk::where('status', 'aktif')->where('status_jual', 'tidak')->orderBy('nama')->get();
+        return view('admin.perawatan.editperawatan', compact('produksDigunakan', 'perawatan'));
     }
 
     /**
@@ -71,7 +130,117 @@ class PerawatanController extends Controller
      */
     public function update(Request $request, Perawatan $perawatan)
     {
-        //
+        date_default_timezone_set("Asia/Jakarta");
+        $namaPerawatan = $request->get('namaPerawatan');
+        $kodePerawatan = $request->get('kode_perawatan');
+        $hargaPerawatan = $request->get('hargaPerawatan');
+        $durasiPerawatan = $request->get('durasi');
+        $komisiKaryawan = $request->get('komisiKaryawan');
+        $deskripsiPerawatan = $request->get('deskripsiPerawatan');
+        $statusKeaktifan = $request->get('radioStatusPerawatan');
+        $statusKomplemen = $request->get('radioStatusKomplemenPerawatan');
+        $arrayIdProduk = $request->get('arrayprodukid');
+        if ($kodePerawatan != $perawatan->kode_perawatan) {
+            $validatedData = $request->validate(
+                [
+                    'namaPerawatan' => 'required|max:255',
+                    'kode_perawatan' => 'required|unique:perawatans',
+                    'hargaPerawatan' => 'required|numeric|min:1',
+                    'durasi' => 'required|numeric|min:15',
+                    'komisiKaryawan' => 'required|numeric|min:1|max:100',
+                ],
+                [
+                    'namaPerawatan.required' => 'Nama perawatan tidak boleh kosong!',
+                    'kode_perawatan.required' => 'Kode perawatan tidak boleh kosong!',
+                    'kode_perawatan.unique' => 'Kode perawatan sudah pernah dipakai, mohon gunakan kode yang lain!',
+                    'hargaPerawatan.required' => 'Harga perawatan tidak boleh kosong!',
+                    'hargaPerawatan.numeric' => 'Harga perawatan harus berupa angka!',
+                    'hargaPerawatan.min' => 'Harga perawatan harus lebih dari Rp. 0!',
+                    'durasi.required' => 'Durasi perawatan produk tidak boleh kosong',
+                    'durasi.numeric' => 'Harga Beli produk harus berupa angka',
+                    'durasi.min' => 'Durasi perawatan minimal 30 menit!',
+                    'komisiKaryawan.required' => 'Stok produk tidak boleh kosong',
+                    'komisiKaryawan.numeric' => 'Stok produk harus berupa angka',
+                    'komisiKaryawan.min' => 'Minimal komisi karyawan adalah 1%!',
+                    'komisiKaryawan.max' => 'Maksimal komisi karyawan adalah 100%!',
+                ]
+            );
+            $perawatan->nama = $namaPerawatan;
+            $perawatan->kode_perawatan = $kodePerawatan;
+            $perawatan->harga = $hargaPerawatan;
+            $perawatan->durasi = $durasiPerawatan;
+            $perawatan->deskripsi = $deskripsiPerawatan;
+            $perawatan->status = $statusKeaktifan;
+            $perawatan->status_komplemen = $statusKomplemen;
+            $perawatan->komisi = $komisiKaryawan;
+            $perawatan->updated_at = date('Y-m-d H:i:s');
+            $perawatan->save();
+
+            if ($arrayIdProduk != null) {
+                foreach ($perawatan->produks as $produk) {
+                    $perawatan->produks()->detach($produk);
+                }
+
+                foreach ($arrayIdProduk as $idProduk) {
+                    $perawatan->produks()->attach($idProduk);
+                }
+            } else {
+                foreach ($perawatan->produks as $produk) {
+                    $perawatan->produks()->detach($produk);
+                }
+            }
+
+            return redirect()->route('perawatans.index')->with('status', 'Berhasil mengedit perawatan ' . $namaPerawatan . '!');
+        } else {
+            $validatedData = $request->validate(
+                [
+                    'namaPerawatan' => 'required|max:255',
+                    'hargaPerawatan' => 'required|numeric|min:1',
+                    'durasi' => 'required|numeric|min:15',
+                    'komisiKaryawan' => 'required|numeric|min:1|max:100',
+                ],
+                [
+                    'namaPerawatan.required' => 'Nama perawatan tidak boleh kosong!',
+                    'hargaPerawatan.required' => 'Harga perawatan tidak boleh kosong!',
+                    'hargaPerawatan.numeric' => 'Harga perawatan harus berupa angka!',
+                    'hargaPerawatan.min' => 'Harga perawatan harus lebih dari Rp. 0!',
+                    'durasi.required' => 'Durasi perawatan produk tidak boleh kosong',
+                    'durasi.numeric' => 'Harga Beli produk harus berupa angka',
+                    'durasi.min' => 'Durasi perawatan minimal 30 menit!',
+                    'komisiKaryawan.required' => 'Stok produk tidak boleh kosong',
+                    'komisiKaryawan.numeric' => 'Stok produk harus berupa angka',
+                    'komisiKaryawan.min' => 'Minimal komisi karyawan adalah 1%!',
+                    'komisiKaryawan.max' => 'Maksimal komisi karyawan adalah 100%!',
+                ]
+            );
+
+            $perawatan->nama = $namaPerawatan;
+            $perawatan->harga = $hargaPerawatan;
+            $perawatan->durasi = $durasiPerawatan;
+            $perawatan->deskripsi = $deskripsiPerawatan;
+            $perawatan->status = $statusKeaktifan;
+            $perawatan->status_komplemen = $statusKomplemen;
+            $perawatan->komisi = $komisiKaryawan;
+            $perawatan->updated_at = date('Y-m-d H:i:s');
+            $perawatan->save();
+
+            if ($arrayIdProduk != null) {
+                foreach ($perawatan->produks as $produk) {
+                    $perawatan->produks()->detach($produk);
+                }
+
+                foreach ($arrayIdProduk as $idProduk) {
+                    $perawatan->produks()->attach($idProduk);
+                }
+            } else {
+                foreach ($perawatan->produks as $produk) {
+                    $perawatan->produks()->detach($produk);
+                }
+            }
+
+            return redirect()->route('perawatans.index')->with('status', 'Berhasil mengedit perawatan ' . $namaPerawatan . '!');
+        }
+
     }
 
     /**

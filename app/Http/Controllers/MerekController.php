@@ -94,6 +94,13 @@ class MerekController extends Controller
      */
     public function destroy(Merek $merek)
     {
-        //
+        $objMerek = $merek;
+        try {
+            $objMerek->delete();
+            return redirect()->route('mereks.index')->with('status', 'Merek ' . $objMerek->nama . ' telah berhasil dihapus');
+        } catch (\PDOException $ex) {
+            $msg = "Data Gagal dihapus. Pastikan kembali tidak ada data yang berelasi sebelum dihapus";
+            return redirect()->route('mereks.index')->with('status', $msg);
+        }
     }
 }

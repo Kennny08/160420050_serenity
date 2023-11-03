@@ -94,6 +94,13 @@ class KondisiController extends Controller
      */
     public function destroy(Kondisi $kondisi)
     {
-        //
+        $objKondisi = $kondisi;
+        try {
+            $objKondisi->delete();
+            return redirect()->route('kondisis.index')->with('status', 'Kondisi ' . $objKondisi->keterangan . ' telah berhasil dihapus');
+        } catch (\PDOException $ex) {
+            $msg = "Data Gagal dihapus. Pastikan kembali tidak ada data yang berelasi sebelum dihapus";
+            return redirect()->route('kondisis.index')->with('status', $msg);
+        }
     }
 }

@@ -48,8 +48,12 @@
                                     <td>{{ date('d-m-Y H:i:s', strtotime($k->updated_at)) }}</td>
                                     <td class="text-center"><a href="{{ route('kategoris.edit', $k->id) }}"
                                             class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><a href="{{ route('kategoris.edit', $k->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
+                                    <td class="text-center"><button data-toggle="modal"
+                                            data-target="#modalKonfirmasiDeleteKategori"
+                                            class=" btn btn-danger waves-effect waves-light btnHapusKategori"
+                                            idKategori = "{{ $k->id }}"
+                                            namaKategori="{{ $k->nama }}"
+                                            routeUrl = "{{ route('kategoris.destroy', $k->id) }}">Hapus</button></td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -60,6 +64,34 @@
         </div>
         <!-- end col -->
     </div>
+
+    <div id="modalKonfirmasiDeleteKategori" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <form id="formDeleteKategori" action="{{ route('kategoris.destroy', '1') }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-header">
+                        <h5 id="modalNamaKategori" class="modal-title mt-0">Konfirmasi Penghapusan Kategori</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="modalBodyHapusKategori" class="modal-body text-center">
+                        <h6>Apakah Anda yakin untuk menghapus kategori?</h6>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Batal</button>
+                        <button id="btnKonfirmasiHapusKategori" type="submit"
+                            class="btn btn-info waves-effect waves-light btnKonfirmasiHapusKategori">Hapus</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @endsection
 
 @section('javascript')
@@ -68,6 +100,17 @@
             $('#tabelDaftarKategori').DataTable({
 
             });
+        });
+
+        $('.btnHapusKategori').on('click', function() {
+
+            var idKategori = $(this).attr("idKategori");
+            var namaKategori = $(this).attr('namaKategori');
+            var routeUrl = $(this).attr('routeUrl');
+            $("#modalNamaKategori").text("Konfirmasi Penghapusan Kategori " + namaKategori);
+            $("#modalBodyHapusKategori").html("<h6>Apakah Anda yakin untuk menghapus kategori " + namaKategori +
+                "?</h6>")
+            $("#formDeleteKategori").attr("action", routeUrl);
         });
     </script>
 @endsection

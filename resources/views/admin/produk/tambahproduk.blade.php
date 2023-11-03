@@ -46,7 +46,7 @@
                                 <input type="text" class="form-control" name="kode_produk" id="txtKodeProduk"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan kode produk" required
                                     value="{{ old('kode_produk') }}">
-                                <small id="emailHelp" class="form-text text-muted">Masukkan jumlah kode disini!</small>
+                                <small id="emailHelp" class="form-text text-muted">Masukkan kode produk disini!</small>
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Harga Jual Produk</strong></label>
@@ -425,7 +425,7 @@
 
         if ($('#bodyListKeteranganKondisi').find("tr").length == 0) {
             $('#bodyListKeteranganKondisi').html(
-                "<tr id='trSilahkan'><td colspan='5=2'>Silahkan Pilih Keterangan Kondisi</td></tr>");
+                "<tr id='trSilahkan'><td colspan='2'>Silahkan Pilih Keterangan Kondisi</td></tr>");
         }
     });
 </script>
