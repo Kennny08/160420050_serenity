@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <title>@yield('title') || Admin - Reservasi</title>
+    <title>@yield('title')</title>
     <meta content="Responsive admin theme build on top of Bootstrap 4" name="description" />
     <meta content="Themesdesign" name="author" />
     <link rel="shortcut icon" href="{{ asset('assets_admin/images/favicon.ico') }}">
@@ -247,7 +247,7 @@
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="submenu">
                                 <li></i><a href="{{ route('pembelians.index') }}">Daftar Pembelian</a></li>
-                                <li></i><a href="{{ route('pembelians.index') }}">Supplier</a></li>
+                                <li></i><a href="{{ route('suppliers.index') }}">Supplier</a></li>
                             </ul>
                         </li>
 
@@ -263,8 +263,10 @@
                                     Produk <span class="float-right menu-arrow"><i
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="submenu">
-                                <li></i><a href="{{ route('produks.index') }}">Daftar Produk</a></li>
-                                <li></i><a href="{{ route('kategoris.index') }}">Kategori</a></li>
+                                <li><a href="{{ route('produks.index') }}">Daftar Produk</a></li>
+                                <li
+                                    class="{{ request()->is('kategoris/create') || request()->is('kategoris/*/edit') ? ' mm-active' : '' }}">
+                                    <a href="{{ route('kategoris.index') }}">Kategori</a></li>
                                 <li></i><a href="{{ route('mereks.index') }}">Merek</a></li>
                                 <li></i><a href="{{ route('kondisis.index') }}">Kondisi</a></li>
                                 <li></i><a href="{{ route('produks.index') }}">Riwayat Pengambilan Produk</a></li>

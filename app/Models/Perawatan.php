@@ -4,14 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Perawatan extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     public function karyawans()
     {
-        return $this->belongsToMany(Karyawan::class, 'karyawan_perawatan', 'perawatan_id', 'karyawan_id');
+        return $this->belongsToMany(Karyawan::class, 'karyawan_perawatan', 'perawatan_id', 'karyawan_id')->withTrashed();
     }
 
     public function penjualanperawatans()
@@ -21,7 +23,7 @@ class Perawatan extends Model
 
     public function produks()
     {
-        return $this->belongsToMany(Produk::class, 'perawatan_produk', 'perawatan_id', 'produk_id');
+        return $this->belongsToMany(Produk::class, 'perawatan_produk', 'perawatan_id', 'produk_id')->withTrashed();
     }
 
     public function pakets()

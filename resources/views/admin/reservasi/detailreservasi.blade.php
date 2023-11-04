@@ -1,6 +1,6 @@
 @extends('layout.adminlayout')
 
-@section('title', 'Admin - Detail Reservasi')
+@section('title', 'Admin || Detail Reservasi')
 
 
 @section('admincontent')

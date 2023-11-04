@@ -12,6 +12,7 @@ use App\Http\Controllers\PerawatanController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\SlotJamController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -82,3 +83,7 @@ Route::post('/admin/karyawan/getDetailKaryawan', [KaryawanController::class, "ge
 
 //Perawatan
 Route::post('/admin/perawatan/getDetailPerawatan', [PerawatanController::class, "getDetailPerawatanList"])->name("admin.getdetailperawatan");
+
+//Supplier
+Route::resource("suppliers", SupplierController::class);
+Route::post('/admin/karyawan/getDetailSupplier', [SupplierController::class, "getDetailSupplier"])->name("admin.getdetailsupplier");

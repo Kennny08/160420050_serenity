@@ -1,5 +1,7 @@
 @extends('layout.adminlayout')
 
+@section('title', 'Admin || Daftar Perawatan')
+
 @section('admincontent')
     <div class="page-title-box">
     </div>
@@ -101,8 +103,12 @@
                                         </td>
                                         <td class="text-center"><a href="{{ route('perawatans.edit', $pa->id) }}"
                                                 class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><a href="{{ route('perawatans.edit', $pa->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeletePerawatan"
+                                                idPerawatan = "{{ $pa->id }}" namaPerawatan="{{ $pa->nama }}"
+                                                routeUrl = "{{ route('perawatans.destroy', $pa->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusPerawatan">Hapus</button>
+                                        </td>
                                     </tr>
                                 @endforeach
                             @endif
@@ -174,8 +180,12 @@
                                         </td>
                                         <td class="text-center"><a href="{{ route('perawatans.edit', $pn->id) }}"
                                                 class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><a href="{{ route('perawatans.edit', $pn->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeletePerawatan"
+                                                idPerawatan = "{{ $pn->id }}" namaPerawatan="{{ $pn->nama }}"
+                                                routeUrl = "{{ route('perawatans.destroy', $pn->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusPerawatan">Hapus</button>
+                                        </td>
                                     </tr>
                                 @endforeach
                             @endif
@@ -211,6 +221,34 @@
                 </div>
             </div>
             <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <div id="modalKonfirmasiDeletePerawatan" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <form id="formDeletePerawatan" action="{{ route('perawatans.destroy', '1') }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-header">
+                        <h5 id="modalNamaPerawatanDelete" class="modal-title mt-0">Konfirmasi Penghapusan Perawatan</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="modalBodyHapusPerawatan" class="modal-body text-center">
+                        <h6>Apakah Anda yakin untuk menghapus perawatan?</h6>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Batal</button>
+                        <button id="btnKonfirmasiHapusPerawatan" type="submit"
+                            class="btn btn-info waves-effect waves-light btnKonfirmasiHapusPerawatan">Hapus</button>
+                    </div>
+                </form>
+            </div>
+
         </div>
         <!-- /.modal-dialog -->
     </div>
@@ -257,6 +295,17 @@
                 }
             })
 
+        });
+
+        $('.btnHapusPerawatan').on('click', function() {
+
+            var idPerawatan = $(this).attr("idPerawatan");
+            var namaPerawatan = $(this).attr('namaPerawatan');
+            var routeUrl = $(this).attr('routeUrl');
+            $("#modalNamaPerawatanDelete").text("Konfirmasi Penghapusan Perawatan " + namaPerawatan);
+            $("#modalBodyHapusPerawatan").html("<h6>Apakah Anda yakin untuk menghapus perawatan " + namaPerawatan +
+                "?</h6>")
+            $("#formDeletePerawatan").attr("action", routeUrl);
         });
     </script>
 @endsection

@@ -188,7 +188,7 @@ class ProdukController extends Controller
         $kategoriProduk = $request->get("kategoriProduk");
         $merekProduk = $request->get("merekProduk");
         $arrayKondisi = $request->get("arraykondisiid");
-        
+
 
         if ($produk->kode_produk != $request->get('kode_produk')) {
             $cekProduk = Produk::where('kode_produk', $kodeProduk)->first();
@@ -230,7 +230,14 @@ class ProdukController extends Controller
      */
     public function destroy(Produk $produk)
     {
-        //
+        $objProduk = $produk;
+        try {
+            $objProduk->delete();
+            return redirect()->route('produks.index')->with('status', 'Produk ' . $objProduk->nama . ' telah berhasil dihapus');
+        } catch (\PDOException $ex) {
+            $msg = "Data Gagal dihapus. Pastikan kembali tidak ada data yang berelasi sebelum dihapus";
+            return redirect()->route('produks.index')->with('status', $msg);
+        }
     }
 
     public function reservasiTambahProduk($id)

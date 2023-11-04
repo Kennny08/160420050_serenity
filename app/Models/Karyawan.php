@@ -4,14 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Karyawan extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     public function perawatans()
     {
-        return $this->belongsToMany(Perawatan::class, 'karyawan_perawatan', 'karyawan_id', 'perawatan_id');
+        return $this->belongsToMany(Perawatan::class, 'karyawan_perawatan', 'karyawan_id', 'perawatan_id')->withTrashed();
     }
 
     public function penjualanperawatans()

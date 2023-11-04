@@ -1,5 +1,7 @@
 @extends('layout.adminlayout')
 
+@section('title', 'Admin || Pemilihan Reservasi Karyawan')
+
 @section('admincontent')
     <div class="page-title-box">
 

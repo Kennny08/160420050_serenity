@@ -251,7 +251,14 @@ class PerawatanController extends Controller
      */
     public function destroy(Perawatan $perawatan)
     {
-        //
+        $objPerawatan = $perawatan;
+        try {
+            $objPerawatan->delete();
+            return redirect()->route('perawatans.index')->with('status', 'Perawatan ' . $objPerawatan->nama . ' telah berhasil dihapus');
+        } catch (\PDOException $ex) {
+            $msg = "Data Gagal dihapus. Pastikan kembali tidak ada data yang berelasi sebelum dihapus";
+            return redirect()->route('perawatans.index')->with('status', $msg);
+        }
     }
 
     public function getDetailPerawatan()

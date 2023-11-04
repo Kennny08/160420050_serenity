@@ -1,5 +1,7 @@
 @extends('layout.adminlayout')
 
+@section('title', 'Admin || Buat Reservasi')
+
 @section('admincontent')
     <div class="page-title-box">
 

@@ -26,6 +26,6 @@ class Penjualan extends Model
 
     public function produks()
     {
-        return $this->belongsToMany(Produk::class, 'penjualan_produk', 'penjualan_id', 'produk_id')->withPivot('kuantitas', 'harga');
+        return $this->belongsToMany(Produk::class, 'penjualan_produk', 'penjualan_id', 'produk_id')->withPivot('kuantitas', 'harga')->withTrashed();
     }
 }

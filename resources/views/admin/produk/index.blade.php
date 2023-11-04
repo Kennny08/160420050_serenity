@@ -1,5 +1,7 @@
 @extends('layout.adminlayout')
 
+@section('title', 'Admin || Daftar Produk')
+
 @section('admincontent')
     <div class="page-title-box">
 
@@ -113,8 +115,12 @@
                                         </td>
                                         <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
                                                 class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
+                                                namaProduk="{{ $p->nama }}"
+                                                routeUrl = "{{ route('produks.destroy', $p->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
+                                        </td>
                                     </tr>
                                 @endforeach
                                 @foreach ($produksAktifLebihMinimumStok as $p)
@@ -146,8 +152,12 @@
                                         </td>
                                         <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
                                                 class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
+                                                namaProduk="{{ $p->nama }}"
+                                                routeUrl = "{{ route('produks.destroy', $p->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
+                                        </td>
                                     </tr>
                                 @endforeach
                             @else
@@ -226,16 +236,21 @@
                                         <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
                                         <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
                                         <td hidden>{{ $p->deskripsi }}</td>
-                                        <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
-                                                deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalDetailProduk" deskripsi="{{ $p->deskripsi }}"
+                                                namaProduk ="{{ $p->nama }}"
                                                 createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
                                                 updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
                                                 class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
                                         </td>
                                         <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
                                                 class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light">Hapus</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeleteProduk"
+                                                idProduk = "{{ $p->id }}" namaProduk="{{ $p->nama }}"
+                                                routeUrl = "{{ route('produks.destroy', $p->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
+                                        </td>
                                     </tr>
                                 @endforeach
                             @else
@@ -280,6 +295,34 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+
+    <div id="modalKonfirmasiDeleteProduk" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <form id="formDeleteProduk" action="{{ route('produks.destroy', '1') }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-header">
+                        <h5 id="modalNamaProdukDelete" class="modal-title mt-0">Konfirmasi Penghapusan Produk</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="modalBodyHapusProduk" class="modal-body text-center">
+                        <h6>Apakah Anda yakin untuk menghapus produk?</h6>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Batal</button>
+                        <button id="btnKonfirmasiHapusProduk" type="submit"
+                            class="btn btn-info waves-effect waves-light btnKonfirmasiHapusProduk">Hapus</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @endsection
 
 @section('javascript')
@@ -297,7 +340,12 @@
             var createdAt = $(this).attr('createdAt');
             var updatedAt = $(this).attr('updatedAt');
             $("#modalNamaProduk").text(" Detail Produk " + namaProduk);
-            $("#contentDetailProduk").html("<div class='form-group row text-center'><div class='form-group col-md-6'><h6>Tanggal Pembuatan</h6><p>" + createdAt + "</p></div><div class='form-group col-md-6'><h6>Tanggal Terakhir Diubah</h6><p>" + updatedAt + "</p></div></div><div class='form-group row text-center'><div class='form-group col-md-12'><h6>Deskripsi Produk</h6><p>" + deskripsiProduk + "</p></div></div>");
+            $("#contentDetailProduk").html(
+                "<div class='form-group row text-center'><div class='form-group col-md-6'><h6>Tanggal Pembuatan</h6><p>" +
+                createdAt + "</p></div><div class='form-group col-md-6'><h6>Tanggal Terakhir Diubah</h6><p>" +
+                updatedAt +
+                "</p></div></div><div class='form-group row text-center'><div class='form-group col-md-12'><h6>Deskripsi Produk</h6><p>" +
+                deskripsiProduk + "</p></div></div>");
 
         });
 
@@ -309,6 +357,17 @@
         $('.radioNonaktif').on('click', function() {
             $(".radioNonaktif").addClass("btn-info");
             $(".radioAktif").removeClass("btn-info");
+        });
+
+        $('.btnHapusProduk').on('click', function() {
+
+            var idProduk = $(this).attr("idProduk");
+            var namaProduk = $(this).attr('namaProduk');
+            var routeUrl = $(this).attr('routeUrl');
+            $("#modalNamaProdukDelete").text("Konfirmasi Penghapusan Produk " + namaProduk);
+            $("#modalBodyHapusProduk").html("<h6>Apakah Anda yakin untuk menghapus produk " + namaProduk +
+                "?</h6>")
+            $("#formDeleteProduk").attr("action", routeUrl);
         });
     </script>
 @endsection

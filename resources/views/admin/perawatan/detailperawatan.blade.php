@@ -58,5 +58,30 @@
             </tbody>
         </table>
     </div>
+</div>
+<br>
+<div class="form-group text-center">
+    <div class="form-group col-md-12">
+        <h6>Karyawan yang Menguasai :</h6>
+        <table id="tabelDaftarPerawatanKaryawan" class="table table-bordered table-striped text-center"
+            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead>
+                <tr>
+                    <th>Nama Karyawan</th>
+                    <th>Total Perawatan</th>
+                </tr>
+            </thead>
+            <tbody id="bodyListPerawatanProduk">
+                @foreach ($perawatan->karyawans as $karyawan)
+                    <tr>
+                        <td>{{ $karyawan->nama }}</td>
+                        <td>{{ $karyawan->penjualanperawatans->where('perawatan.id', $perawatan->id)->where('penjualan.status_selesai', 'selesai')->count() }}
+                        </td>
+                    </tr>
+                @endforeach
+
+            </tbody>
+        </table>
+    </div>
 
 </div>

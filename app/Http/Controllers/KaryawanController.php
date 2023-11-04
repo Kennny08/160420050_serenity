@@ -378,7 +378,15 @@ class KaryawanController extends Controller
      */
     public function destroy(Karyawan $karyawan)
     {
-        //
+        
+        $objKaryawan = $karyawan;
+        try {
+            $objKaryawan->delete();
+            return redirect()->route('karyawans.index')->with('status', 'Karyawan ' . $objKaryawan->nama . ' telah berhasil dihapus');
+        } catch (\PDOException $ex) {
+            $msg = "Data Gagal dihapus. Pastikan kembali tidak ada data yang berelasi sebelum dihapus";
+            return redirect()->route('karyawans.index')->with('status', $msg);
+        }
     }
 
     public function getDetailKaryawan()

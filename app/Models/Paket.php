@@ -11,11 +11,11 @@ class Paket extends Model
 
     public function produks()
     {
-        return $this->belongsToMany(Produk::class, 'paket_produk', 'paket_id', 'produk_id')->withPivot('jumlah');
+        return $this->belongsToMany(Produk::class, 'paket_produk', 'paket_id', 'produk_id')->withPivot('jumlah')->withTrashed();
     }
 
     public function perawatans()
     {
-        return $this->belongsToMany(Perawatan::class, 'paket_perawatan', 'paket_id', 'perawatan_id');
+        return $this->belongsToMany(Perawatan::class, 'paket_perawatan', 'paket_id', 'perawatan_id')->withTrashed();
     }
 }

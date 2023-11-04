@@ -13,12 +13,12 @@ class PenjualanPerawatan extends Model
 
     public function karyawan()
     {
-        return $this->belongsTo(Karyawan::class, 'karyawan_id');
+        return $this->belongsTo(Karyawan::class, 'karyawan_id')->withTrashed();;
     }
 
     public function perawatan()
     {
-        return $this->belongsTo(Perawatan::class, 'perawatan_id');
+        return $this->belongsTo(Perawatan::class, 'perawatan_id')->withTrashed();
     }
 
     public function penjualan()
