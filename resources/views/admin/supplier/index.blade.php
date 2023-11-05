@@ -29,20 +29,20 @@
                     @endif
 
                     <div>
-                        <table id="tabelDaftarKaryawan" class="table table-bordered dt-responsive nowrap text-center w-100"
+                        <table id="tabelDaftarKaryawan" class="table table-bordered dt-responsive wrap text-center w-100"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Nama</th>
-                                    <th>Alamat</th>
-                                    <th>Nomor Telepon</th>
-                                    <th>Email</th>
-                                    <th>Tanggal Pembuatan</th>
-                                    <th>Tanggal Edit Terakhir</th>
-                                    <th>Detail</th>
-                                    <th>Edit</th>
-                                    <th>Hapus</th>
+                                    <th class="align-middle">ID</th>
+                                    <th class="align-middle">Nama</th>
+                                    <th class="align-middle">Alamat</th>
+                                    <th class="align-middle">Nomor Telepon</th>
+                                    <th class="align-middle">Email</th>
+                                    <th class="align-middle">Tanggal Pembuatan</th>
+                                    <th class="align-middle">Tanggal Edit Terakhir</th>
+                                    <th class="align-middle">Detail</th>
+                                    <th class="align-middle">Edit</th>
+                                    <th class="align-middle">Hapus</th>
                                 </tr>
                             </thead>
 
@@ -67,7 +67,7 @@
                                             <td class="text-center"><button data-toggle="modal"
                                                     data-target="#modalKonfirmasiDeleteSupplier"
                                                     idSupplier = "{{ $s->id }}" namaSupplier="{{ $s->nama }}"
-                                                    routeUrl = "{{ route('supplier.destroy', $s->id) }}"
+                                                    routeUrl = "{{ route('suppliers.destroy', $s->id) }}"
                                                     class=" btn btn-danger waves-effect waves-light btnHapusSupplier">Hapus</button>
                                             </td>
                                         </tr>
@@ -122,7 +122,7 @@
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
-                <form id="formDeleteSupplier" action="{{ route('karyawans.destroy', '1') }}" method="POST">
+                <form id="formDeleteSupplier" action="{{ route('suppliers.destroy', '1') }}" method="POST">
                     @csrf
                     @method('DELETE')
                     <div class="modal-header">
