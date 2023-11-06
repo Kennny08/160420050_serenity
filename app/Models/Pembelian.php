@@ -18,4 +18,9 @@ class Pembelian extends Model
     {
         return $this->belongsTo(Supplier::class, 'supplier_id')->withTrashed();
     }
+    public function karyawan()
+    {
+        return $this->belongsTo(Karyawan::class, 'karyawan_id')->withTrashed();
+    }
+    
 }

@@ -39,7 +39,7 @@ class PerawatanController extends Controller
      */
     public function store(Request $request)
     {
-
+        
         date_default_timezone_set("Asia/Jakarta");
         $validatedData = $request->validate(
             [

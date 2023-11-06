@@ -197,8 +197,6 @@
                                                 @endif
                                             @endforeach
                                         @endif
-
-
                                     </select>
                                     <button style="margin-left: 1%; width: 20%" type="button" id="btnTambahPerawatan"
                                         class="btn btn-info waves-effect waves-light">Tambah Perawatan</button>

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Karyawan;
 use App\Models\Pembelian;
+use App\Models\Produk;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class PembelianController extends Controller
@@ -14,7 +17,10 @@ class PembelianController extends Controller
      */
     public function index()
     {
-        //
+        $pembeliansBelumBayar = Pembelian::where('tanggal_bayar', NULL)->orderBy('tanggal_beli', 'asc')->get();
+        $pembelians = Pembelian::where('tanggal_bayar', '!=', NULL)->orderBy('tanggal_beli', 'desc')->get();
+
+        return view('admin.pembelian.index', compact('pembeliansBelumBayar', 'pembelians'));
     }
 
     /**
@@ -24,7 +30,12 @@ class PembelianController extends Controller
      */
     public function create()
     {
-        //
+        $produksKurangDariMinimumStok = Produk::whereRaw('stok <= minimum_stok')->get();
+        $produks = Produk::whereRaw('stok > minimum_stok')->get();
+        $karyawansAdmin = Karyawan::where('jenis_karyawan', 'admin')->get();
+        $suppliers = Supplier::all();
+        return view('admin.pembelian.tambahpembelian', compact('produksKurangDariMinimumStok', 'produks', 'karyawansAdmin', 'suppliers'));
+
     }
 
     /**
