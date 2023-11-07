@@ -46,7 +46,56 @@ class PembelianController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all());
+        date_default_timezone_set("Asia/Jakarta");
+
+        $nomorNota = $request->get("nomorNota");
+        $supplierPembelian = $request->get("supplierPembelian");
+        $karyawan = $request->get("namaKaryawan");
+        $tanggalPembelian = $request->get("tanggalPembelian");
+        $tanggalPembayaran = $request->get("tanggalPembayaran");
+        $arrayIdProduk = $request->get("arrayproduk");
+        $arrayStokproduk = $request->get("arraystokproduk");
+        $arrayHargaProduk = $request->get("arrayhargaproduk");
+
+        $totalHarga = 0;
+        for ($i = 0; $i < count($arrayIdProduk); $i++) {
+            $totalHarga += $arrayStokproduk[$i] * $arrayHargaProduk[$i];
+        }
+
+        $newPembelian = new Pembelian();
+        $newPembelian->total = $totalHarga;
+        $newPembelian->tanggal_beli = $tanggalPembelian;
+        if ($tanggalPembayaran != null) {
+            $newPembelian->tanggal_bayar = $tanggalPembayaran;
+        }
+        $newPembelian->nomor_nota = $nomorNota;
+        $newPembelian->supplier_id = $supplierPembelian;
+        $newPembelian->karyawan_id = $karyawan;
+        $newPembelian->created_at = date("Y-m-d H:i:s");
+        $newPembelian->updated_at = date("Y-m-d H:i:s");
+        $newPembelian->save();
+
+        for ($i = 0; $i < count($arrayIdProduk); $i++) {
+            $idProduk = $arrayIdProduk[$i];
+            $stokBeli = $arrayStokproduk[$i];
+            $hargaBeli = $arrayHargaProduk[$i];
+
+            $newPembelian->produks()->attach($idProduk, ['kuantitas' => $stokBeli, 'harga' => $hargaBeli]);
+
+            $produk = Produk::find($idProduk);
+            if ($produk->harga_beli != $hargaBeli) {
+                $hargaBaru = ceil((($produk->stok * $produk->harga_beli) + ($stokBeli * $hargaBeli)) / ($produk->stok + $stokBeli));
+                $produk->harga_beli = $hargaBaru;
+                $produk->stok = $produk->stok + $stokBeli;
+            } else {
+                $produk->stok = $produk->stok + $stokBeli;
+            }
+            $produk->updated_at = date('Y-m-d H:i:s');
+            $produk->save();
+        }
+        return redirect()->route('pembelians.index')->with('status', 'Berhasil menambahkan data pembelian baru dari supplier ' . $newPembelian->supplier->nama . ' dengan nomor nota ' . $nomorNota . '!');
+
     }
 
     /**

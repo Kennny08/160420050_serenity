@@ -76,7 +76,8 @@
                                             <th class="align-middle">Kode Produk</th>
                                             <th class="align-middle">Nama</th>
                                             <th class="align-middle">Merek</th>
-                                            <th class="align-middle">Harga(Rp)</th>
+                                            <th class="align-middle">Harga Beli(Rp)</th>
+                                            <th class="align-middle">Harga Jual(Rp)</th>
                                             <th class="align-middle">Stok</th>
                                             <th class="align-middle">Minimum Stok</th>
                                             <th class="align-middle">Kategori</th>
@@ -92,6 +93,7 @@
                                                 <td>{{ $p->kode_produk }}</td>
                                                 <td>{{ $p->nama }}</td>
                                                 <td>{{ $p->merek->nama }}</td>
+                                                <td>{{ $p->harga_beli }}</td>
                                                 <td>{{ $p->harga_jual }}</td>
                                                 <td class="text-danger">{{ $p->stok }}</td>
                                                 <td class="text-danger">{{ $p->minimum_stok }}</td>
@@ -110,7 +112,7 @@
                                                     <button id="btnTambahKeranjang_{{ $p->id }}"
                                                         class="btn btn-info waves-effect waves-light btnTambahKeranjang"
                                                         idProduk='{{ $p->id }}' namaProduk='{{ $p->nama }}'
-                                                        hargaProduk='{{ $p->harga_jual }}'
+                                                        hargaProduk='{{ $p->harga_beli }}'
                                                         stokProduk='{{ $p->stok }}'
                                                         minimumStokProduk='{{ $p->minimum_stok }}'>Tambah</button>
                                                 </td>
@@ -161,7 +163,8 @@
                                         <th class="align-middle">Kode Produk</th>
                                         <th class="align-middle">Nama</th>
                                         <th class="align-middle">Merek</th>
-                                        <th class="align-middle">Harga(Rp)</th>
+                                        <th class="align-middle">Harga Beli(Rp)</th>
+                                        <th class="align-middle">Harga Jual(Rp)</th>
                                         <th class="align-middle">Stok</th>
                                         <th class="align-middle">Minimum Stok</th>
                                         <th class="align-middle">Kategori</th>
@@ -177,6 +180,7 @@
                                             <td>{{ $p->kode_produk }}</td>
                                             <td>{{ $p->nama }}</td>
                                             <td>{{ $p->merek->nama }}</td>
+                                            <td>{{ $p->harga_beli }}</td>
                                             <td>{{ $p->harga_jual }}</td>
                                             <td>{{ $p->stok }}</td>
                                             <td>{{ $p->minimum_stok }}</td>
@@ -193,7 +197,7 @@
                                                 <button id="btnTambahKeranjang_{{ $p->id }}"
                                                     class="btn btn-info waves-effect waves-light btnTambahKeranjang"
                                                     idProduk='{{ $p->id }}' namaProduk='{{ $p->nama }}'
-                                                    hargaProduk='{{ $p->harga_jual }}' stokProduk='{{ $p->stok }}'
+                                                    hargaProduk='{{ $p->harga_beli }}' stokProduk='{{ $p->stok }}'
                                                     minimumStokProduk='{{ $p->minimum_stok }}'>Tambah</button>
                                             </td>
                                         </tr>
@@ -389,7 +393,7 @@
                                     <input type="date" class="form-control" name="tanggalPembayaran"
                                         id="tanggalPembayaran" aria-describedby="emailHelp"
                                         placeholder="Silahkan pilih tanggal pebayaran pembelian"
-                                        value="{{ old('tanggalPembayaran') }}" required>
+                                        value="{{ old('tanggalPembayaran') }}">
                                     <small id="emailHelp" class="form-text text-muted">Pilih tanggal pembayaran pembelian
                                         disini!</small>
                                 </div>
@@ -411,8 +415,15 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button id="btnKonfirmasiKeranjang" type="submit" idKeranjang=''
-                            class="btn btn-info waves-effect waves-light btnKonfirmasiKeranjang">Konfirmasi</button>
+                        <button type="button" class="btn btn-warning waves-effect" data-dismiss="modal">Pilih
+                            Produk</button>
+                        <div id="divBtnKonfirmasi">
+                            <button id="btnKonfirmasiKeranjang" type="submit" idKeranjang='' disabled
+                                title="Pastikan telah memilih produk yang akan dibeli terlebih dahulu!"
+                                data-toggle='tooltip' data-placement='top'
+                                class="btn btn-info waves-effect waves-light btnKonfirmasiKeranjang">Konfirmasi</button>
+                        </div>
+
                     </div>
                 </form>
             </div>
@@ -570,15 +581,19 @@
                     currency: 'IDR'
                 }) + "</span>");
 
-            // var totalHarga = 0;
-            // $(".btnHapusKeranjang").each(function(index) {
-            //     totalHarga += parseInt($(this).attr('subTotal'));
-            // });
-            // if (totalHarga == 0) {
-            //     $("#btnKonfirmasiKeranjang").attr('hidden', true);
-            // } else {
-            //     $("#btnKonfirmasiKeranjang").attr('hidden', false);
-            // }
+            var totalHarga = 0;
+            $(".btnHapusKeranjang").each(function(index) {
+                totalHarga += parseInt($(this).attr('subTotal'));
+            });
+            if (totalHarga == 0) {
+                $("#divBtnKonfirmasi").html(
+                    "<button id='btnKonfirmasiKeranjang' type='submit' idKeranjang='' disabled title = 'Pastikan telah memilih produk yang akan dibeli terlebih dahulu!' data-toggle='tooltip' data-placement='top' class = 'btn btn-info waves-effect waves-light btnKonfirmasiKeranjang' > Konfirmasi </button>"
+                );
+            } else {
+                $("#divBtnKonfirmasi").html(
+                    "<button id='btnKonfirmasiKeranjang' type='submit' idKeranjang='' class = 'btn btn-info waves-effect waves-light btnKonfirmasiKeranjang' > Konfirmasi </button>"
+                );
+            }
             $("#modalKeranjang").modal('show');
         });
 
@@ -591,11 +606,19 @@
 
             if ($('#bodyTabelKeranjang').find("tr").length == 0) {
                 $('#bodyTabelKeranjang').html(
-                    "<tr id='trSilahkan'><td colspan='5'>Silahkan tambahkan produk terlebih dahulu!</td></tr>");
-                $("#tabelTotalHarga").html(
-                    "<span class='font-weight-normal'>Total harga : </span> <span class='text-danger'>Rp. 0</span>"
+                    "<tr id='trSilahkan'><td colspan='5'>Silahkan tambahkan produk terlebih dahulu!</td></tr>"
                 );
+                $("#divBtnKonfirmasi").html(
+                    "<button id='btnKonfirmasiKeranjang' type='submit' idKeranjang='' disabled title = 'Pastikan telah memilih produk yang akan dibeli terlebih dahulu!' data-toggle='tooltip' data-placement='top' class = 'btn btn-info waves-effect waves-light btnKonfirmasiKeranjang' > Konfirmasi </button>"
+                );
+                // $("#tabelTotalHarga").html(
+                //     "<span class='font-weight-normal'>Total harga : </span> <span class='text-danger'>Rp. 0</span>"
+                // );
                 // $("#btnKonfirmasiKeranjang").attr('hidden', true);
+            } else {
+                $("#divBtnKonfirmasi").html(
+                    "<button id='btnKonfirmasiKeranjang' type='submit' idKeranjang='' class = 'btn btn-info waves-effect waves-light btnKonfirmasiKeranjang'> Konfirmasi </button>"
+                );
             }
 
             var totalHarga = 0;
@@ -603,7 +626,8 @@
                 totalHarga += parseInt($(this).attr('subTotal'));
             });
             $("#tabelTotalHarga").html(
-                "<span class='font-weight-normal'>Total harga : </span> <span class='text-danger'>" + totalHarga
+                "<span class='font-weight-normal'>Total harga : </span> <span class='text-danger'>" +
+                totalHarga
                 .toLocaleString('id-ID', {
                     style: 'currency',
                     currency: 'IDR'

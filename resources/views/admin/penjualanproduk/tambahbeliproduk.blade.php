@@ -69,7 +69,7 @@
                                     <td>{{ $p->nama }}</td>
                                     <td>{{ $p->merek->nama }}</td>
                                     <td>{{ $p->harga_jual }}</td>
-                                    <td>{{ $p->stok - $p->minimum_stok }}</td>
+                                    <td>{{ $p->stok }}</td>
                                     <td>{{ $p->kategori->nama }}</td>
                                     <td class="text-left">
                                         <ul>
@@ -82,12 +82,20 @@
 
                                     <td>{{ $p->deskripsi }}</td>
                                     <td class="text-center">
-                                        <button id="btnTambahKeranjang_{{ $p->id }}"
-                                            class="btn btn-info waves-effect waves-light btnTambahKeranjang"
-                                            idProduk='{{ $p->id }}' namaProduk='{{ $p->nama }}'
-                                            hargaProduk='{{ $p->harga_jual }}'
-                                            stokProduk='{{ $p->stok - $p->minimum_stok }}'
-                                            minimumStokProduk='{{ $p->minimum_stok }}'>Tambah</button>
+                                        @if ($p->stok > 0)
+                                            <button id="btnTambahKeranjang_{{ $p->id }}"
+                                                class="btn btn-info waves-effect waves-light btnTambahKeranjang"
+                                                idProduk='{{ $p->id }}' namaProduk='{{ $p->nama }}'
+                                                hargaProduk='{{ $p->harga_jual }}' stokProduk='{{ $p->stok }}'
+                                                minimumStokProduk='{{ $p->minimum_stok }}'>Tambah</button>
+                                        @else
+                                            <button id="btnTambahKeranjang_{{ $p->id }}"
+                                                class="btn btn-danger waves-effect waves-light btnTambahKeranjang"
+                                                idProduk='{{ $p->id }}' namaProduk='{{ $p->nama }}'
+                                                hargaProduk='{{ $p->harga_jual }}' stokProduk='{{ $p->stok }}'
+                                                minimumStokProduk='{{ $p->minimum_stok }}' disabled>Habis</button>
+                                        @endif
+
                                     </td>
                                 </tr>
                             @endforeach
@@ -321,7 +329,7 @@
             $("#" + idButtonTambahKeranjang).attr('stokProduk', stokSaatIni - stokDiambil);
             if (stokSaatIni - stokDiambil == 0) {
                 $("#" + idButtonTambahKeranjang).attr('disabled', true);
-                $("#" + idButtonTambahKeranjang).text('habis');
+                $("#" + idButtonTambahKeranjang).text('Habis');
                 $("#" + idButtonTambahKeranjang).removeClass('btn-info');
                 $("#" + idButtonTambahKeranjang).addClass('btn-danger');
             }
@@ -378,7 +386,10 @@
             $(".btnHapusKeranjang").each(function(index) {
                 totalHarga += parseInt($(this).attr('subTotal'));
             });
-            $("#tabelTotalHarga").text("Total harga : " + totalHarga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }));
+            $("#tabelTotalHarga").text("Total harga : " + totalHarga.toLocaleString('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }));
 
             // var totalHarga = 0;
             // $(".btnHapusKeranjang").each(function(index) {

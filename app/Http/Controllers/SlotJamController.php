@@ -90,7 +90,7 @@ class SlotJamController extends Controller
 
         $nomorHariDalamMingguan = date("w", strtotime($tanggal));
 
-        $slotJams = SlotJam::where('hari', $hariIndonesia[$nomorHariDalamMingguan])->where('status', 'aktif')->get();
+        $slotJams = SlotJam::where('hari', $hariIndonesia[$nomorHariDalamMingguan])->get();
 
         $status = "";
         if (count($slotJams) == 0) {

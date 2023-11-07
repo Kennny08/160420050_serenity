@@ -362,11 +362,16 @@
                                                     <button
                                                         class="btn btn-lg btn-danger waves-effect waves-light mt-3 mr-3"
                                                         data-toggle="modal"
-                                                        data-target="#modalKonfirmasiBatalkanReservasi">
+                                                        data-target="#modalKonfirmasiBatalkanReservasi"
+                                                        id="btnKonfirmasiBatalkanReservasi"
+                                                        namaPelanggan = "{{ $reservasi->penjualan->pelanggan->nama }}"
+                                                        nomorNotaPenjualan = "{{ $reservasi->penjualan->nomor_nota }}">
                                                         Batalkan Reservasi</button>
                                                     <button class="btn btn-lg btn-primary waves-effect waves-light mt-3"
-                                                        data-toggle="modal"
-                                                        data-target="#modalKonfirmasiSelesaiReservasi">
+                                                        data-toggle="modal" data-target="#modalKonfirmasiSelesaiReservasi"
+                                                        id="btnKonfirmasiSelesaiReservasi"
+                                                        namaPelanggan = "{{ $reservasi->penjualan->pelanggan->nama }}"
+                                                        nomorNotaPenjualan = "{{ $reservasi->penjualan->nomor_nota }}">
                                                         Selesai Reservasi</button>
                                                 @endif
                                             </address>
@@ -395,7 +400,7 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body text-center" id="modalBodyBatalReservasi">
                                     <h6>Apakah Anda yakin ingin membatalkan reservasi ini?</h6>
                                 </div>
                                 <div class="modal-footer">
@@ -425,7 +430,7 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body text-center" id="modalBodySelesaiReservasi">
                                     <h6>Apakah Anda yakin ingin menyelesaikan reservasi ini?</h6>
                                 </div>
                                 <div class="modal-footer">
@@ -455,5 +460,25 @@
 @endsection
 
 @section('javascript')
-    <script></script>
+    <script>
+        $('body').on('click', '#btnKonfirmasiBatalkanReservasi', function() {
+            var namaPelanggan = $(this).attr('namaPelanggan');
+            var nomorNota = $(this).attr('nomorNotaPenjualan');
+            $("#modalBodyBatalReservasi").html(
+                "<p class='h6 font-weight-normal'>Apakah Anda yakin untuk membatalkan reservasi dengan nomor nota <span class='text-danger h6'>" +
+                nomorNota +
+                "</span> atas nama <span class='text-danger h6'>" + namaPelanggan + "</span>?</p>");
+
+        });
+
+        $('body').on('click', '#btnKonfirmasiSelesaiReservasi', function() {
+            var namaPelanggan = $(this).attr('namaPelanggan');
+            var nomorNota = $(this).attr('nomorNotaPenjualan');
+            $("#modalBodySelesaiReservasi").html(
+                "<p class='h6 font-weight-normal'>Apakah Anda yakin untuk menyelasikan reservasi dengan nomor nota <span class='text-danger h6'>" +
+                nomorNota +
+                "</span> atas nama <span class='text-danger h6'>" + namaPelanggan + "</span>?</p>");
+
+        });
+    </script>
 @endsection

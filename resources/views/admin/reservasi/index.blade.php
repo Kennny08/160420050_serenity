@@ -78,9 +78,7 @@
     <script>
         $(document).ready(function() {
             $('#tabelDaftarReservasi').DataTable({
-                "order": [
-                    [0, "desc"], // Kolom pertama diurutkan berdasarkan ID terbesar (descending)
-                ]
+                ordering:false
             });
         });
     </script>

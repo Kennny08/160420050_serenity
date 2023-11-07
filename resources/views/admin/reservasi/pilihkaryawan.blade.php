@@ -190,16 +190,19 @@
                         </table>
                         <div class="row">
                             <div class="col-md-6 form-group text-left">
-                                <a id="btnPilihPerawatan" style="width: 200px" href="{{ route('reservasi.admin.create') }}"
+                                {{-- <a id="btnPilihPerawatan" style="width: 200px" href="{{ route('reservasi.admin.create') }}"
                                     class="btn btn-primary btn-lg btn-danger">Pilih
-                                    Perawatan</a>
+                                    Perawatan</a> --}}
+                                <button id="btnPilihPerawatan" style="width: 200px" onclick="goBack()" type="button"
+                                    class="btn btn-primary btn-lg btn-danger">Pilih
+                                    Perawatan</button>
                             </div>
 
                             @if ($keteranganNull == 0)
                                 <div class=" col-md-6 form-group text-right" id="divBtnKonfirmasi">
                                     <button id="btnKonfirmasiReservasi" style="width: 200px" type="submit" disabled
                                         data-toggle="tooltip" data-placement="right"
-                                        title="Pastikan telah memilih karyawan untuk setiap perawawtan!"
+                                        title="Pastikan telah memilih karyawan untuk setiap perawatan!"
                                         class="btn btn-primary btn-lg text-center">Konfirmasi
                                         Reservasi</button>
                                 </div>
@@ -242,7 +245,7 @@
             if (count == 0) {
                 $("#divBtnKonfirmasi").html(
                     "<button id='btnKonfirmasiReservasi' style='width: 200px' type='submit' class='btn btn-primary btn-lg text-center'>Konfirmasi Reservasi</button>"
-                    );
+                );
             } else {
                 $("#btnKonfirmasiReservasi").attr('disabled', true);
             }

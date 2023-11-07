@@ -124,7 +124,7 @@ class PenjualanController extends Controller
                 for ($i = 0; $i < count($arrayIdProduk); $i++) {
                     foreach ($penjualan->produks as $produkPenjualan) {
                         if ($arrayIdProduk[$i] == $produkPenjualan->id) {
-                            $nilaiSementara = $produkPenjualan->stok - $produkPenjualan->minimum_stok + $produkPenjualan->pivot->kuantitas;
+                            $nilaiSementara = $produkPenjualan->stok  + $produkPenjualan->pivot->kuantitas;
                             if ($nilaiSementara < $arrayStokProduk[$i]) {
                                 return redirect()->back()->withErrors('Terdapat perubahan stok produk! Silahkan periksa kembali stok produk yang tersedia!');
                             } else {
@@ -141,7 +141,7 @@ class PenjualanController extends Controller
                 for ($i = 0; $i < count($arrayIdProduk); $i++) {
                     if (!in_array($arrayIdProduk[$i], $arrayIdProdukDalamDetailPenjualan)) {
                         $produk = Produk::find($arrayIdProduk[$i]);
-                        if ($produk->stok - $produk->minimum_stok < $arrayStokProduk[$i]) {
+                        if ($produk->stok < $arrayStokProduk[$i]) {
                             return redirect()->back()->withErrors('Terdapat perubahan stok produk! Silahkan periksa kembali stok produk yang tersedia!');
                         } else {
                             continue;
@@ -182,7 +182,7 @@ class PenjualanController extends Controller
             } else {
                 for ($i = 0; $i < count($arrayIdProduk); $i++) {
                     $produk = Produk::find($arrayIdProduk[$i]);
-                    if ($produk->stok - $produk->minimum_stok < $arrayStokProduk[$i]) {
+                    if ($produk->stok < $arrayStokProduk[$i]) {
                         return redirect()->back()->withErrors('Terdapat perubahan stok produk! Silahkan periksa kembali stok produk yang tersedia!');
                     } else {
                         continue;

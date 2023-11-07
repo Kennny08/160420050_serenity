@@ -134,6 +134,7 @@
                                 <th class="align-middle">Nama Supplier</th>
                                 <th class="align-middle">Tanggal Pembelian</th>
                                 <th class="align-middle">Total Pembelian</th>
+                                <th class="align-middle">Total Pembayaran</th>
                                 <th class="align-middle">Karyawan Penerima</th>
                                 <th hidden class="align-middle">Tanggal Pembuatan</th>
                                 <th hidden class="align-middle">Tanggal Edit Terakhir</th>
@@ -143,9 +144,9 @@
                         </thead>
 
                         <tbody>
-                            @if (count($pembeliansBelumBayar) == 0)
+                            @if (count($pembelians) == 0)
                                 <tr class="text-center">
-                                    <td colspan="9">Tidak ada data riwayat pembelian!</td>
+                                    <td colspan="10">Tidak ada data riwayat pembelian!</td>
                                 </tr>
                             @else
                                 @foreach ($pembelians as $p)
@@ -153,6 +154,7 @@
                                         <td>{{ $p->nomor_nota }}</td>
                                         <td>{{ $p->supplier->nama }}</td>
                                         <td>{{ date('d-m-Y', strtotime($p->tanggal_beli)) }}</td>
+                                        <td>{{ date('d-m-Y', strtotime($p->tanggal_bayar)) }}</td>
                                         <td>{{ number_format($p->total, 0, ',', '.') }}</td>
                                         <td>{{ $p->karyawan->nama }}</td>
                                         <td hidden>{{ date('d-m-Y', strtotime($p->created_at)) }}</td>

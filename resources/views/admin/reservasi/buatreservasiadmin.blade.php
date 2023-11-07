@@ -96,16 +96,26 @@
                                             @if ($sj->id == session('idSlotJam'))
                                                 <option selected value="{{ $sj->id }}">{{ $sj->jam }}</option>
                                             @else
-                                                <option value="{{ $sj->id }}">{{ $sj->jam }}</option>
+                                                @if ($sj->status == 'aktif')
+                                                    <option value="{{ $sj->id }}">{{ $sj->jam }}</option>
+                                                @else
+                                                    <option class="text-danger" disabled value="{{ $sj->id }}">
+                                                        {{ $sj->jam }} - Tutup</option>
+                                                @endif
                                             @endif
                                         @endforeach
                                     @else
                                         @if (count($slotJams) == 0)
                                             <option selected disabled value="null">Tidak ada Slot Jam Tersedia</option>
                                         @else
-                                            <option selected disabled value="null">Tidak ada Slot Jam Tersedia</option>
+                                            <option selected disabled value="null">Pilih Slot Jam</option>
                                             @foreach ($slotJams as $sj)
-                                                <option value="{{ $sj->id }}">{{ $sj->jam }}</option>
+                                                @if ($sj->status == 'aktif')
+                                                    <option value="{{ $sj->id }}">{{ $sj->jam }}</option>
+                                                @else
+                                                    <option class="text-danger" disabled value="{{ $sj->id }}">
+                                                        {{ $sj->jam }} - Tutup</option>
+                                                @endif
                                             @endforeach
                                         @endif
 
@@ -155,8 +165,9 @@
 
                             @if (session('arrPerawatanObject'))
                                 @foreach (session('arrPerawatanObject') as $aro)
-                                    <input id="perawatan{{ $aro->id }}" type="hidden" class='classarrayperawatanid'
-                                        value="{{ $aro->id }}" name="arrayperawatanid[]">
+                                    <input id="perawatan{{ $aro->id }}" type="hidden"
+                                        class='classarrayperawatanid' value="{{ $aro->id }}"
+                                        name="arrayperawatanid[]">
                                 @endforeach
                             @endif
                         </div>
@@ -205,7 +216,8 @@
                                                 <td>{{ $aro->durasi }} </td>
                                                 <td>{{ $aro->harga }} </td>
                                                 <td>{{ $aro->deskripsi }}</td>
-                                                <td><button type='button' class='deletePerawatan btn btn-danger waves-effect waves-light'
+                                                <td><button type='button'
+                                                        class='deletePerawatan btn btn-danger waves-effect waves-light'
                                                         idPerawatan="{{ $aro->id }}"
                                                         namaPerawatan="{{ $aro->nama }}"
                                                         durasiPerawatan="{{ $aro->durasi }}"

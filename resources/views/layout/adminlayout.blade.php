@@ -287,6 +287,7 @@
                             <ul class="submenu">
                                 <li></i><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
                                 <li></i><a href="{{ route('karyawans.index') }}">Presensi Karyawan</a></li>
+                                <li></i><a href="{{ route('karyawans.index') }}">Komisi Karyawan</a></li>
                             </ul>
                         </li>
                         <li>

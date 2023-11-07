@@ -248,7 +248,7 @@ class ProdukController extends Controller
             return redirect()->route('penjualan.null.errorpage');
         } else {
             if ($penjualan->status_selesai == "belum") {
-                $produks = Produk::whereRaw('stok > minimum_stok')->where('status_jual', 'aktif')->where('status', 'aktif')->get();
+                $produks = Produk::where('status_jual', 'aktif')->where('status', 'aktif')->get();
                 return view('admin.penjualanproduk.tambahbeliproduk', compact('produks', 'penjualan'));
             } else {
                 if ($penjualan->reservasi != null) {
