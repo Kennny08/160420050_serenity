@@ -87,3 +87,6 @@ Route::post('/admin/perawatan/getDetailPerawatan', [PerawatanController::class, 
 //Supplier
 Route::resource("suppliers", SupplierController::class);
 Route::post('/admin/karyawan/getDetailSupplier', [SupplierController::class, "getDetailSupplier"])->name("admin.getdetailsupplier");
+
+//Slot Jam
+Route::post('/admin/slotjam/editstatusslotjam', [SlotJamController::class, "editStatusSlotJam"])->name("admin.editstatusslotjam");

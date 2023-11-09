@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Reservasi;
 use App\Models\SlotJam;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,15 @@ class SlotJamController extends Controller
      */
     public function index()
     {
-        //
+        $tanggalMingguIni = date("Y-m-d", strtotime('last sunday'));
+        $tanggalSabtuIni = date('Y-m-d', strtotime('this saturday'));
+        $jams = SlotJam::selectRaw('distinct(jam)')->orderBy('jam', 'asc')->get();
+        $daftarSlotJams = [];
+        foreach ($jams as $j) {
+            $slotJams = SlotJam::select('hari', 'jam', 'id', 'status')->where('jam', $j->jam)->get();
+            array_push($daftarSlotJams, $slotJams);
+        }
+        return view('admin.slotjam.slotjamreservasi', compact('daftarSlotJams', 'tanggalMingguIni', 'tanggalSabtuIni'));
     }
 
     /**
@@ -99,5 +108,47 @@ class SlotJamController extends Controller
             $status = "ok";
         }
         return response()->json(array('status' => $status, 'msg' => view('admin.reservasi.optionslotjam', compact('slotJams'))->render()), 200);
+    }
+
+    public function editStatusSlotJam()
+    {
+        $idSlotjam = $_POST['idSlotJam'];
+        $statusUbah = $_POST['status'];
+
+        $slotJamDipilih = SlotJam::find($idSlotjam);
+        if ($statusUbah != $slotJamDipilih->status) {
+            if ($statusUbah == "nonaktif") {
+                $tanggalMingguIni = date("Y-m-d", strtotime('last sunday'));
+                $tanggalSabtuIni = date('Y-m-d', strtotime('this saturday'));
+                $daftarReservasiBaru = Reservasi::where("status", "baru")->where("tanggal_reservasi", ">=", $tanggalMingguIni)->where("tanggal_reservasi", "<=", $tanggalSabtuIni)->get();
+                // dd($daftarReservasiBaru);
+                $daftarReservasiFix = [];
+                foreach ($daftarReservasiBaru as $reservasi) {
+                    $penjualanPerawatan = $reservasi->penjualan->penjualanperawatans;
+                    foreach ($penjualanPerawatan as $pp) {
+                        $daftarSlotJamPenjualanPerawatan = $pp->slotjams;
+                        if ($daftarSlotJamPenjualanPerawatan->where('id', $idSlotjam)->count() > 0) {
+                            array_push($daftarReservasiFix, $reservasi);
+                            break;
+                        }
+                    }
+                }
+                if (count($daftarReservasiFix) != 0) {
+                    return response()->json(array('status' => "gagal", 'msg' => view('admin.slotjam.modalslotjadwal', compact('daftarReservasiFix'))->render()), 200);
+                } else {
+                    $slotJamDipilih->status = "nonaktif";
+                    $slotJamDipilih->updated_at = date("Y-m-d H:i:s");
+                    $slotJamDipilih->save();
+                    return response()->json(array('status' => "berhasil"), 200);
+                }
+            } else {
+                $slotJamDipilih->status = "aktif";
+                $slotJamDipilih->updated_at = date("Y-m-d H:i:s");
+                $slotJamDipilih->save();
+                return response()->json(array('status' => "berhasil"), 200);
+            }
+        } else {
+            return response()->json(array('status' => "berhasil"), 200);
+        }
     }
 }
