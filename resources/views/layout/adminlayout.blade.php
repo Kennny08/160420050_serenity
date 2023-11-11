@@ -233,6 +233,7 @@
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="submenu">
                                 <li></i><a href="{{ route('reservasis.index') }}">Reservasi Perawatan</a></li>
+                                <li></i><a href="{{ route('riwayatreservasis.index') }}">Riwayat Reservasi Perawatan</a></li>
                                 <li></i><a href="{{ route('reservasis.index') }}">Reservasi Paket Perawatan</a></li>
                             </ul>
                         </li>
@@ -286,7 +287,8 @@
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="submenu">
                                 <li></i><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
-                                <li></i><a href="{{ route('karyawans.index') }}">Presensi Karyawan</a></li>
+                                <li></i><a href="{{ route('presensikehadirans.index') }}">Presensi Karyawan</a></li>
+                                <li></i><a href="{{ route('presensikehadirans.index') }}">Riwayat Presensi Karyawan</a></li>
                                 <li></i><a href="{{ route('karyawans.index') }}">Komisi Karyawan</a></li>
                             </ul>
                         </li>

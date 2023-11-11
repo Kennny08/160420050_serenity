@@ -35,4 +35,9 @@ class Karyawan extends Model
     {
         return $this->hasMany(Pembelian::class, 'karyawan_id');
     }
+
+    public function presensikehadirans()
+    {
+        return $this->hasMany(PresensiKehadiran::class, 'karyawan_id');
+    }
 }

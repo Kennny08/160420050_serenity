@@ -134,7 +134,7 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="input-group" style="width: 100%">
-                                    <select style="width: 85%" name="perawatan" id="perawatanSelect" class="form-control"
+                                    <select name="perawatan" id="perawatanSelect" class="form-control"
                                         aria-label="Default select example" required>
                                         <option value="null" selected disabled>Pilih Perawatan</option>
                                         @if (session('arrPerawatan'))
@@ -156,8 +156,8 @@
                                         @endif
 
                                     </select>
-                                    <button style="margin-left: 1%; width: 14%" type="button" id="btnTambahLayanan"
-                                        class="btn btn-info waves-effect waves-light">Tambah Layanan</button>
+                                    <button type="button" id="btnTambahLayanan" style="width: 150px"
+                                        class="btn btn-info waves-effect waves-light ml-2">Tambah Layanan</button>
                                 </div>
 
                                 <small id="emailHelp" class="form-text text-muted">Pilih Layanan Perawatan disini!</small>
@@ -197,45 +197,51 @@
                             </div> --}}
                         </div>
 
-                        <div class="form-group text-center">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">Nama Perawatan</th>
-                                        <th class="text-center">Durasi (Menit)</th>
-                                        <th class="text-center">Harga (Rp)</th>
-                                        <th class="text-center">Deskripsi</th>
-                                        <th class="text-center">Hapus</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="bodyListPerawatan">
-                                    @if (session('arrPerawatanObject'))
-                                        @foreach (session('arrPerawatanObject') as $aro)
+                        <div class="form-group row text-center">
+                            <div class="form-group col-md-12 table-responsive">
+                                <div>
+                                    <table class="table table-bordered table-striped dt-responsive wrap">
+                                        <thead>
                                             <tr>
-                                                <td> {{ $aro->nama }} </td>
-                                                <td>{{ $aro->durasi }} </td>
-                                                <td>{{ $aro->harga }} </td>
-                                                <td>{{ $aro->deskripsi }}</td>
-                                                <td><button type='button'
-                                                        class='deletePerawatan btn btn-danger waves-effect waves-light'
-                                                        idPerawatan="{{ $aro->id }}"
-                                                        namaPerawatan="{{ $aro->nama }}"
-                                                        durasiPerawatan="{{ $aro->durasi }}"
-                                                        hargaPerawatan="{{ $aro->harga }}"
-                                                        deskripsiPerawatan="{{ $aro->deskripsi }}">Hapus</button>
-                                                </td>
+                                                <th class="text-center">Nama Perawatan</th>
+                                                <th class="text-center">Durasi (Menit)</th>
+                                                <th class="text-center">Harga (Rp)</th>
+                                                <th class="text-center">Deskripsi</th>
+                                                <th class="text-center">Hapus</th>
                                             </tr>
-                                        @endforeach
-                                    @else
-                                        <tr id="trSilahkan">
-                                            <td colspan="5">
-                                                Silahkan pilih Layanan Perawatan
-                                            </td>
-                                        </tr>
-                                    @endif
+                                        </thead>
+                                        <tbody id="bodyListPerawatan">
+                                            @if (session('arrPerawatanObject'))
+                                                @foreach (session('arrPerawatanObject') as $aro)
+                                                    <tr>
+                                                        <td> {{ $aro->nama }} </td>
+                                                        <td>{{ $aro->durasi }} </td>
+                                                        <td>{{ $aro->harga }} </td>
+                                                        <td>{{ $aro->deskripsi }}</td>
+                                                        <td><button type='button'
+                                                                class='deletePerawatan btn btn-danger waves-effect waves-light'
+                                                                idPerawatan="{{ $aro->id }}"
+                                                                namaPerawatan="{{ $aro->nama }}"
+                                                                durasiPerawatan="{{ $aro->durasi }}"
+                                                                hargaPerawatan="{{ $aro->harga }}"
+                                                                deskripsiPerawatan="{{ $aro->deskripsi }}">Hapus</button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @else
+                                                <tr id="trSilahkan">
+                                                    <td colspan="5">
+                                                        Silahkan pilih Layanan Perawatan
+                                                    </td>
+                                                </tr>
+                                            @endif
 
-                                </tbody>
-                            </table>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
                         </div>
 
                         <div class="form-group text-right">

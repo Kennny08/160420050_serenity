@@ -10,6 +10,7 @@ use App\Models\Perawatan;
 use App\Models\Produk;
 use App\Models\Reservasi;
 use App\Models\SlotJam;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class ReservasiController extends Controller
@@ -21,10 +22,14 @@ class ReservasiController extends Controller
      */
     public function index()
     {
-        $reservasis = Reservasi::orderBy('status', 'asc')->orderBy("tanggal_reservasi", "asc")->get();
+        date_default_timezone_set('Asia/Jakarta');
+        $tanggalHariIni = date('Y-m-d');
+        $reservasis = Reservasi::orderBy('status', 'asc')->whereRaw("DATE(tanggal_reservasi) = '" . $tanggalHariIni . "'")->orderBy("tanggal_reservasi", "asc")->get();
+
+        $reservasisAkanDatang = Reservasi::orderBy('status', 'asc')->whereRaw("DATE(tanggal_reservasi) > '" . $tanggalHariIni . "'")->orderBy("tanggal_reservasi", "asc")->get();
 
 
-        return view('admin.reservasi.index', compact('reservasis'));
+        return view('admin.reservasi.index', compact('reservasis', 'reservasisAkanDatang'));
     }
 
     /**
@@ -107,7 +112,7 @@ class ReservasiController extends Controller
         $nomorHariDalamMingguan = date("w");
         $tanggalHariIni = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y');
 
-        $slotJams = SlotJam::where('hari', $hariIndonesia[$nomorHariDalamMingguan])->get();
+        $slotJams = SlotJam::where('hari', $hariIndonesia[$nomorHariDalamMingguan])->where('jam', ">=", date("H.i"))->get();
         $daftarPelanggans = Pelanggan::all();
         return view('admin.reservasi.buatreservasiadmin', compact('perawatans', 'slotJams', 'tanggalHariIni', 'tanggalPertamaDalamMinggu', 'tanggalTerakhirDalamMinggu', 'daftarPelanggans'));
     }
@@ -684,5 +689,55 @@ class ReservasiController extends Controller
         $selectedPenjualan->save();
 
         return redirect()->route('reservasi.admin.detailreservasi', $selectedReservasi->id)->with('status', 'Berhasil menyelesaikan reservasi!');
+    }
+
+    public function riwayatReservasiPerawatanAdmin()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+        $tanggalReservasi = Reservasi::selectRaw("DISTINCT DATE(tanggal_reservasi) as tanggal_reservasi")->whereRaw(" DATE(tanggal_reservasi) < '" . date("Y-m-d") . "'")->orderBy('tanggal_reservasi', "desc")->get();
+
+        $arrDaftarRiwayatReservasi = [];
+        foreach ($tanggalReservasi as $tr) {
+            $objectRiwayat = [];
+            $reservasi = Reservasi::whereRaw(" DATE(tanggal_reservasi) = '" . $tr->tanggal_reservasi . "'")->get();
+
+            $nomorHariDalamMingguan = date("w", strtotime($tr->tanggal_reservasi));
+            $tanggal = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y', strtotime($tr->tanggal_reservasi));
+            $objectRiwayat["tanggalreservasi"] = $tanggal;
+
+            $objectRiwayat["tanggal"] = $tr->tanggal_reservasi;
+
+            $objectRiwayat["reservasis"] = $reservasi;
+
+            $objectRiwayat["jumlahreservasi"] = count($reservasi);
+
+            $totalPenjualanPerawatan = 0;
+            $totalPenjualanProduk = 0;
+            foreach ($reservasi as $r) {
+                $totalPenjualanPerawatan += $r->penjualan->total_pembayaran;
+
+                foreach ($r->penjualan->produks as $p) {
+                    $totalPenjualanProduk += $p->pivot->kuantitas * $p->pivot->harga;
+                }
+            }
+
+            $objectRiwayat["totalpenjualanproduk"] = $totalPenjualanProduk;
+
+            $objectRiwayat["totalpenjualanperawatan"] = $totalPenjualanPerawatan;
+
+            $objectRiwayat["totalpembayaran"] = $totalPenjualanProduk + $totalPenjualanPerawatan;
+
+            array_push($arrDaftarRiwayatReservasi, $objectRiwayat);
+        }
+
+        return view("admin.reservasi.riwayatreservasiperawatan", compact("arrDaftarRiwayatReservasi"));
+
+    }
+    public function getDetailRiwayatReservasiPerawatan()
+    {
+        $tanggal = $_POST['tanggal'];
+        $riwayatReservasis = Reservasi::whereRaw("DATE(tanggal_reservasi) = '" . $tanggal . "'")->orderBy("id", "desc")->get();
+        return response()->json(array('msg' => view('admin.reservasi.detailreservasiperawatan', compact('riwayatReservasis'))->render()), 200);
     }
 }

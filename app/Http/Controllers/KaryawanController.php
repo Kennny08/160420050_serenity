@@ -394,4 +394,6 @@ class KaryawanController extends Controller
         $karyawan = Karyawan::find($idKaryawan);
         return response()->json(array('msg' => view('admin.karyawan.detailkaryawan', compact('karyawan'))->render()), 200);
     }
+
+    
 }

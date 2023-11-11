@@ -9,6 +9,7 @@ use App\Http\Controllers\PaketController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PerawatanController;
+use App\Http\Controllers\PresensiKehadiranController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\SlotJamController;
@@ -42,6 +43,9 @@ Route::get('/serenity/penjualan/errorpage', [PenjualanController::class, "errorP
 //ADMIN
 //Reservasi
 Route::get('/reservasi/admin/create', [ReservasiController::class, "reservasiAdminCreate"])->name("reservasi.admin.create");
+Route::get('/reservasi/admin/riwayatreservasiperawatan', [ReservasiController::class, "riwayatReservasiPerawatanAdmin"])->name("riwayatreservasis.index");
+Route::post('/reservasi/admin/getdetailriwayatreservasiperawatan', [ReservasiController::class, "getDetailRiwayatReservasiPerawatan"])->name("admin.getdetailriwayatreservasiperawatan");
+
 
 Route::post('/reservasi/admin/selectstaf', [ReservasiController::class, "reservasiAdminPilihKaryawan"])->name("reservasi.admin.pilihkaryawan");
 
@@ -62,7 +66,7 @@ Route::post('/reservasi/admin/selesai', [ReservasiController::class, "adminSeles
 
 
 //Kategori
-Route::resource("kategoris",KategoriController::class);
+Route::resource("kategoris", KategoriController::class);
 //Route::get("admin/produk/kategori/", [KategoriController::class,"index"])->name("kategoris.index");
 
 
@@ -90,3 +94,6 @@ Route::post('/admin/karyawan/getDetailSupplier', [SupplierController::class, "ge
 
 //Slot Jam
 Route::post('/admin/slotjam/editstatusslotjam', [SlotJamController::class, "editStatusSlotJam"])->name("admin.editstatusslotjam");
+
+//Presensi Kehadiran
+Route::resource("presensikehadirans", PresensiKehadiranController::class);

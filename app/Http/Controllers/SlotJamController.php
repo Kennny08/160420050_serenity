@@ -94,12 +94,17 @@ class SlotJamController extends Controller
 
     public function getSlotJamAktif()
     {
+        date_default_timezone_set('Asia/Jakarta');
         $tanggal = $_POST['tanggal'];
         $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
 
         $nomorHariDalamMingguan = date("w", strtotime($tanggal));
+        if ($tanggal == date("Y-m-d")) {
+            $slotJams = SlotJam::where('hari', $hariIndonesia[$nomorHariDalamMingguan])->where('jam', ">=", date("H.i"))->get();
+        } else {
+            $slotJams = SlotJam::where('hari', $hariIndonesia[$nomorHariDalamMingguan])->get();
+        }
 
-        $slotJams = SlotJam::where('hari', $hariIndonesia[$nomorHariDalamMingguan])->get();
 
         $status = "";
         if (count($slotJams) == 0) {
@@ -112,6 +117,7 @@ class SlotJamController extends Controller
 
     public function editStatusSlotJam()
     {
+        date_default_timezone_set('Asia/Jakarta');
         $idSlotjam = $_POST['idSlotJam'];
         $statusUbah = $_POST['status'];
 
