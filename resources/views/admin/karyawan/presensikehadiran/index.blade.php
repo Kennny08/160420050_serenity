@@ -20,15 +20,29 @@
                         <a class="btn btn-info waves-effect waves-light" href={{ route('presensikehadirans.create') }}>Buka
                             Presensi
                             Karyawan</a>
-                    @else
-                        <a class="btn btn-info waves-effect waves-light" href={{ route('presensikehadirans.edit') }}>Edit
+                    @elseif(count($presensisHariIni) == $jumlahKaryawan)
+                        <a class="btn btn-info waves-effect waves-light"
+                            href={{ route('admin.presensikehadirans.editpresensi') }}>Edit
                             Presensi
                             Karyawan</a>
+                    @else
+                        @if (count($idKaryawanUnikIzin) != $jumlahKaryawan)
+                            <a class="btn btn-info waves-effect waves-light"
+                                href={{ route('presensikehadirans.create') }}>Buka
+                                Presensi
+                                Karyawan</a>
+                        @else
+                            <a class="btn btn-info waves-effect waves-light"
+                                href={{ route('admin.presensikehadirans.editpresensi') }}>Edit
+                                Presensi
+                                Karyawan</a>
+                        @endif
+
                     @endif
                     @if ($jumlahIzinKehadiran > 0)
                         <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" id="btnDaftarIzin">
                             <span
-                                class="badge badge-danger badge-pill float-right ml-2">{{ $jumlahIzinKehadiran }}</span><span>Produk
+                                class="badge badge-danger badge-pill float-right ml-2">{{ $jumlahIzinKehadiran }}</span><span>
                                 Daftar Izin Karyawan</span>
                         </button>
                     @endif
@@ -43,7 +57,7 @@
                         </div>
                     @endif
 
-                    @if (count($presensisHariIni) == 0)
+                    @if (count($presensisHariIni) != $jumlahKaryawan)
                         <div class="col-xl-12">
                             <div class="card text-white bg-danger text-center">
                                 <div class="card-body">
@@ -57,6 +71,73 @@
                                 </div>
                             </div>
                         </div>
+                        @if (count($presensiIzinKehadiranHariIni) > 0)
+                            <div class="form-group row">
+                                <div class="form-group col-md-12">
+                                    <h4>Daftar Presensi Izin Hari Ini </h4>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="form-group col-md-12">
+                                    <table id="tabelDaftarPresensiKaryawanIzin"
+                                        class="table table-bordered dt-responsive nowrap text-center w-100"
+                                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>Nama Karyawan</th>
+                                                <th>Tanggal Presensi</th>
+                                                <th>Keterangan</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach ($presensiIzinKehadiranHariIni as $p)
+                                                <tr id="tr_{{ $p->id }}">
+                                                    <td>{{ $p->karyawan->nama }}</td>
+                                                    <td>{{ $p->tanggal_presensi }}</td>
+
+                                                    @if ($p->keterangan == 'hadir')
+                                                        <td class="text-success">HADIR</td>
+                                                    @elseif($p->keterangan == 'absen')
+                                                        <td class="text-danger">ABSEN</td>
+                                                    @elseif($p->keterangan == 'izin')
+                                                        <td class="text-warning">IZIN</td>
+                                                    @elseif($p->keterangan == 'sakit')
+                                                        <td class="text-info">SAKIT</td>
+                                                    @endif
+
+                                                    @if ($p->keterangan == 'izin')
+                                                        @if ($p->status == 'belum')
+                                                            <td><span style="font-size: 1em;padding: 0.5em 1em;"
+                                                                    class="badge badge-warning">Belum Dikonfirmasi</span>
+                                                            </td>
+                                                        @elseif($p->status == 'konfirmasi')
+                                                            <td><span style="font-size: 1em;padding: 0.5em 1em;"
+                                                                    class="badge badge-success">Telah Dikonfirmasi</span>
+                                                            </td>
+                                                        @elseif($p->status == 'tolak')
+                                                            <td><span style="font-size: 1em;padding: 0.5em 1em;"
+                                                                    class="badge badge-danger">Izin Ditolak</span></td>
+                                                        @endif
+                                                    @else
+                                                        @if ($p->status == 'belum')
+                                                            <td><span style="font-size: 1em;padding: 0.5em 1em;"
+                                                                    class="badge badge-warning">Belum Dikonfirmasi</span>
+                                                            </td>
+                                                        @elseif($p->status == 'konfirmasi')
+                                                            <td><span style="font-size: 1em;padding: 0.5em 1em;"
+                                                                    class="badge badge-success">Telah Dikonfirmasi</span>
+                                                            </td>
+                                                        @endif
+                                                    @endif
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        @endif
                     @else
                         <div>
                             <table id="tabelDaftarPresensiKaryawan"
@@ -89,17 +170,22 @@
 
                                             @if ($p->keterangan == 'izin')
                                                 @if ($p->status == 'belum')
-                                                    <td><span class="badge badge-warning">Belum Dikonfirmasi</span></td>
+                                                    <td><span style="font-size: 1em;padding: 0.5em 1em;"
+                                                            class="badge badge-warning">Belum Dikonfirmasi</span></td>
                                                 @elseif($p->status == 'konfirmasi')
-                                                    <td><span class="badge badge-success">Telah Dikonfirmasi</span></td>
+                                                    <td><span style="font-size: 1em;padding: 0.5em 1em;"
+                                                            class="badge badge-success">Telah Dikonfirmasi</span></td>
                                                 @elseif($p->status == 'tolak')
-                                                    <td><span class="badge badge-danger">Izin Ditolak</span></td>
+                                                    <td><span style="font-size: 1em;padding: 0.5em 1em;"
+                                                            class="badge badge-danger">Izin Ditolak</span></td>
                                                 @endif
                                             @else
                                                 @if ($p->status == 'belum')
-                                                    <td><span class="badge badge-warning">Belum Dikonfirmasi</span></td>
+                                                    <td><span style="font-size: 1em;padding: 0.5em 1em;"
+                                                            class="badge badge-warning">Belum Dikonfirmasi</span></td>
                                                 @elseif($p->status == 'konfirmasi')
-                                                    <td><span class="badge badge-success">Telah Dikonfirmasi</span></td>
+                                                    <td><span style="font-size: 1em;padding: 0.5em 1em;"
+                                                            class="badge badge-success">Telah Dikonfirmasi</span></td>
                                                 @endif
                                             @endif
                                         </tr>
@@ -178,6 +264,9 @@
 
             });
 
+            $('#tabelDaftarPresensiKaryawanIzin').DataTable({
+
+            });
         });
 
         // $('.btnDetailKaryawan').on('click', function() {

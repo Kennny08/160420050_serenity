@@ -23,7 +23,17 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
+                    @if ($errors->any())
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close text-danger" data-dismiss="alert" aria-label="Close">
+                                <span class="text-danger" aria-hidden="true">&times;</span>
+                            </button>
+                            <p class="mb-0"><strong>Maaf, terjadi kesalahan!</strong></p>
+                            @foreach ($errors->all() as $error)
+                                <p class="mt-0 mb-1">- {{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
 
 
                     <form method="POST" action="{{ route('presensikehadirans.store') }}" enctype="multipart/form-data">
@@ -53,44 +63,197 @@
                                         </thead>
 
                                         <tbody>
-                                            @foreach ($karyawans as $k)
-                                                <tr id="tr_{{ $k->id }}">
-                                                    <td>{{ $k->nama }}</td>
+                                            @php
+                                                $counter = 0;
+                                                $arrKeterangan = ['null', 'hadir', 'sakit', 'izin', 'absen'];
+                                                $arrKeteranganTolak = ['null', 'hadir', 'sakit', 'absen'];
+                                                $arrStatusIzin = ['null', 'belum', 'konfirmasi', 'tolak'];
+                                                $arrStatus = ['null', 'belum', 'konfirmasi'];
+
+                                            @endphp
+
+                                            @foreach ($karyawans as $karyawan)
+                                                <tr id="tr_{{ $karyawan->id }}">
+                                                    <td>{{ $karyawan->nama }}</td>
                                                     <td>{{ $tanggalHariIniTeks }}</td>
 
-                                                    @if (!in_array($k->id, $idKaryawansIzin))
-                                                        <input type="hidden" value="{{ $k->id }}"
+                                                    @if (!in_array($karyawan->id, $idKaryawansIzin))
+                                                        <input type="hidden" value="{{ $karyawan->id }}"
                                                             name="daftarNamaKaryawan[]">
                                                         <td>
                                                             <div class="col-md-12">
                                                                 <select name="keteranganPresensi[]"
-                                                                    id="keteranganPresensiSelect" class="form-control"
+                                                                    idKaryawan = "{{ $karyawan->id }}"
+                                                                    id="keteranganPresensiSelect"
+                                                                    class="form-control keteranganPresensiSelect"
                                                                     aria-label="Default select example" required>
-                                                                    <option class="text-danger" selected disabled
-                                                                        value="null">Pilih Keterangan
-                                                                        Presensi</option>
-                                                                    <option value="hadir">HADIR</option>
-                                                                    <option value="sakit">SAKIT</option>
-                                                                    <option value="absen">ABSEN</option>
-                                                                    <option value="izin">IZIN</option>
+                                                                    @if (old('keteranganPresensi') != null)
+                                                                        @foreach ($arrKeterangan as $k)
+                                                                            @if (old('keteranganPresensi')[$counter] == $k)
+                                                                                @if ($k == 'null')
+                                                                                    <option class="text-danger" selected
+                                                                                        value="null">
+                                                                                        Pilih Keterangan
+                                                                                        Presensi</option>
+                                                                                @else
+                                                                                    <option selected
+                                                                                        value="{{ $k }}">
+                                                                                        {{ strtoupper($k) }}</option>
+                                                                                @endif
+                                                                            @else
+                                                                                @if ($k == 'null')
+                                                                                    <option class="text-danger"
+                                                                                        value="null">
+                                                                                        Pilih Keterangan
+                                                                                        Presensi</option>
+                                                                                @else
+                                                                                    <option value="{{ $k }}">
+                                                                                        {{ strtoupper($k) }}</option>
+                                                                                @endif
+                                                                            @endif
+                                                                        @endforeach
+                                                                    @else
+                                                                        <option class="text-danger" selected value="null">
+                                                                            Pilih Keterangan
+                                                                            Presensi</option>
+                                                                        <option value="hadir">HADIR</option>
+                                                                        <option value="sakit">SAKIT</option>
+                                                                        <option value="absen">ABSEN</option>
+                                                                        <option value="izin">IZIN</option>
+                                                                    @endif
+
                                                                 </select>
                                                             </div>
                                                         </td>
                                                         <td>
                                                             <div class="col-md-12">
-                                                                <select name="statusPresensi[]"
-                                                                    id="keteranganPresensiSelect" class="form-control"
-                                                                    aria-label="Default select example" required>
-                                                                    <option class="text-danger" selected disabled
-                                                                        value="null">Pilih Status Presensi</option>
-                                                                    <option value="konfirmasi">Konfirmasi</option>
-                                                                    <option value="belum">Belum Konfirmasi</option>
-                                                                </select>
+                                                                @if (old('keteranganPresensi') != null)
+                                                                    @if (old('keteranganPresensi')[$counter] == 'izin')
+                                                                        @if (old('statusPresensi') != null)
+                                                                            <select name="statusPresensi[]"
+                                                                                id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                                class="form-control statusPresensiSelect"
+                                                                                aria-label="Default select example"
+                                                                                required>
+                                                                                @foreach ($arrStatusIzin as $s)
+                                                                                    @if (old('statusPresensi')[$counter] == $s)
+                                                                                        @if ($s == 'null')
+                                                                                            <option class="text-danger"
+                                                                                                selected value="null">
+                                                                                                Pilih Status Presensi
+                                                                                            </option>
+                                                                                        @else
+                                                                                            <option selected
+                                                                                                value="{{ $s }}">
+                                                                                                {{ $s }}
+                                                                                            </option>
+                                                                                        @endif
+                                                                                    @else
+                                                                                        @if ($s == 'null')
+                                                                                            <option class="text-danger"
+                                                                                                value="null">
+                                                                                                Pilih Status Presensi
+                                                                                            </option>
+                                                                                        @else
+                                                                                            <option
+                                                                                                value="{{ $s }}">
+                                                                                                {{ $s }}
+                                                                                            </option>
+                                                                                        @endif
+                                                                                    @endif
+                                                                                @endforeach
+                                                                            </select>
+                                                                        @else
+                                                                            <select name="statusPresensi[]"
+                                                                                id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                                class="form-control statusPresensiSelect"
+                                                                                aria-label="Default select example"
+                                                                                required>
+                                                                                <option class="text-danger" selected
+                                                                                    value="null">
+                                                                                    Pilih Status Presensi</option>
+                                                                                <option value="konfirmasi">konfimasi
+                                                                                </option>
+                                                                                <option value="belum">belum
+                                                                                </option>
+                                                                                <option value="tolak">tolak
+                                                                                </option>
+                                                                            </select>
+                                                                        @endif
+                                                                    @else
+                                                                        @if (old('statusPresensi') != null)
+                                                                            <select name="statusPresensi[]"
+                                                                                id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                                class="form-control statusPresensiSelect"
+                                                                                aria-label="Default select example"
+                                                                                required>
+                                                                                @foreach ($arrStatus as $s)
+                                                                                    @if (old('statusPresensi')[$counter] == $s)
+                                                                                        @if ($s == 'null')
+                                                                                            <option class="text-danger"
+                                                                                                selected value="null">
+                                                                                                Pilih Status Presensi
+                                                                                            </option>
+                                                                                        @else
+                                                                                            <option selected
+                                                                                                value="{{ $s }}">
+                                                                                                {{ $s }}
+                                                                                            </option>
+                                                                                        @endif
+                                                                                    @else
+                                                                                        @if ($s == 'null')
+                                                                                            <option class="text-danger"
+                                                                                                value="null">
+                                                                                                Pilih Status Presensi
+                                                                                            </option>
+                                                                                        @else
+                                                                                            <option
+                                                                                                value="{{ $s }}">
+                                                                                                {{ $s }}
+                                                                                            </option>
+                                                                                        @endif
+                                                                                    @endif
+                                                                                @endforeach
+                                                                            </select>
+                                                                        @else
+                                                                            <select name="statusPresensi[]"
+                                                                                id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                                class="form-control statusPresensiSelect"
+                                                                                aria-label="Default select example"
+                                                                                required>
+                                                                                <option class="text-danger" selected
+                                                                                    value="null">
+                                                                                    Pilih Status Presensi</option>
+                                                                                <option value="konfirmasi">konfirmasi
+                                                                                </option>
+                                                                                <option value="belum">belum
+                                                                                </option>
+                                                                            </select>
+                                                                        @endif
+                                                                    @endif
+                                                                @else
+                                                                    <select name="statusPresensi[]"
+                                                                        id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                        class="form-control statusPresensiSelect"
+                                                                        aria-label="Default select example" required>
+                                                                        <option class="text-danger" selected
+                                                                            value="null">
+                                                                            Pilih Status Presensi</option>
+                                                                        <option value="konfirmasi">konfirmasi
+                                                                        </option>
+                                                                        <option value="belum">belum
+                                                                        </option>
+                                                                    </select>
+                                                                @endif
                                                             </div>
+
                                                         </td>
+                                                        @php
+                                                            $counter++;
+                                                        @endphp
                                                     @else
                                                         @php
-                                                            $presensiIzinKaryawanTerpilih = $daftarIzinPresensiHariIni->firstWhere('karyawan_id', $k->id);
+                                                            $presensiIzinKaryawanTerpilih = $daftarIzinPresensiHariIni->firstWhere('karyawan_id', $karyawan->id);
                                                         @endphp
 
                                                         @if ($presensiIzinKaryawanTerpilih->status == 'konfirmasi')
@@ -103,55 +266,288 @@
                                                                     class="badge badge-success">Telah Dikonfirmasi</span>
                                                             </td>
                                                         @elseif($presensiIzinKaryawanTerpilih->status == 'tolak')
-                                                            <input type="hidden" value="{{ $k->id }}"
+                                                            <input type="hidden" value="{{ $karyawan->id }}"
                                                                 name="daftarNamaKaryawan[]">
                                                             <td>
                                                                 <div class="col-md-12">
                                                                     <select name="keteranganPresensi[]"
-                                                                        id="keteranganPresensiSelect" class="form-control"
+                                                                        idKaryawan = "{{ $karyawan->id }}"
+                                                                        id="keteranganPresensiSelect"
+                                                                        class="form-control keteranganPresensiSelect"
                                                                         aria-label="Default select example" required>
-                                                                        <option class="text-danger" selected disabled
-                                                                            value="null">Pilih Keterangan
-                                                                            Presensi (izin ditolak)</option>
-                                                                        <option value="hadir">HADIR</option>
-                                                                        <option value="sakit">SAKIT</option>
-                                                                        <option value="absen">ABSEN</option>
+                                                                        @if (old('keteranganPresensi') != null)
+                                                                            @foreach ($arrKeteranganTolak as $k)
+                                                                                @if (old('keteranganPresensi')[$counter] == $k)
+                                                                                    @if ($k == 'null')
+                                                                                        <option class="text-danger"
+                                                                                            selected value="null">
+                                                                                            Pilih Keterangan
+                                                                                            Presensi (izin ditolak)</option>
+                                                                                    @else
+                                                                                        <option selected
+                                                                                            value="{{ $k }}">
+                                                                                            {{ strtoupper($k) }}</option>
+                                                                                    @endif
+                                                                                @else
+                                                                                    @if ($k == 'null')
+                                                                                        <option class="text-danger"
+                                                                                            value="null">
+                                                                                            Pilih Keterangan
+                                                                                            Presensi (izin ditolak)</option>
+                                                                                    @else
+                                                                                        <option
+                                                                                            value="{{ $k }}">
+                                                                                            {{ strtoupper($k) }}</option>
+                                                                                    @endif
+                                                                                @endif
+                                                                            @endforeach
+                                                                        @else
+                                                                            <option class="text-danger" selected
+                                                                                value="null">
+                                                                                Pilih Keterangan
+                                                                                Presensi (izin ditolak)</option>
+                                                                            <option value="hadir">HADIR</option>
+                                                                            <option value="sakit">SAKIT</option>
+                                                                            <option value="absen">ABSEN</option>
+                                                                        @endif
+
                                                                     </select>
                                                                 </div>
                                                             </td>
                                                             <td>
                                                                 <div class="col-md-12">
-                                                                    <select name="statusPresensi[]"
-                                                                        id="keteranganPresensiSelect" class="form-control"
-                                                                        aria-label="Default select example" required>
-                                                                        <option class="text-danger" selected disabled
-                                                                            value="null">Pilih Status Presensi</option>
-                                                                        <option value="konfirmasi">Konfirmasi</option>
-                                                                        <option value="belum">Belum Konfirmasi</option>
-                                                                    </select>
+                                                                    @if (old('keteranganPresensi') != null)
+                                                                        @if (old('keteranganPresensi')[$counter] == 'izin')
+                                                                            @if (old('statusPresensi') != null)
+                                                                                <select name="statusPresensi[]"
+                                                                                    id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                                    class="form-control statusPresensiSelect"
+                                                                                    aria-label="Default select example"
+                                                                                    required>
+                                                                                    @foreach ($arrStatusIzin as $s)
+                                                                                        @if (old('statusPresensi')[$counter] == $s)
+                                                                                            @if ($s == 'null')
+                                                                                                <option class="text-danger"
+                                                                                                    selected
+                                                                                                    value="null">
+                                                                                                    Pilih Status Presensi
+                                                                                                </option>
+                                                                                            @else
+                                                                                                <option selected
+                                                                                                    value="{{ $s }}">
+                                                                                                    {{ $s }}
+                                                                                                </option>
+                                                                                            @endif
+                                                                                        @else
+                                                                                            @if ($s == 'null')
+                                                                                                <option class="text-danger"
+                                                                                                    value="null">
+                                                                                                    Pilih Status Presensi
+                                                                                                </option>
+                                                                                            @else
+                                                                                                <option
+                                                                                                    value="{{ $s }}">
+                                                                                                    {{ $s }}
+                                                                                                </option>
+                                                                                            @endif
+                                                                                        @endif
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            @else
+                                                                                <select name="statusPresensi[]"
+                                                                                    id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                                    class="form-control statusPresensiSelect"
+                                                                                    aria-label="Default select example"
+                                                                                    required>
+                                                                                    <option class="text-danger" selected
+                                                                                        value="null">
+                                                                                        Pilih Status Presensi</option>
+                                                                                    <option value="konfirmasi">konfimasi
+                                                                                    </option>
+                                                                                    <option value="belum">belum
+                                                                                    </option>
+                                                                                    <option value="tolak">tolak
+                                                                                    </option>
+                                                                                </select>
+                                                                            @endif
+                                                                        @else
+                                                                            @if (old('statusPresensi') != null)
+                                                                                <select name="statusPresensi[]"
+                                                                                    id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                                    class="form-control statusPresensiSelect"
+                                                                                    aria-label="Default select example"
+                                                                                    required>
+                                                                                    @foreach ($arrStatus as $s)
+                                                                                        @if (old('statusPresensi')[$counter] == $s)
+                                                                                            @if ($s == 'null')
+                                                                                                <option class="text-danger"
+                                                                                                    selected
+                                                                                                    value="null">
+                                                                                                    Pilih Status Presensi
+                                                                                                </option>
+                                                                                            @else
+                                                                                                <option selected
+                                                                                                    value="{{ $s }}">
+                                                                                                    {{ $s }}
+                                                                                                </option>
+                                                                                            @endif
+                                                                                        @else
+                                                                                            @if ($s == 'null')
+                                                                                                <option class="text-danger"
+                                                                                                    value="null">
+                                                                                                    Pilih Status Presensi
+                                                                                                </option>
+                                                                                            @else
+                                                                                                <option
+                                                                                                    value="{{ $s }}">
+                                                                                                    {{ $s }}
+                                                                                                </option>
+                                                                                            @endif
+                                                                                        @endif
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            @else
+                                                                                <select name="statusPresensi[]"
+                                                                                    id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                                    class="form-control statusPresensiSelect"
+                                                                                    aria-label="Default select example"
+                                                                                    required>
+                                                                                    <option class="text-danger" selected
+                                                                                        value="null">
+                                                                                        Pilih Status Presensi</option>
+                                                                                    <option value="konfirmasi">konfirmasi
+                                                                                    </option>
+                                                                                    <option value="belum">belum
+                                                                                    </option>
+                                                                                </select>
+                                                                            @endif
+                                                                        @endif
+                                                                    @else
+                                                                        <select name="statusPresensi[]"
+                                                                            id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                            class="form-control statusPresensiSelect"
+                                                                            aria-label="Default select example" required>
+                                                                            <option class="text-danger" selected
+                                                                                value="null">
+                                                                                Pilih Status Presensi</option>
+                                                                            <option value="konfirmasi">konfirmasi
+                                                                            </option>
+                                                                            <option value="belum">belum
+                                                                            </option>
+                                                                        </select>
+                                                                    @endif
                                                                 </div>
                                                             </td>
+                                                            @php
+                                                                $counter++;
+                                                            @endphp
                                                         @else
-                                                            <input type="hidden" value="{{ $k->id }}"
+                                                            <input type="hidden" value="{{ $karyawan->id }}"
                                                                 name="daftarNamaKaryawan[]">
-                                                            <td class="font-weight-bold text-warning">
+
+                                                            <td style="font-size: 1.3em"
+                                                                class="font-weight-bold text-warning">
                                                                 IZIN
                                                             </td>
+                                                            <input type="hidden" value="izin"
+                                                                name="keteranganPresensi[]">
+
                                                             <td>
+                                                                <div class="col-md-12">
+                                                                    @if (old('keteranganPresensi') != null)
+                                                                        @if (old('statusPresensi') != null)
+                                                                            <select name="statusPresensi[]"
+                                                                                id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                                class="form-control statusPresensiSelect"
+                                                                                aria-label="Default select example"
+                                                                                required>
+                                                                                @foreach ($arrStatusIzin as $s)
+                                                                                    @if (old('statusPresensi')[$counter] == $s)
+                                                                                        @if ($s == 'null')
+                                                                                            <option class="text-danger"
+                                                                                                selected value="null">
+                                                                                                Pilih Status Presensi
+                                                                                            </option>
+                                                                                        @else
+                                                                                            <option selected
+                                                                                                value="{{ $s }}">
+                                                                                                {{ $s }}
+                                                                                            </option>
+                                                                                        @endif
+                                                                                    @else
+                                                                                        @if ($s == 'null')
+                                                                                            <option class="text-danger"
+                                                                                                value="null">
+                                                                                                Pilih Status Presensi
+                                                                                            </option>
+                                                                                        @else
+                                                                                            <option
+                                                                                                value="{{ $s }}">
+                                                                                                {{ $s }}
+                                                                                            </option>
+                                                                                        @endif
+                                                                                    @endif
+                                                                                @endforeach
+                                                                            </select>
+                                                                        @else
+                                                                            <select name="statusPresensi[]"
+                                                                                id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                                class="form-control statusPresensiSelect"
+                                                                                aria-label="Default select example"
+                                                                                required>
+                                                                                <option class="text-danger" selected
+                                                                                    value="null">
+                                                                                    Pilih Status Presensi</option>
+                                                                                <option value="konfirmasi">konfimasi
+                                                                                </option>
+                                                                                <option value="belum">belum
+                                                                                </option>
+                                                                                <option value="tolak">tolak
+                                                                                </option>
+                                                                            </select>
+                                                                        @endif
+                                                                    @else
+                                                                        <select name="statusPresensi[]"
+                                                                            id="statusPresensiSelect_{{ $karyawan->id }}"
+                                                                            class="form-control statusPresensiSelect"
+                                                                            aria-label="Default select example" required>
+                                                                            <option class="text-danger" selected
+                                                                                value="null">
+                                                                                Pilih Status Presensi</option>
+                                                                            <option value="konfirmasi">konfirmasi
+                                                                            </option>
+                                                                            <option value="belum">belum
+                                                                            </option>
+                                                                            <option value="tolak">tolak
+                                                                            </option>
+                                                                        </select>
+                                                                    @endif
+                                                                </div>
+                                                            </td>
+                                                            @php
+                                                                $counter++;
+                                                            @endphp
+                                                            {{-- <td>
                                                                 <div class="col-md-12">
                                                                     <select name="statusPresensi[]"
                                                                         id="keteranganPresensiSelect" class="form-control"
                                                                         aria-label="Default select example" required>
-                                                                        <option class="text-danger" selected disabled
-                                                                            value="null">Pilih Status Presensi</option>
-                                                                        <option value="konfirmasi">Konfirmasi</option>
-                                                                        <option value="belum">Belum Konfirmasi</option>
+                                                                        <option class="text-danger" selected
+                                                                            value="null">
+                                                                            Pilih Status Presensi</option>
+                                                                        <option value="konfirmasi">konfirmasi</option>
+                                                                        <option value="belum">belum</option>
+                                                                        <option value="tolak">tolak</option>
                                                                     </select>
                                                                 </div>
                                                             </td>
+                                                            @php
+                                                                $counter++;
+                                                            @endphp --}}
                                                         @endif
                                                     @endif
                                                 </tr>
+
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -259,6 +655,19 @@
             $("#modalBodyHapusKaryawan").html("<h6>Apakah Anda yakin untuk menghapus perawatan " + namaKaryawan +
                 "?</h6>")
             $("#formDeleteKaryawan").attr("action", routeUrl);
+        });
+
+        $('body').on('change', '.keteranganPresensiSelect', function() {
+            var valueKeterangan = $(this).val();
+            var idKaryawan = $(this).attr("idKaryawan");
+
+            if (valueKeterangan == "izin") {
+                $("#statusPresensiSelect_" + idKaryawan + " option[value='tolak']").remove();
+                $("#statusPresensiSelect_" + idKaryawan).append("<option value='tolak'>tolak</option>");
+            } else {
+                $("#statusPresensiSelect_" + idKaryawan + " option[value='tolak']").remove();
+            }
+
         });
     </script>
 @endsection

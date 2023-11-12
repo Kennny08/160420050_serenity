@@ -264,7 +264,7 @@ class ReservasiController extends Controller
                     ->join('presensi_kehadiran', 'presensi_kehadiran.karyawan_id', '=', 'karyawans.id')
                     ->where(function ($query) {
                         $query->where('presensi_kehadiran.keterangan', 'izin')->orWhere('presensi_kehadiran.keterangan', 'sakit');
-                    })->where('presensi_kehadiran.tanggal_presensi', $tanggalReservasi)->get();
+                    })->whereRaw("DATE(presensi_kehadiran.tanggal_presensi) = '" . $tanggalReservasi . "'")->where("presensi_kehadiran.status", "konfirmasi")->get();
 
                 // $idKaryawan
                 $karyawanTersedia = Karyawan::select('karyawans.*')->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
@@ -343,7 +343,7 @@ class ReservasiController extends Controller
                 ->join('presensi_kehadiran', 'presensi_kehadiran.karyawan_id', '=', 'karyawans.id')
                 ->where(function ($query) {
                     $query->where('presensi_kehadiran.keterangan', 'izin')->orWhere('presensi_kehadiran.keterangan', 'sakit');
-                })->where('presensi_kehadiran.tanggal_presensi', $tanggalReservasi)->get();
+                })->whereRaw("DATE(presensi_kehadiran.tanggal_presensi) = '" . $tanggalReservasi . "'")->where("presensi_kehadiran.status", "konfirmasi")->get();
 
 
             foreach ($perawatanKomplemen as $perawatanK) {

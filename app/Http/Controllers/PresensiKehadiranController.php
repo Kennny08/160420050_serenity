@@ -23,10 +23,14 @@ class PresensiKehadiranController extends Controller
             $daftarRiwayat = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggal->tanggal_presensi . "'")->get();
             array_push($daftarRiwayatPresensi, $daftarRiwayat);
         }
-        $presensisHariIni = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->where("keterangan", "!=", "izin")->get();
+        $idMaxPresensiHariIniPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->groupBy("karyawan_id")->get();
+        $presensisHariIni = PresensiKehadiran::whereIn("id", $idMaxPresensiHariIniPerKaryawan)->get();
         $jumlahIzinKehadiran = PresensiKehadiran::where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where("status", "belum")->count();
+        $presensiIzinKehadiranHariIni = PresensiKehadiran::where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->get();
+        $jumlahKaryawan = Karyawan::count("id");
+        $idKaryawanUnikIzin = PresensiKehadiran::selectRaw("DISTINCT karyawan_id ")->where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->get();
 
-        return view("admin.karyawan.presensikehadiran.index", compact("tanggalHariIni", "daftarRiwayatPresensi", "presensisHariIni", "jumlahIzinKehadiran"));
+        return view("admin.karyawan.presensikehadiran.index", compact("tanggalHariIni", "daftarRiwayatPresensi", "presensisHariIni", "jumlahIzinKehadiran", "presensiIzinKehadiranHariIni", "jumlahKaryawan", "idKaryawanUnikIzin"));
     }
 
     /**
@@ -79,7 +83,62 @@ class PresensiKehadiranController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        //dd($request->all());
+        date_default_timezone_set("Asia/Jakarta");
+        $tanggalHariIni = date("Y-m-d");
+        $daftarNamaKaryawan = $request->get("daftarNamaKaryawan");
+        $keteranganPresensi = $request->get("keteranganPresensi");
+        $statusPresensi = $request->get("statusPresensi");
+        $karyawans = Karyawan::all();
+        if ($daftarNamaKaryawan == null) {
+
+            return redirect()->route("presensikehadirans.index")->with("status", "Presensi hari ini telah berhasil dibuka!")->withInput();
+        }
+
+        foreach ($keteranganPresensi as $kp) {
+            if ($kp == "null") {
+
+                return redirect()->back()->withErrors("Mohon pilih keterangan presensi untuk setiap karyawan yang tersedia!")->withInput();
+            }
+        }
+
+        foreach ($statusPresensi as $sp) {
+            if ($sp == "null") {
+                return redirect()->back()->withErrors("Mohon pilih status dari keterangan presensi untuk setiap karyawan yang tersedia!")->withInput();
+            }
+        }
+
+        for ($i = 0; $i < count($daftarNamaKaryawan); $i++) {
+
+            if ($keteranganPresensi[$i] == "izin") {
+                $presensiIzinTerpilih = PresensiKehadiran::where('karyawan_id', $daftarNamaKaryawan[$i])->where('status', 'belum')->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->first();
+                if ($presensiIzinTerpilih != null) {
+                    $presensiIzinTerpilih->status = $statusPresensi[$i];
+                    $presensiIzinTerpilih->updated_at = date("Y-m-d H:i:s");
+                    $presensiIzinTerpilih->save();
+                } else {
+                    $newPresensiKehadiran = new PresensiKehadiran();
+                    $newPresensiKehadiran->keterangan = $keteranganPresensi[$i];
+                    $newPresensiKehadiran->status = $statusPresensi[$i];
+                    $newPresensiKehadiran->karyawan_id = $daftarNamaKaryawan[$i];
+                    $newPresensiKehadiran->tanggal_presensi = date("Y-m-d H:i:s");
+                    $newPresensiKehadiran->created_at = date("Y-m-d H:i:s");
+                    $newPresensiKehadiran->updated_at = date("Y-m-d H:i:s");
+                    $newPresensiKehadiran->save();
+                }
+            } else {
+                $newPresensiKehadiran = new PresensiKehadiran();
+                $newPresensiKehadiran->keterangan = $keteranganPresensi[$i];
+                $newPresensiKehadiran->status = $statusPresensi[$i];
+                $newPresensiKehadiran->karyawan_id = $daftarNamaKaryawan[$i];
+                $newPresensiKehadiran->tanggal_presensi = date("Y-m-d H:i:s");
+                $newPresensiKehadiran->created_at = date("Y-m-d H:i:s");
+                $newPresensiKehadiran->updated_at = date("Y-m-d H:i:s");
+                $newPresensiKehadiran->save();
+            }
+
+        }
+        return redirect()->route('presensikehadirans.index')->with('status', 'Berhasil membuka presensi untuk hari ini');
     }
 
     /**
@@ -125,5 +184,9 @@ class PresensiKehadiranController extends Controller
     public function destroy(PresensiKehadiran $presensiKehadiran)
     {
         //
+    }
+
+    public function editPresensiKehadiran(){
+
     }
 }
