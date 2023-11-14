@@ -259,7 +259,7 @@
                             </button>
                         </div>
                         <div class="col-md-6">
-                            <input class="text-center form-control" disabled id="setNumberJumlahProduk" type="number"
+                            <input class="text-center form-control" id="setNumberJumlahProduk" type="number"
                                 value="1" name="setNumberJumlahProduk" min="1" />
                         </div>
                         <div class="col-md-3 text-left">
@@ -273,6 +273,30 @@
                     <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Batalkan</button>
                     <button id="btnSimpanJumlahProduk" type="button" idButtonTambahKeranjang=''
                         class="btn btn-info waves-effect waves-light btnSimpanJumlahProduk">Simpan</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <div id="modalPeringatanTidakBolehMin" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="modalPeirngatanTidakBolehMin" class="modal-title mt-0">Terjadi Kesalahan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center d-flex align-items-center justify-content-center"
+                    style="overflow-y: auto; height: 150px">
+                    <h5 id="textModal" class="text-danger">Kuantitas produk yang ingin dibeli minimal 1!</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup</button>
+
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -500,7 +524,10 @@
                 value = 1;
             }
             var newSubTotal = value * parseInt($("#kolomStokDiambil_" + idProduk).text());
-            $("#kolomSubTotal_" + idProduk).text(newSubTotal);
+            $("#kolomSubTotal_" + idProduk).text(parseInt(newSubTotal).toLocaleString('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).replace('Rp', ''));
             $("#btnHapusKeranjang_" + idProduk).attr("subTotal", newSubTotal);
 
             var totalHarga = 0;
@@ -513,7 +540,6 @@
                     style: 'currency',
                     currency: 'IDR'
                 }) + "</span>");
-
         });
 
 
@@ -522,49 +548,71 @@
             var stokSaatIni = parseInt($("#" + idButtonTambahKeranjang).attr('stokProduk'));
             var stokDiambil = parseInt($("#setNumberJumlahProduk").val());
 
+            if (!isNaN(stokDiambil)) {
+                if (stokDiambil <= 0) {
+                    $("#setNumberJumlahProduk").val("1");
+                    $('#textModal').text("Kuantitas produk yang ingin dibeli minimal berjumlah 1!");
+                    $("#modalPeringatanTidakBolehMin").modal("show");
+                } else {
+                    //Tambahkan ke modal keranjang
+                    $("#trSilahkan").remove();
+                    var namaProduk = $("#" + idButtonTambahKeranjang).attr('namaProduk');
+                    var hargaProduk = $("#" + idButtonTambahKeranjang).attr('hargaProduk');
+                    var idProduk = $("#" + idButtonTambahKeranjang).attr('idProduk');
 
-            //Tambahkan ke modal keranjang
-            $("#trSilahkan").remove();
-            var namaProduk = $("#" + idButtonTambahKeranjang).attr('namaProduk');
-            var hargaProduk = $("#" + idButtonTambahKeranjang).attr('hargaProduk');
-            var idProduk = $("#" + idButtonTambahKeranjang).attr('idProduk');
+                    var check = false;
+                    $("#bodyTabelKeranjang tr").each(function(index) {
+                        if ($(this).attr('id') == 'barisKeranjang_' + idProduk) {
+                            check = true;
+                        }
+                    });
 
-            var check = false;
-            $("#bodyTabelKeranjang tr").each(function(index) {
-                if ($(this).attr('id') == 'barisKeranjang_' + idProduk) {
-                    check = true;
+                    if (check == true) {
+                        var stokSaatIni = parseInt($("#kolomStokDiambil_" + idProduk).text());
+                        var stokBaruDiKeranjang = stokSaatIni + stokDiambil;
+                        var hargaSaatIni = parseInt($("#kolomHargaProduk_" + idProduk).val());
+                        $("#kolomStokDiambil_" + idProduk).text(stokBaruDiKeranjang);
+                        $("#kolomSubTotal_" + idProduk).text(parseInt(hargaSaatIni * stokBaruDiKeranjang)
+                            .toLocaleString(
+                                'id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                }).replace('Rp', ''));
+                        $("#btnHapusKeranjang_" + idProduk).attr('subTotal', hargaSaatIni * stokBaruDiKeranjang);
+                        $("#stokproduk_" + idProduk).val(stokBaruDiKeranjang);
+                    } else {
+                        var subTotal = parseInt(hargaProduk) * stokDiambil;
+                        $("#bodyTabelKeranjang").append(
+                            "<tr id='barisKeranjang_" + idProduk + "'>" +
+                            "<td>" + namaProduk + "</td>" +
+                            "<td><input type='number' min='1' value='" + hargaProduk +
+                            "' name='arrayhargaproduk[]' id='kolomHargaProduk_" + idProduk +
+                            "' class='form-control numHargaProduk' idProduk='" + idProduk + "'></td>" +
+                            "<td id='kolomStokDiambil_" + idProduk + "'>" + stokDiambil + "</td>" +
+                            "<td id='kolomSubTotal_" + idProduk + "'>" + subTotal.toLocaleString(
+                                'id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                }).replace('Rp', '') + "</td>" +
+                            "<td>" + "<button class='btn btn-danger btnHapusKeranjang' id='btnHapusKeranjang_" +
+                            idProduk +
+                            "' idProduk='" + idProduk + "' subTotal='" + subTotal +
+                            "'>Hapus</button>" + "</td>" +
+                            "</tr>");
+
+                        $("#modalDetailKeranjang").append("<input type='hidden' value='" + idProduk +
+                            "' id='produk_" +
+                            idProduk + "' name='arrayproduk[]'><input type='hidden' value='" + stokDiambil +
+                            "' id='stokproduk_" + idProduk + "' name='arraystokproduk[]'>");
+                    }
+                    $("#modalDetailProduk").modal('hide');
                 }
-            });
-
-            if (check == true) {
-                var stokSaatIni = parseInt($("#kolomStokDiambil_" + idProduk).text());
-                var stokBaruDiKeranjang = stokSaatIni + stokDiambil;
-                var hargaSaatIni = parseInt($("#kolomHargaProduk_" + idProduk).val());
-                $("#kolomStokDiambil_" + idProduk).text(stokBaruDiKeranjang);
-                $("#kolomSubTotal_" + idProduk).text(hargaSaatIni * stokBaruDiKeranjang);
-                $("#btnHapusKeranjang_" + idProduk).attr('subTotal', hargaSaatIni * stokBaruDiKeranjang);
-                $("#stokproduk_" + idProduk).val(stokBaruDiKeranjang);
             } else {
-                var subTotal = parseInt(hargaProduk) * stokDiambil;
-                $("#bodyTabelKeranjang").append(
-                    "<tr id='barisKeranjang_" + idProduk + "'>" +
-                    "<td>" + namaProduk + "</td>" +
-                    "<td><input type='number' min='1' value='" + hargaProduk +
-                    "' name='arrayhargaproduk[]' id='kolomHargaProduk_" + idProduk +
-                    "' class='form-control numHargaProduk' idProduk='" + idProduk + "'></td>" +
-                    "<td id='kolomStokDiambil_" + idProduk + "'>" + stokDiambil + "</td>" +
-                    "<td id='kolomSubTotal_" + idProduk + "'>" + subTotal + "</td>" +
-                    "<td>" + "<button class='btn btn-danger btnHapusKeranjang' id='btnHapusKeranjang_" +
-                    idProduk +
-                    "' idProduk='" + idProduk + "' subTotal='" + subTotal +
-                    "'>Hapus</button>" + "</td>" +
-                    "</tr>");
-
-                $("#modalDetailKeranjang").append("<input type='hidden' value='" + idProduk + "' id='produk_" +
-                    idProduk + "' name='arrayproduk[]'><input type='hidden' value='" + stokDiambil +
-                    "' id='stokproduk_" + idProduk + "' name='arraystokproduk[]'>");
+                $("#setNumberJumlahProduk").val("1");
+                $('#textModal').text("Mohon masukkan inputan kuantitas berupa angka!");
+                $("#modalPeringatanTidakBolehMin").modal("show");
             }
-            $("#modalDetailProduk").modal('hide');
+
 
         });
 

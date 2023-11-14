@@ -42,9 +42,17 @@ class PresensiKehadiranController extends Controller
     {
         date_default_timezone_set("Asia/Jakarta");
         $tanggalHariIni = date("Y-m-d");
-        $karyawans = Karyawan::all();
+        $karyawans = Karyawan::orderBy("nama")->get();
 
+        $idMaxPresensiHariIniPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->where("keterangan", "!=", "izin")->groupBy("karyawan_id")->get();
 
+        $idPresensiKaryawanYangSudahPresensiHariIni = [];
+        foreach ($idMaxPresensiHariIniPerKaryawan as $presensi) {
+            array_push($idPresensiKaryawanYangSudahPresensiHariIni, $presensi->id);
+        }
+
+        $arrObjectPresensiHariIniTanpaIzin = PresensiKehadiran::whereIn("id", $idPresensiKaryawanYangSudahPresensiHariIni)->get();
+        // dd($arrObjectPresensiHariIniTanpaIzin);
 
         $daftarIzinPresensiHariIni = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->where("keterangan", "izin")->get();
         $daftarKaryawanIzinHariIni = [];
@@ -71,7 +79,7 @@ class PresensiKehadiranController extends Controller
         $nomorHariDalamMingguan = date("w");
         $tanggalHariIniTeks = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y');
 
-        return view('admin.karyawan.presensikehadiran.bukapresensi', compact('karyawans', 'daftarKaryawanIzinHariIni', 'tanggalHariIniTeks', 'idKaryawansIzin', 'daftarIzinPresensiHariIni'));
+        return view('admin.karyawan.presensikehadiran.bukapresensi1', compact('karyawans', 'daftarKaryawanIzinHariIni', 'tanggalHariIniTeks', 'idKaryawansIzin', 'daftarIzinPresensiHariIni', 'arrObjectPresensiHariIniTanpaIzin'));
 
     }
 
@@ -86,6 +94,7 @@ class PresensiKehadiranController extends Controller
         //dd($request->all());
         date_default_timezone_set("Asia/Jakarta");
         $tanggalHariIni = date("Y-m-d");
+        $waktuBukaPresensi = $request->get("waktuBukaPresensi");
         $daftarNamaKaryawan = $request->get("daftarNamaKaryawan");
         $keteranganPresensi = $request->get("keteranganPresensi");
         $statusPresensi = $request->get("statusPresensi");
@@ -121,8 +130,8 @@ class PresensiKehadiranController extends Controller
                     $newPresensiKehadiran->keterangan = $keteranganPresensi[$i];
                     $newPresensiKehadiran->status = $statusPresensi[$i];
                     $newPresensiKehadiran->karyawan_id = $daftarNamaKaryawan[$i];
-                    $newPresensiKehadiran->tanggal_presensi = date("Y-m-d H:i:s");
-                    $newPresensiKehadiran->created_at = date("Y-m-d H:i:s");
+                    $newPresensiKehadiran->tanggal_presensi = date("Y-m-d H:i:s", strtotime($tanggalHariIni . " " . $waktuBukaPresensi . ":00"));
+                    $newPresensiKehadiran->created_at = date("Y-m-d H:i:s", strtotime($tanggalHariIni . " " . $waktuBukaPresensi . ":00"));
                     $newPresensiKehadiran->updated_at = date("Y-m-d H:i:s");
                     $newPresensiKehadiran->save();
                 }
@@ -131,8 +140,8 @@ class PresensiKehadiranController extends Controller
                 $newPresensiKehadiran->keterangan = $keteranganPresensi[$i];
                 $newPresensiKehadiran->status = $statusPresensi[$i];
                 $newPresensiKehadiran->karyawan_id = $daftarNamaKaryawan[$i];
-                $newPresensiKehadiran->tanggal_presensi = date("Y-m-d H:i:s");
-                $newPresensiKehadiran->created_at = date("Y-m-d H:i:s");
+                $newPresensiKehadiran->tanggal_presensi = date("Y-m-d H:i:s", strtotime($tanggalHariIni . " " . $waktuBukaPresensi . ":00"));
+                $newPresensiKehadiran->created_at = date("Y-m-d H:i:s", strtotime($tanggalHariIni . " " . $waktuBukaPresensi . ":00"));
                 $newPresensiKehadiran->updated_at = date("Y-m-d H:i:s");
                 $newPresensiKehadiran->save();
             }
@@ -186,7 +195,141 @@ class PresensiKehadiranController extends Controller
         //
     }
 
-    public function editPresensiKehadiran(){
+    public function editPresensiKehadiran($tanggalPresensi)
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $idMaxPresensiPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalPresensi . "'")->groupBy("karyawan_id")->get();
+        $idMaxPresensiPerKaryawanIzinDitolak = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalPresensi . "'")->where("keterangan", "izin")->where("status", "tolak")->groupBy("karyawan_id")->get();
+        $objectUnikKaryawanYangIzinDitolak = PresensiKehadiran::selectRaw("DISTINCT karyawan_id")->whereIn("id", $idMaxPresensiPerKaryawanIzinDitolak)->get();
+        $idUnikKaryawanYangIzinDitolak = [];
+        foreach ($objectUnikKaryawanYangIzinDitolak as $presensiIzinDitolak) {
+            array_push($idUnikKaryawanYangIzinDitolak, $presensiIzinDitolak->karyawan_id);
+        }
 
+        $idPresensiKaryawan = [];
+        foreach ($idMaxPresensiPerKaryawan as $presensi) {
+            array_push($idPresensiKaryawan, $presensi->id);
+        }
+
+        $daftarObjectPresensiKehadiran = PresensiKehadiran::whereIn("id", $idPresensiKaryawan)->get();
+        $arrObjectPresensiKehadiran = [];
+
+        foreach ($daftarObjectPresensiKehadiran as $objectPresensiKehadiran) {
+            array_push($arrObjectPresensiKehadiran, $objectPresensiKehadiran);
+        }
+
+        usort($arrObjectPresensiKehadiran, [$this, "urutkanNamaKaryawan"]);
+
+        $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+        $nomorHariDalamMingguan = date("w", strtotime($tanggalPresensi));
+        $tanggalPresensiTeks = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y', strtotime($tanggalPresensi));
+
+        return view('admin.karyawan.presensikehadiran.editpresensi', compact('arrObjectPresensiKehadiran', 'tanggalPresensi', 'tanggalPresensiTeks', 'idUnikKaryawanYangIzinDitolak'));
+    }
+
+    protected function urutkanNamaKaryawan($presensiA, $presensiB)
+    {
+        return strcmp($presensiA->karyawan->nama, $presensiB->karyawan->nama);
+    }
+
+    public function updatePresensiKehadiran(Request $request)
+    {
+        //dd($request->all());
+        date_default_timezone_set("Asia/Jakarta");
+        $tanggalHariIni = date("Y-m-d");
+        $tanggalPresensi = $request->get("tanggalPresensi");
+        $daftarIdKaryawan = $request->get("daftarNamaKaryawan");
+        $keteranganPresensi = $request->get("keteranganPresensi");
+        $statusPresensi = $request->get("statusPresensi");
+        for ($i = 0; $i < count($daftarIdKaryawan); $i++) {
+            $idMaxPresensiKaryawan = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalPresensi . "'")->where("karyawan_id", $daftarIdKaryawan[$i])->max("id");
+            $presensiKaryawanMax = PresensiKehadiran::find($idMaxPresensiKaryawan);
+
+            if ($keteranganPresensi[$i] != $presensiKaryawanMax->keterangan) {
+                if ($statusPresensi[$i] != $presensiKaryawanMax->status) {
+                    if ($presensiKaryawanMax->keterangan == "izin" && $presensiKaryawanMax->status == "tolak") {
+                        $newPresensi = new PresensiKehadiran();
+                        $newPresensi->keterangan = $keteranganPresensi[$i];
+                        $newPresensi->status = $statusPresensi[$i];
+                        $newPresensi->karyawan_id = $daftarIdKaryawan[$i];
+                        $newPresensi->tanggal_presensi = date("Y-m-d H:i:s", strtotime($presensiKaryawanMax->created_at));
+                        $newPresensi->created_at = date("Y-m-d H:i:s", strtotime($presensiKaryawanMax->created_at));
+                        $newPresensi->updated_at = date("Y-m-d H:i:s");
+                        $newPresensi->save();
+                    } else {
+                        $presensiKaryawanMax->keterangan = $keteranganPresensi[$i];
+                        $presensiKaryawanMax->status = $statusPresensi[$i];
+                        if ($tanggalPresensi == $tanggalHariIni) {
+                            $presensiKaryawanMax->updated_at = date("Y-m-d H:i:s");
+                        } else {
+                            $tanggalSementara = date("Y-m-d H:i:s", strtotime($presensiKaryawanMax->updated_at));
+                            $presensiKaryawanMax->updated_at = $tanggalSementara;
+                        }
+                        $presensiKaryawanMax->save();
+                    }
+
+
+                } else {
+                    $presensiKaryawanMax->keterangan = $keteranganPresensi[$i];
+                    $presensiKaryawanMax->updated_at = date("Y-m-d H:i:s", strtotime($presensiKaryawanMax->updated_at));
+                    $presensiKaryawanMax->save();
+                }
+            } else {
+                if ($statusPresensi[$i] != $presensiKaryawanMax->status) {
+                    $presensiKaryawanMax->status = $statusPresensi[$i];
+                    if ($tanggalPresensi == $tanggalHariIni) {
+                        $presensiKaryawanMax->updated_at = date("Y-m-d H:i:s");
+                    } else {
+                        $presensiKaryawanMax->updated_at = date("Y-m-d H:i:s", strtotime($presensiKaryawanMax->updated_at));
+                    }
+                    $presensiKaryawanMax->save();
+                }
+            }
+        }
+        $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+
+        if ($tanggalPresensi == $tanggalHariIni) {
+            $nomorHariDalamMingguan = date("w");
+            $tanggalPresensiTeks = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y');
+            return redirect()->route("presensikehadirans.index")->with("status", "Berhasil mengedit presensi untuk hari ini pada tanggal " . $tanggalPresensiTeks);
+        } else {
+            $nomorHariDalamMingguan = date("w", strtotime($tanggalPresensi));
+            $tanggalPresensiTeks = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y', strtotime($tanggalPresensi));
+            return redirect()->route("admin.presensikehadirans.riwayatpresensi")->with("status", "Berhasil mengedit presensi untuk tanggal " . $tanggalPresensiTeks);
+        }
+
+
+    }
+
+    public function riwayatPresensiKaryawan()
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $tanggalHariIni = date("Y-m-d");
+        $tanggalPresensi = PresensiKehadiran::selectRaw("distinct DATE(tanggal_presensi) as tanggal_presensi")->whereRaw("DATE(tanggal_presensi) < '" . $tanggalHariIni . "'")->orderBy("tanggal_presensi", "desc")->get();
+        $daftarRiwayatPresensi = [];
+        foreach ($tanggalPresensi as $tanggal) {
+            $riwayatPresensi = [];
+            $daftarRiwayat = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggal->tanggal_presensi . "'")->get();
+
+            $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+            $nomorHariDalamMingguan = date("w", strtotime($tanggal->tanggal_presensi));
+            $tanggalPresensiTeks = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y', strtotime($tanggal->tanggal_presensi));
+            $riwayatPresensi["tanggalPresensi"] = $tanggal->tanggal_presensi;
+            $riwayatPresensi["tanggalPresensiDenganHari"] = $tanggalPresensiTeks;
+            $riwayatPresensi["daftarPresensi"] = $daftarRiwayat;
+            $riwayatPresensi["objectPresensiPertamaTanpaIzin"] = $daftarRiwayat->firstWhere("keterangan", "!=", "izin");
+            array_push($daftarRiwayatPresensi, $riwayatPresensi);
+        }
+        return view("admin.karyawan.presensikehadiran.riwayatpresensi", compact("daftarRiwayatPresensi"));
+    }
+
+    public function getDetailRiwayatPresensi()
+    {
+        $tanggalPresensi = $_POST['tanggalPresensi'];
+        $idMaxPresensiPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalPresensi . "'")->groupBy("karyawan_id")->get();
+        $presensis = PresensiKehadiran::whereIn("id", $idMaxPresensiPerKaryawan)->get();
+
+
+        return response()->json(array('msg' => view('admin.karyawan.presensikehadiran.detailriwayatpresensi', compact('presensis'))->render()), 200);
     }
 }

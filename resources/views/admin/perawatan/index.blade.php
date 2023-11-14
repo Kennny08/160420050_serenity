@@ -258,11 +258,11 @@
     <script>
         $(document).ready(function() {
             $('#tabelDaftarPerawatanAktif').DataTable({
-                ordering: false
+
             });
 
             $('#tabelDaftarPerawatanNonaktif').DataTable({
-                ordering: false
+
             });
 
         });

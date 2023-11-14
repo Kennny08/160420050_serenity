@@ -58,7 +58,7 @@
                         @endforeach
                         <div class="mb-2">
                             <div class="d-inline-block">
-                                <h3 class="mt-0 header-title">Perawatan Non Komplemen</h3>
+                                <h3 class="mt-0 header-title">Perawatan Sekuensial/Berurutan</h3>
                             </div>
 
                             <div class="d-inline-block">
@@ -109,7 +109,7 @@
                         <br>
                         <div class="mb-2">
                             <div class="d-inline-block">
-                                <h3 class="mt-0 header-title">Perawatan Komplemen</h3>
+                                <h3 class="mt-0 header-title">Perawatan Bersamaan</h3>
                             </div>
 
                             <div class="d-inline-block">
@@ -194,7 +194,8 @@
                                     class="btn btn-primary btn-lg btn-danger">Pilih
                                     Perawatan</a> --}}
                                 <button id="btnPilihPerawatan" style="width: 200px" onclick="goBack()" type="button"
-                                    class="btn btn-primary btn-lg btn-danger">Pilih
+                                    class="btn btn-primary btn-lg btn-danger"><i class="mdi mdi-keyboard-backspace"></i>
+                                    &nbsp; Pilih
                                     Perawatan</button>
                             </div>
 

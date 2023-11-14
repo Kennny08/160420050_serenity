@@ -90,8 +90,17 @@
                                     <tr id="tr_{{ $p->id }}">
                                         <td>{{ $p->kode_produk }}</td>
                                         <td>{{ $p->nama }}</td>
-                                        <td>{{ $p->harga_jual }}</td>
-                                        <td>{{ $p->harga_beli }}</td>
+                                        @if ($p->harga_beli >= $p->harga_jual)
+                                            <td class="text-danger font-weight-bold">
+                                                {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                            <td class="text-danger font-weight-bold">
+                                                {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                        @else
+                                            <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                            <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                        @endif
+
+
                                         <td class="text-danger font-weight-bold">{{ $p->stok }}</td>
                                         <td class="text-danger font-weight-bold">{{ $p->minimum_stok }}</td>
                                         <td>{{ $p->status_jual }}</td>
@@ -127,8 +136,15 @@
                                     <tr id="tr_{{ $p->id }}">
                                         <td>{{ $p->kode_produk }}</td>
                                         <td>{{ $p->nama }}</td>
-                                        <td>{{ $p->harga_jual }}</td>
-                                        <td>{{ $p->harga_beli }}</td>
+                                        @if ($p->harga_beli >= $p->harga_jual)
+                                            <td class="text-danger font-weight-bold">
+                                                {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                            <td class="text-danger font-weight-bold">
+                                                {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                        @else
+                                            <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                            <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                        @endif
                                         <td>{{ $p->stok }}</td>
                                         <td>{{ $p->minimum_stok }}</td>
                                         <td>{{ $p->status_jual }}</td>
@@ -219,8 +235,15 @@
                                     <tr id="tr_{{ $p->id }}">
                                         <td>{{ $p->kode_produk }}</td>
                                         <td>{{ $p->nama }}</td>
-                                        <td>{{ $p->harga_jual }}</td>
-                                        <td>{{ $p->harga_beli }}</td>
+                                        @if ($p->harga_beli >= $p->harga_jual)
+                                            <td class="text-danger font-weight-bold">
+                                                {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                            <td class="text-danger font-weight-bold">
+                                                {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                        @else
+                                            <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                            <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                        @endif
                                         <td>{{ $p->stok }}</td>
                                         <td>{{ $p->minimum_stok }}</td>
                                         <td>{{ $p->status_jual }}</td>

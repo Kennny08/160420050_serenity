@@ -97,4 +97,7 @@ Route::post('/admin/slotjam/editstatusslotjam', [SlotJamController::class, "edit
 
 //Presensi Kehadiran
 Route::resource("presensikehadirans", PresensiKehadiranController::class);
-Route::get('/admin/presensi/editpresensi', [PresensiKehadiranController::class, "editPresensiKehadiran"])->name("admin.presensikehadirans.editpresensi");
+Route::get('/admin/presensi/editpresensi/{tanggalPresensi}', [PresensiKehadiranController::class, "editPresensiKehadiran"])->name("admin.presensikehadirans.editpresensi");
+Route::post('/admin/presensi/updatepresensi', [PresensiKehadiranController::class, "updatePresensiKehadiran"])->name("admin.presensikehadirans.updatepresensikehadiran");
+Route::get('/admin/presensi/riwayatpresensi', [PresensiKehadiranController::class, "riwayatPresensiKaryawan"])->name("admin.presensikehadirans.riwayatpresensi");
+Route::post('/admin/presensi/detailriwayatpresensi', [PresensiKehadiranController::class, "getDetailRiwayatPresensi"])->name("admin.getdetailriwayatpresensi");

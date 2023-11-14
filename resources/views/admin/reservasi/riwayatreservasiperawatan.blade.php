@@ -88,7 +88,6 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
-
 @endsection
 
 @section('javascript')

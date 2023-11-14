@@ -22,7 +22,7 @@
                             Karyawan</a>
                     @elseif(count($presensisHariIni) == $jumlahKaryawan)
                         <a class="btn btn-info waves-effect waves-light"
-                            href={{ route('admin.presensikehadirans.editpresensi') }}>Edit
+                            href={{ route('admin.presensikehadirans.editpresensi', $tanggalHariIni) }}>Edit
                             Presensi
                             Karyawan</a>
                     @else
@@ -33,7 +33,7 @@
                                 Karyawan</a>
                         @else
                             <a class="btn btn-info waves-effect waves-light"
-                                href={{ route('admin.presensikehadirans.editpresensi') }}>Edit
+                                href={{ route('admin.presensikehadirans.editpresensi', $tanggalHariIni) }}>Edit
                                 Presensi
                                 Karyawan</a>
                         @endif
@@ -85,9 +85,12 @@
                                         <thead>
                                             <tr>
                                                 <th>Nama Karyawan</th>
-                                                <th>Tanggal Presensi</th>
+                                                <th>Tanggal Pengajuan Izin</th>
+                                                <th>Waktu Buka Presensi</th>
+                                                <th>Waktu Karyawan Izin</th>
                                                 <th>Keterangan</th>
                                                 <th>Status</th>
+                                                <th>Dikonfirmasi Terakhir Pukul</th>
                                             </tr>
                                         </thead>
 
@@ -95,8 +98,16 @@
                                             @foreach ($presensiIzinKehadiranHariIni as $p)
                                                 <tr id="tr_{{ $p->id }}">
                                                     <td>{{ $p->karyawan->nama }}</td>
-                                                    <td>{{ $p->tanggal_presensi }}</td>
+                                                    <td>{{ date('Y-m-d', strtotime($p->tanggal_presensi)) }}</td>
+                                                    @if (count($presensisHariIni) != $jumlahKaryawan)
+                                                        <td>Presensi Belum Dibuka</td>
+                                                    @else
+                                                        <td>{{ date('H:i', strtotime($p->tanggal_presensi)) }}</td>
+                                                    @endif
 
+                                                    <td>
+                                                        {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                                                    </td>
                                                     @if ($p->keterangan == 'hadir')
                                                         <td class="text-success">HADIR</td>
                                                     @elseif($p->keterangan == 'absen')
@@ -131,6 +142,14 @@
                                                             </td>
                                                         @endif
                                                     @endif
+
+                                                    <td>
+                                                        @if ($p->status == 'belum')
+                                                            Menunggu Konfirmasi
+                                                        @else
+                                                            {{ date('H:i', strtotime($p->updated_at)) }}
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -147,8 +166,11 @@
                                     <tr>
                                         <th>Nama Karyawan</th>
                                         <th>Tanggal Presensi</th>
+                                        <th>Waktu Buka Presensi</th>
+                                        <th>Waktu Karyawan Presensi</th>
                                         <th>Keterangan</th>
                                         <th>Status</th>
+                                        <th>Dikonfirmasi Terakhir Pukul</th>
                                     </tr>
                                 </thead>
 
@@ -156,7 +178,15 @@
                                     @foreach ($presensisHariIni as $p)
                                         <tr id="tr_{{ $p->id }}">
                                             <td>{{ $p->karyawan->nama }}</td>
-                                            <td>{{ $p->tanggal_presensi }}</td>
+                                            <td>{{ date('Y-m-d', strtotime($p->tanggal_presensi)) }}</td>
+                                            <td>{{ date('H:i', strtotime($p->tanggal_presensi)) }}</td>
+                                            <td>
+                                                @if (date('H:i:s', strtotime($p->created_at)) == date('H:i:s', strtotime($p->tanggal_presensi)))
+                                                    Menunggu Karyawan Presensi
+                                                @else
+                                                    {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                                                @endif
+                                            </td>
 
                                             @if ($p->keterangan == 'hadir')
                                                 <td class="text-success">HADIR</td>
@@ -188,6 +218,14 @@
                                                             class="badge badge-success">Telah Dikonfirmasi</span></td>
                                                 @endif
                                             @endif
+
+                                            <td>
+                                                @if ($p->status == 'belum')
+                                                    Menunggu Konfirmasi
+                                                @else
+                                                    {{ date('H:i', strtotime($p->updated_at)) }}
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -227,34 +265,6 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
-
-    {{-- <div id="modalKonfirmasiDeleteKaryawan" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
-        aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <form id="formDeleteKaryawan" action="{{ route('karyawans.destroy', '1') }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-header">
-                        <h5 id="modalNamaKaryawanDelete" class="modal-title mt-0">Konfirmasi Penghapusan Karyawan</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div id="modalBodyHapusKaryawan" class="modal-body text-center">
-                        <h6>Apakah Anda yakin untuk menghapus karyawan?</h6>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Batal</button>
-                        <button id="btnKonfirmasiHapusKaryawan" type="submit"
-                            class="btn btn-info waves-effect waves-light btnKonfirmasiHapusKaryawan">Hapus</button>
-                    </div>
-                </form>
-            </div>
-
-        </div>
-        <!-- /.modal-dialog -->
-    </div> --}}
 @endsection
 
 @section('javascript')
@@ -269,24 +279,7 @@
             });
         });
 
-        // $('.btnDetailKaryawan').on('click', function() {
-        //     var idKaryawan = $(this).attr("idKaryawan");
-        //     var nama = $(this).attr('nama');
 
-        //     $("#modalNamaKaryawan").text(" Detail Karyawan " + nama);
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: '{{ route('admin.getdetailkaryawan') }}',
-        //         data: {
-        //             '_token': '<?php echo csrf_token(); ?>',
-        //             'idKaryawan': idKaryawan,
-        //         },
-        //         success: function(data) {
-        //             $('#contentDetailKaryawan').html(data.msg);
-        //             $('#tabelDaftarKaryawanPerawatan').DataTable({});
-        //         }
-        //     })
-        // });
         $('.btnHapusKaryawan').on('click', function() {
 
             var idKaryawan = $(this).attr("idKaryawan");

@@ -28,7 +28,7 @@
                         </div>
                     @endif
 
-                    <table id="tabelDaftarMereks" class="table table-bordered dt-responsive nowrap text-center"
+                    <table id="tabelDaftarMerek" class="table table-bordered dt-responsive nowrap text-center"
                         style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                             <tr>

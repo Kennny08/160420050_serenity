@@ -46,7 +46,7 @@ class PerawatanController extends Controller
                 'namaPerawatan' => 'required|max:255',
                 'kode_perawatan' => 'required|unique:perawatans',
                 'hargaPerawatan' => 'required|numeric|min:1',
-                'durasi' => 'required|numeric|min:15',
+                'durasi' => 'required|numeric|min:30',
                 'komisiKaryawan' => 'required|numeric|min:1|max:100',
             ],
             [
@@ -146,7 +146,7 @@ class PerawatanController extends Controller
                     'namaPerawatan' => 'required|max:255',
                     'kode_perawatan' => 'required|unique:perawatans',
                     'hargaPerawatan' => 'required|numeric|min:1',
-                    'durasi' => 'required|numeric|min:15',
+                    'durasi' => 'required|numeric|min:30',
                     'komisiKaryawan' => 'required|numeric|min:1|max:100',
                 ],
                 [
@@ -196,7 +196,7 @@ class PerawatanController extends Controller
                 [
                     'namaPerawatan' => 'required|max:255',
                     'hargaPerawatan' => 'required|numeric|min:1',
-                    'durasi' => 'required|numeric|min:15',
+                    'durasi' => 'required|numeric|min:30',
                     'komisiKaryawan' => 'required|numeric|min:1|max:100',
                 ],
                 [

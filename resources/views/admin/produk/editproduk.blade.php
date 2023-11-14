@@ -48,8 +48,8 @@
                                 <label for="exampleInputEmail1"><strong>Kode Produk</strong></label>
                                 <input type="text" class="form-control" name="kode_produk" id="txtKodeProduk"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan kode produk" required
-                                    value="{{ $produk->kode_produk }}">
-                                <small id="emailHelp" class="form-text text-muted">Masukkan jumlah kode disini!</small>
+                                    value="{{ $produk->kode_produk }}" disabled>
+                                <small id="emailHelp" class="form-text text-muted">Kode produk!</small>
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Harga Jual Produk</strong></label>
@@ -85,7 +85,7 @@
                                 <label for="exampleInputEmail1"><strong>Stok Produk</strong></label>
                                 <input type="number" class="form-control" name="stokProduk" id="numStok" min="1"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan jumlah stok produk" required
-                                    value="{{ $produk->stok}}">
+                                    value="{{ $produk->stok}}" disabled>
                                 <small id="emailHelp" class="form-text text-muted">Masukkan jumlah stok produk
                                     disini!</small>
                             </div>

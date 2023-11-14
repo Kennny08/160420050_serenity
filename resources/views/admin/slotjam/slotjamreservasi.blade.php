@@ -13,7 +13,9 @@
                 <div class="card-body">
 
                     <h4 class="mt-0">Pengaturan Slot Jam Reservasi</h4>
-                    <h6>pengaturan slot jadwal berlaku untuk minggu ini <span class="text-danger">(Minggu, {{ date("d-m-Y", strtotime($tanggalMingguIni)) }} - Sabtu, {{ date("d-m-Y", strtotime($tanggalSabtuIni)) }})</span></h6>
+                    <h6>pengaturan slot jadwal berlaku untuk minggu ini <span class="text-danger">(Minggu,
+                            {{ date('d-m-Y', strtotime($tanggalMingguIni)) }} - Sabtu,
+                            {{ date('d-m-Y', strtotime($tanggalSabtuIni)) }})</span></h6>
                     <p class="sub-title">
                     </p>
                     @if (session('status'))
@@ -31,9 +33,11 @@
                             <thead class="font-weight-bold">
                                 <tr>
                                     <th>Jam</th>
-                                    <th>
+                                    {{-- <th>
                                         Senin <input style="transform: scale(1.5)" class="float-right" type="checkbox"
-                                            value="apa"></th>
+                                            value="apa">
+                                    </th> --}}
+                                    <th>Senin</th>
                                     <th>Selasa</th>
                                     <th>Rabu</th>
                                     <th>Kamis</th>

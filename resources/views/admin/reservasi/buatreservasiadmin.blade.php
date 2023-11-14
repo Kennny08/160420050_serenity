@@ -28,7 +28,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('reservasi.admin.pilihkaryawan') }}"
+                    <form id="formPilihPerawatan" method="POST" action="{{ route('reservasi.admin.pilihkaryawan') }}"
                         enctype="multipart/form-data">
                         @csrf
 
@@ -243,14 +243,38 @@
                             </div>
 
                         </div>
-
                         <div class="form-group text-right">
-                            <button id="tesbutton" style="width: 200px" type="submit"
-                                class="btn btn-primary btn-lg waves-effect waves-light">Pilih
-                                Karyawan</button>
+                            <button id="btnKonfirmasiPerawatan" type="button" data-toggle = "modal"
+                                data-target="#modalKonfirmasiPerawatan"
+                                class="btn btn-primary btn-lg waves-effect waves-light">Konfirmasi Perawatan</button>
                         </div>
 
-
+                        <div id="modalKonfirmasiPerawatan" class="modal fade bs-example-modal-center" tabindex="-1"
+                            role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title mt-0">Konfirmasi Pemilihan Karyawan</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body text-center" id="bodyModalKonfirmasiPerawatan">
+                                        <h6>Apakah Anda ingin memilih karyawan yang akan melayani perawatan Anda?</h6>
+                                        <input id="inputPilihKaryawan" type="hidden" name="keteranganPilihKaryawan"
+                                            value="tidak">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="btnTidakPilihKaryawan" type="button"
+                                            class="btn btn-primary waves-effect">Tidak</button>
+                                        <button id="btnPilihKaryawan" type="button"
+                                            class="btn btn-info waves-effect waves-light">Ya</button>
+                                    </div>
+                                </div>
+                                <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+                        </div>
                     </form>
 
 
@@ -352,7 +376,10 @@
                 $("#bodyListPerawatan").append(
                     "<tr><td>" + namaperawatan + "</td>" +
                     "<td>" + durasiperawatan + "</td>" +
-                    "<td>" + hargaperawatan + "</td>" +
+                    "<td>" + parseInt(hargaperawatan).toLocaleString('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR'
+                    }).toString().replace("Rp", "") + "</td>" +
                     "<td>" + deskripsiperawatan + "</td>" +
                     "<td>" +
                     "<button type='button' class='deletePerawatan btn btn-danger waves-effect waves-light' idPerawatan='" +
@@ -446,6 +473,34 @@
                 $('#bodyListPerawatan').html(
                     "<tr id='trSilahkan'><td colspan='5'>Silahkan Pilih Perawatan</td></tr>");
             }
+        });
+
+        $('#btnKonfirmasiPerawatan').on('click', function() {
+            var hargaJual = parseInt($("#numHargaJual").val());
+            var hargaBeli = parseInt($("#numHargaBeli").val());
+            var namaProduk = $("#txtNamaProduk").val();
+            if (hargaJual < hargaBeli) {
+                $("#bodyModalPengecekanHarga").html("<p>Harga jual produk " + namaProduk +
+                    " yang Anda masukkan(Rp. " + hargaJual + ") lebih kecil dari harga beli produk(Rp. " +
+                    hargaBeli + "). Apakah Anda yakin untuk mengkonfirmasi penyimpanan data produk?</p>");
+                $("#modalPengecekanHargaJualBeli").modal("show");
+            } else {
+                $("#formStoreProduk").submit();
+            }
+        });
+
+        $('body').on('click', '#btnPilihKaryawan', function() {
+
+            $("#inputPilihKaryawan").val("ya");
+            $("#modalKonfirmasiPerawatan").modal("hide");
+            $("#formPilihPerawatan").submit();
+        });
+
+        $('body').on('click', '#btnTidakPilihKaryawan', function() {
+
+            $("#inputPilihKaryawan").val("tidak");
+            $("#modalKonfirmasiPerawatan").modal("hide");
+            $("#formPilihPerawatan").submit();
         });
     </script>
 @endsection

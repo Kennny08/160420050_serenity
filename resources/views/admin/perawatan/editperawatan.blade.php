@@ -48,8 +48,8 @@
                                 <label for="exampleInputEmail1"><strong>Kode Perawatan</strong></label>
                                 <input type="text" class="form-control" name="kode_perawatan" id="txtKodePerawatan"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan kode perawatan" required
-                                    value="{{ $perawatan->kode_perawatan }}">
-                                <small id="emailHelp" class="form-text text-muted">Masukkan jumlah kode disini!</small>
+                                    value="{{ $perawatan->kode_perawatan }}" disabled>
+                                <small id="emailHelp" class="form-text text-muted">Kode Perawatan</small>
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Harga Layanan Perawatan(Rp)</strong></label>

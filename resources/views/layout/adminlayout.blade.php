@@ -288,7 +288,7 @@
                             <ul class="submenu">
                                 <li></i><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
                                 <li></i><a href="{{ route('presensikehadirans.index') }}">Presensi Karyawan</a></li>
-                                <li></i><a href="{{ route('presensikehadirans.index') }}">Riwayat Presensi Karyawan</a></li>
+                                <li></i><a href="{{ route('admin.presensikehadirans.riwayatpresensi') }}">Riwayat Presensi Karyawan</a></li>
                                 <li></i><a href="{{ route('presensikehadirans.index') }}">Riwayat Izin Karyawan</a></li>
                                 <li></i><a href="{{ route('karyawans.index') }}">Komisi Karyawan</a></li>
                             </ul>
