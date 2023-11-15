@@ -233,7 +233,8 @@
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="submenu">
                                 <li></i><a href="{{ route('reservasis.index') }}">Reservasi Perawatan</a></li>
-                                <li></i><a href="{{ route('riwayatreservasis.index') }}">Riwayat Reservasi Perawatan</a></li>
+                                <li></i><a href="{{ route('riwayatreservasis.index') }}">Riwayat Reservasi
+                                        Perawatan</a></li>
                                 <li></i><a href="{{ route('reservasis.index') }}">Reservasi Paket Perawatan</a></li>
                             </ul>
                         </li>
@@ -267,7 +268,8 @@
                                 <li><a href="{{ route('produks.index') }}">Daftar Produk</a></li>
                                 <li
                                     class="{{ request()->is('kategoris/create') || request()->is('kategoris/*/edit') ? ' mm-active' : '' }}">
-                                    <a href="{{ route('kategoris.index') }}">Kategori</a></li>
+                                    <a href="{{ route('kategoris.index') }}">Kategori</a>
+                                </li>
                                 <li></i><a href="{{ route('mereks.index') }}">Merek</a></li>
                                 <li></i><a href="{{ route('kondisis.index') }}">Kondisi</a></li>
                                 <li></i><a href="{{ route('produks.index') }}">Riwayat Pengambilan Produk</a></li>
@@ -288,8 +290,10 @@
                             <ul class="submenu">
                                 <li></i><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
                                 <li></i><a href="{{ route('presensikehadirans.index') }}">Presensi Karyawan</a></li>
-                                <li></i><a href="{{ route('admin.presensikehadirans.riwayatpresensi') }}">Riwayat Presensi Karyawan</a></li>
-                                <li></i><a href="{{ route('presensikehadirans.index') }}">Riwayat Izin Karyawan</a></li>
+                                <li></i><a href="{{ route('admin.presensikehadirans.riwayatpresensi') }}">Riwayat
+                                        Presensi Karyawan</a></li>
+                                <li></i><a href="{{ route('admin.presensikehadirans.riwayatizinkehadiran') }}">Riwayat
+                                        Izin Karyawan</a></li>
                                 <li></i><a href="{{ route('karyawans.index') }}">Komisi Karyawan</a></li>
                             </ul>
                         </li>

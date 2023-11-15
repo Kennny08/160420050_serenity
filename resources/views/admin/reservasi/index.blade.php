@@ -47,7 +47,7 @@
                     <div class="table-responsive">
                         <div>
                             <table id="tabelDaftarReservasiHariIni"
-                                class="table table-bordered dt-responsive nowrap text-center"
+                                class="tabelDaftarReservasi table table-bordered dt-responsive nowrap text-center"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
@@ -62,36 +62,28 @@
                                 </thead>
 
                                 <tbody>
-                                    @if (count($reservasis) == 0)
-                                        <tr>
-                                            <td colspan="7" class="text-center">
-                                                Tidak terdapat reservasi perawatan untuk hari ini!
+                                    @foreach ($reservasis as $r)
+                                        <tr id="tr_{{ $r->id }}">
+                                            <td>{{ $r->id }}</td>
+                                            <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_reservasi)) }}</td>
+                                            <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_pembuatan_reservasi)) }}
                                             </td>
+                                            <td>
+                                                @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan')
+                                                    <span class="badge badge-danger font-16">{{ $r->status }}</span>
+                                                @elseif($r->status == 'selesai')
+                                                    <span class="badge badge-success font-16">{{ $r->status }}</span>
+                                                @else
+                                                    <span class="badge badge-warning font-16">{{ $r->status }}</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $r->penjualan->pelanggan->nama }}</td>
+                                            <td>{{ $r->penjualan->nomor_nota }}</td>
+                                            <td class="text-center"><a
+                                                    href="{{ route('reservasi.admin.detailreservasi', $r->id) }}"
+                                                    class="btn btn-info waves-effect waves-light">Detail</a></td>
                                         </tr>
-                                    @else
-                                        @foreach ($reservasis as $r)
-                                            <tr id="tr_{{ $r->id }}">
-                                                <td>{{ $r->id }}</td>
-                                                <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_reservasi)) }}</td>
-                                                <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_pembuatan_reservasi)) }}
-                                                </td>
-                                                <td>
-                                                    @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan')
-                                                        <span class="badge badge-danger font-16">{{ $r->status }}</span>
-                                                    @elseif($r->status == 'selesai')
-                                                        <span class="badge badge-success font-16">{{ $r->status }}</span>
-                                                    @else
-                                                        <span class="badge badge-warning font-16">{{ $r->status }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $r->penjualan->pelanggan->nama }}</td>
-                                                <td>{{ $r->penjualan->nomor_nota }}</td>
-                                                <td class="text-center"><a
-                                                        href="{{ route('reservasi.admin.detailreservasi', $r->id) }}"
-                                                        class="btn btn-info waves-effect waves-light">Detail</a></td>
-                                            </tr>
-                                        @endforeach
-                                    @endif
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -116,34 +108,29 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table id="tabelDaftarReservasiAkanDatang"
-                            class="table table-bordered dt-responsive nowrap text-center"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Tanggal Reservasi</th>
-                                    <th>Tanggal Pembuatan Reservasi</th>
-                                    <th>Status</th>
-                                    <th>Pelanggan</th>
-                                    <th>No. Nota Penjualan</th>
-                                    <th>Detail</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                @if (count($reservasisAkanDatang) == 0)
+                        <div>
+                            <table id="tabelDaftarReservasiAkanDatang"
+                                class="tabelDaftarReservasi table table-bordered dt-responsive nowrap text-center"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
                                     <tr>
-                                        <td colspan="7" class="text-center">
-                                            Tidak terdapat reservasi perawatan untuk hari yang akan datang!
-                                        </td>
+                                        <th>ID</th>
+                                        <th>Tanggal Reservasi</th>
+                                        <th>Tanggal Pembuatan Reservasi</th>
+                                        <th>Status</th>
+                                        <th>Pelanggan</th>
+                                        <th>No. Nota Penjualan</th>
+                                        <th>Detail</th>
                                     </tr>
-                                @else
+                                </thead>
+
+                                <tbody>
                                     @foreach ($reservasisAkanDatang as $r)
                                         <tr id="tr_{{ $r->id }}">
                                             <td>{{ $r->id }}</td>
                                             <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_reservasi)) }}</td>
-                                            <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_pembuatan_reservasi)) }}</td>
+                                            <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_pembuatan_reservasi)) }}
+                                            </td>
                                             <td>
                                                 @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan')
                                                     <span class="badge badge-danger font-16">{{ $r->status }}</span>
@@ -160,9 +147,10 @@
                                                     class=" btn btn-info waves-effect waves-light">Detail</a></td>
                                         </tr>
                                     @endforeach
-                                @endif
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -175,16 +163,22 @@
     <script>
         $(document).ready(function() {
 
-            $("#tabelDaftarReservasiAkanDatang").DataTable({
-                ordering: false,
-            });
-
             $("#tabelDaftarReservasiHariIni").DataTable({
                 ordering: false,
-
+                language: {
+                    emptyTable: "Tidak terdapat reservasi perawatan untuk hari ini!",
+                    infoEmpty: "Tidak terdapat reservasi perawatan untuk hari ini!",
+                }
             });
 
-            
+            $("#tabelDaftarReservasiAkanDatang").DataTable({
+                ordering: false,
+                language: {
+                    emptyTable: "Tidak terdapat reservasi perawatan untuk hari yang akan datang!",
+                    infoEmpty: "Tidak terdapat reservasi perawatan untuk hari yang akan datang!",
+                }
+            });
+
         });
 
         $('.radioAktif').on('click', function() {

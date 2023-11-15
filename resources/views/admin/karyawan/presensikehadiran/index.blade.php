@@ -39,15 +39,23 @@
                         @endif
 
                     @endif
-                    @if ($jumlahIzinKehadiran > 0)
+                    <br>
+                    <br>
+                    @if ($objectPertamaYangtanpaIzin != null)
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <h5>Waktu Buka Presensi :
+                                    {{ date('H:i', strtotime($objectPertamaYangtanpaIzin->created_at)) }}</h5>
+                            </div>
+                        </div>
+                    @endif
+                    {{-- @if ($jumlahIzinKehadiran > 0)
                         <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" id="btnDaftarIzin">
                             <span
                                 class="badge badge-danger badge-pill float-right ml-2">{{ $jumlahIzinKehadiran }}</span><span>
                                 Daftar Izin Karyawan</span>
                         </button>
-                    @endif
-                    <br>
-                    <br>
+                    @endif --}}
                     @if (session('status'))
                         <div class="alert alert-success">
                             <button type="button" class="close text-danger" data-dismiss="alert" aria-label="Close">
@@ -121,11 +129,13 @@
                                                     @if ($p->keterangan == 'izin')
                                                         @if ($p->status == 'belum')
                                                             <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                                    class="badge badge-warning">Belum Dikonfirmasi</span>
+                                                                    class="badge badge-warning">Belum
+                                                                    Dikonfirmasi</span>
                                                             </td>
                                                         @elseif($p->status == 'konfirmasi')
                                                             <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                                    class="badge badge-success">Telah Dikonfirmasi</span>
+                                                                    class="badge badge-success">Telah
+                                                                    Dikonfirmasi</span>
                                                             </td>
                                                         @elseif($p->status == 'tolak')
                                                             <td><span style="font-size: 1em;padding: 0.5em 1em;"
@@ -134,11 +144,13 @@
                                                     @else
                                                         @if ($p->status == 'belum')
                                                             <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                                    class="badge badge-warning">Belum Dikonfirmasi</span>
+                                                                    class="badge badge-warning">Belum
+                                                                    Dikonfirmasi</span>
                                                             </td>
                                                         @elseif($p->status == 'konfirmasi')
                                                             <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                                    class="badge badge-success">Telah Dikonfirmasi</span>
+                                                                    class="badge badge-success">Telah
+                                                                    Dikonfirmasi</span>
                                                             </td>
                                                         @endif
                                                     @endif
@@ -166,7 +178,7 @@
                                     <tr>
                                         <th>Nama Karyawan</th>
                                         <th>Tanggal Presensi</th>
-                                        <th>Waktu Buka Presensi</th>
+                                        <th>Waktu Presensi</th>
                                         <th>Waktu Karyawan Presensi</th>
                                         <th>Keterangan</th>
                                         <th>Status</th>

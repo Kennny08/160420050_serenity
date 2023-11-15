@@ -101,3 +101,6 @@ Route::get('/admin/presensi/editpresensi/{tanggalPresensi}', [PresensiKehadiranC
 Route::post('/admin/presensi/updatepresensi', [PresensiKehadiranController::class, "updatePresensiKehadiran"])->name("admin.presensikehadirans.updatepresensikehadiran");
 Route::get('/admin/presensi/riwayatpresensi', [PresensiKehadiranController::class, "riwayatPresensiKaryawan"])->name("admin.presensikehadirans.riwayatpresensi");
 Route::post('/admin/presensi/detailriwayatpresensi', [PresensiKehadiranController::class, "getDetailRiwayatPresensi"])->name("admin.getdetailriwayatpresensi");
+Route::get('/admin/presensi/riwayatizinkehadiran', [PresensiKehadiranController::class, "riwayatIzinKehadiran"])->name("admin.presensikehadirans.riwayatizinkehadiran");
+Route::post('/admin/presensi/detailriwayatizinkehadiran', [PresensiKehadiranController::class, "getDetailIzinKehadiran"])->name("admin.getdetailizinkehadiran");
+Route::post('/admin/presensi/updatestatusizinkehadrian', [PresensiKehadiranController::class, "updateStatusIzin"])->name("admin.updatestatusizin");

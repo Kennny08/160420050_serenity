@@ -32,8 +32,9 @@
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th hidden>Tanggal</th>
+                                    
                                     <th>Tanggal Presensi</th>
+                                    <th hidden>Tanggal</th>
                                     <th>Hadir</th>
                                     <th>Sakit</th>
                                     <th>Izin</th>
@@ -46,8 +47,9 @@
                             <tbody>
                                 @foreach ($daftarRiwayatPresensi as $p)
                                     <tr>
-                                        <td hidden>{{ $p['tanggalPresensi'] }}</td>
+                                        
                                         <td>{{ $p['tanggalPresensiDenganHari'] }}</td>
+                                        <td hidden>{{ $p['tanggalPresensi'] }}</td>
                                         <td>{{ $p['daftarPresensi']->where('keterangan', 'hadir')->where('status', 'konfirmasi')->count() }}
                                         </td>
                                         <td>{{ $p['daftarPresensi']->where('keterangan', 'sakit')->where('status', 'konfirmasi')->count() }}
@@ -155,7 +157,7 @@
                 success: function(data) {
                     $('#contentDetailRiwayatPresensi').html(data.msg);
                     $('#tabelDaftarDetailRiwayatPresensi').DataTable({
-                        "scrollY": "415px",
+                        "scrollY": "380px",
 
                     });
                 }
