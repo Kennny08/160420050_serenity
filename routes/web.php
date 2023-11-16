@@ -104,3 +104,8 @@ Route::post('/admin/presensi/detailriwayatpresensi', [PresensiKehadiranControlle
 Route::get('/admin/presensi/riwayatizinkehadiran', [PresensiKehadiranController::class, "riwayatIzinKehadiran"])->name("admin.presensikehadirans.riwayatizinkehadiran");
 Route::post('/admin/presensi/detailriwayatizinkehadiran', [PresensiKehadiranController::class, "getDetailIzinKehadiran"])->name("admin.getdetailizinkehadiran");
 Route::post('/admin/presensi/updatestatusizinkehadrian', [PresensiKehadiranController::class, "updateStatusIzin"])->name("admin.updatestatusizin");
+
+//Komisi Karyawan
+Route::get('/admin/karyawan/komisikaryawan', [KaryawanController::class, "indexKomisiKaryawan"])->name("admin.karyawans.indexkomisikaryawan");
+Route::post('/admin/karyawan/proseskomisikaryawan', [KaryawanController::class, "prosesKomisiKaryawan"])->name("admin.karyawans.proseskomisikaryawan");
+Route::post('/admin/karyawan/detailkomisikaryawan', [KaryawanController::class, "getDetailKomisiKaryawan"])->name("admin.karyawans.detailkomisikaryawan");

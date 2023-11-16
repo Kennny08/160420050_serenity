@@ -85,104 +85,96 @@
                         </thead>
 
                         <tbody>
-                            @if (count($produksAktifMinimumStok) != 0 || count($produksAktifLebihMinimumStok) != 0)
-                                @foreach ($produksAktifMinimumStok as $p)
-                                    <tr id="tr_{{ $p->id }}">
-                                        <td>{{ $p->kode_produk }}</td>
-                                        <td>{{ $p->nama }}</td>
-                                        @if ($p->harga_beli >= $p->harga_jual)
-                                            <td class="text-danger font-weight-bold">
-                                                {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                            <td class="text-danger font-weight-bold">
-                                                {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
-                                        @else
-                                            <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                            <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
-                                        @endif
+                            @foreach ($produksAktifMinimumStok as $p)
+                                <tr id="tr_{{ $p->id }}">
+                                    <td>{{ $p->kode_produk }}</td>
+                                    <td>{{ $p->nama }}</td>
+                                    @if ($p->harga_beli >= $p->harga_jual)
+                                        <td class="text-danger font-weight-bold">
+                                            {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                        <td class="text-danger font-weight-bold">
+                                            {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                    @else
+                                        <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                        <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                    @endif
 
 
-                                        <td class="text-danger font-weight-bold">{{ $p->stok }}</td>
-                                        <td class="text-danger font-weight-bold">{{ $p->minimum_stok }}</td>
-                                        <td>{{ $p->status_jual }}</td>
-                                        <td>{{ $p->merek->nama }}</td>
-                                        <td>{{ $p->kategori->nama }}</td>
-                                        <td class="text-left">
-                                            <ul>
-                                                @foreach ($p->kondisis as $kondisi)
-                                                    <li>{{ $kondisi->keterangan }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </td>
-                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
-                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
-                                        <td hidden>{{ $p->deskripsi }}</td>
-                                        <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
-                                                deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
-                                                createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
-                                                updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
-                                                class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
-                                        </td>
-                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><button data-toggle="modal"
-                                                data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
-                                                namaProduk="{{ $p->nama }}"
-                                                routeUrl = "{{ route('produks.destroy', $p->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                @foreach ($produksAktifLebihMinimumStok as $p)
-                                    <tr id="tr_{{ $p->id }}">
-                                        <td>{{ $p->kode_produk }}</td>
-                                        <td>{{ $p->nama }}</td>
-                                        @if ($p->harga_beli >= $p->harga_jual)
-                                            <td class="text-danger font-weight-bold">
-                                                {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                            <td class="text-danger font-weight-bold">
-                                                {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
-                                        @else
-                                            <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                            <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
-                                        @endif
-                                        <td>{{ $p->stok }}</td>
-                                        <td>{{ $p->minimum_stok }}</td>
-                                        <td>{{ $p->status_jual }}</td>
-                                        <td>{{ $p->merek->nama }}</td>
-                                        <td>{{ $p->kategori->nama }}</td>
-                                        <td class="text-left">
-                                            <ul>
-                                                @foreach ($p->kondisis as $kondisi)
-                                                    <li>{{ $kondisi->keterangan }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </td>
-                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
-                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
-                                        <td hidden>{{ $p->deskripsi }}</td>
-                                        <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
-                                                deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
-                                                createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
-                                                updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
-                                                class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
-                                        </td>
-                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><button data-toggle="modal"
-                                                data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
-                                                namaProduk="{{ $p->nama }}"
-                                                routeUrl = "{{ route('produks.destroy', $p->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
-                                <tr class="text-center">
-                                    <td colspan="13">
-                                        Tidak ada produk yang aktif!
+                                    <td class="text-danger font-weight-bold">{{ $p->stok }}</td>
+                                    <td class="text-danger font-weight-bold">{{ $p->minimum_stok }}</td>
+                                    <td>{{ $p->status_jual }}</td>
+                                    <td>{{ $p->merek->nama }}</td>
+                                    <td>{{ $p->kategori->nama }}</td>
+                                    <td class="text-left">
+                                        <ul>
+                                            @foreach ($p->kondisis as $kondisi)
+                                                <li>{{ $kondisi->keterangan }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </td>
+                                    <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
+                                    <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
+                                    <td hidden>{{ $p->deskripsi }}</td>
+                                    <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
+                                            deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
+                                            createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
+                                            updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
+                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
+                                    </td>
+                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                    <td class="text-center"><button data-toggle="modal"
+                                            data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
+                                            namaProduk="{{ $p->nama }}"
+                                            routeUrl = "{{ route('produks.destroy', $p->id) }}"
+                                            class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
                                     </td>
                                 </tr>
-                            @endif
+                            @endforeach
+                            @foreach ($produksAktifLebihMinimumStok as $p)
+                                <tr id="tr_{{ $p->id }}">
+                                    <td>{{ $p->kode_produk }}</td>
+                                    <td>{{ $p->nama }}</td>
+                                    @if ($p->harga_beli >= $p->harga_jual)
+                                        <td class="text-danger font-weight-bold">
+                                            {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                        <td class="text-danger font-weight-bold">
+                                            {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                    @else
+                                        <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                        <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                    @endif
+                                    <td>{{ $p->stok }}</td>
+                                    <td>{{ $p->minimum_stok }}</td>
+                                    <td>{{ $p->status_jual }}</td>
+                                    <td>{{ $p->merek->nama }}</td>
+                                    <td>{{ $p->kategori->nama }}</td>
+                                    <td class="text-left">
+                                        <ul>
+                                            @foreach ($p->kondisis as $kondisi)
+                                                <li>{{ $kondisi->keterangan }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </td>
+                                    <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
+                                    <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
+                                    <td hidden>{{ $p->deskripsi }}</td>
+                                    <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
+                                            deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
+                                            createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
+                                            updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
+                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
+                                    </td>
+                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                    <td class="text-center"><button data-toggle="modal"
+                                            data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
+                                            namaProduk="{{ $p->nama }}"
+                                            routeUrl = "{{ route('produks.destroy', $p->id) }}"
+                                            class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
+                                    </td>
+                                </tr>
+                            @endforeach
 
                         </tbody>
                     </table>
@@ -230,59 +222,50 @@
                         </thead>
 
                         <tbody>
-                            @if (count($produksNonaktif) != 0)
-                                @foreach ($produksNonaktif as $p)
-                                    <tr id="tr_{{ $p->id }}">
-                                        <td>{{ $p->kode_produk }}</td>
-                                        <td>{{ $p->nama }}</td>
-                                        @if ($p->harga_beli >= $p->harga_jual)
-                                            <td class="text-danger font-weight-bold">
-                                                {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                            <td class="text-danger font-weight-bold">
-                                                {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
-                                        @else
-                                            <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                            <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
-                                        @endif
-                                        <td>{{ $p->stok }}</td>
-                                        <td>{{ $p->minimum_stok }}</td>
-                                        <td>{{ $p->status_jual }}</td>
-                                        <td>{{ $p->merek->nama }}</td>
-                                        <td>{{ $p->kategori->nama }}</td>
-                                        <td class="text-left">
-                                            <ul>
-                                                @foreach ($p->kondisis as $kondisi)
-                                                    <li>{{ $kondisi->keterangan }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </td>
-                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
-                                        <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
-                                        <td hidden>{{ $p->deskripsi }}</td>
-                                        <td class="text-center"><button data-toggle="modal"
-                                                data-target="#modalDetailProduk" deskripsi="{{ $p->deskripsi }}"
-                                                namaProduk ="{{ $p->nama }}"
-                                                createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
-                                                updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
-                                                class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
-                                        </td>
-                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><button data-toggle="modal"
-                                                data-target="#modalKonfirmasiDeleteProduk"
-                                                idProduk = "{{ $p->id }}" namaProduk="{{ $p->nama }}"
-                                                routeUrl = "{{ route('produks.destroy', $p->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
-                                <tr class="text-center">
-                                    <td colspan="13">
-                                        Tidak ada produk yang nonaktif!
+                            @foreach ($produksNonaktif as $p)
+                                <tr id="tr_{{ $p->id }}">
+                                    <td>{{ $p->kode_produk }}</td>
+                                    <td>{{ $p->nama }}</td>
+                                    @if ($p->harga_beli >= $p->harga_jual)
+                                        <td class="text-danger font-weight-bold">
+                                            {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                        <td class="text-danger font-weight-bold">
+                                            {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                    @else
+                                        <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                        <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                    @endif
+                                    <td>{{ $p->stok }}</td>
+                                    <td>{{ $p->minimum_stok }}</td>
+                                    <td>{{ $p->status_jual }}</td>
+                                    <td>{{ $p->merek->nama }}</td>
+                                    <td>{{ $p->kategori->nama }}</td>
+                                    <td class="text-left">
+                                        <ul>
+                                            @foreach ($p->kondisis as $kondisi)
+                                                <li>{{ $kondisi->keterangan }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </td>
+                                    <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
+                                    <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
+                                    <td hidden>{{ $p->deskripsi }}</td>
+                                    <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
+                                            deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
+                                            createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
+                                            updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
+                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
+                                    </td>
+                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                    <td class="text-center"><button data-toggle="modal"
+                                            data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
+                                            namaProduk="{{ $p->nama }}"
+                                            routeUrl = "{{ route('produks.destroy', $p->id) }}"
+                                            class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
                                     </td>
                                 </tr>
-                            @endif
+                            @endforeach
 
                         </tbody>
                     </table>
@@ -352,9 +335,18 @@
     <script>
         $(document).ready(function() {
             $('#tabelDaftarProdukAktif').DataTable({
-                ordering: false
+                ordering: false,
+                language: {
+                    emptyTable: "Tidak terdapat data produk aktif!",
+                    infoEmpty: "Tidak terdapat data produk aktif!",
+                }
             });
-            $('#tabelDaftarProdukNonaktif').DataTable();
+            $('#tabelDaftarProdukNonaktif').DataTable({
+                language: {
+                    emptyTable: "Tidak terdapat data produk nonaktif!",
+                    infoEmpty: "Tidak terdapat data produk nonaktif!",
+                }
+            });
         });
 
         $('.btnDetailProduk').on('click', function() {

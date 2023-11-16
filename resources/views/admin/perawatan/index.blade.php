@@ -80,38 +80,31 @@
                         </thead>
 
                         <tbody>
-                            @if (count($perawatansAktif) == 0)
-                                <tr class="text-center">
-                                    <td colspan="9">Tidak ada Data Perawatan yang Aktif!</td>
+                            @foreach ($perawatansAktif as $pa)
+                                <tr id="tr_{{ $pa->id }}">
+                                    <td>{{ $pa->kode_perawatan }}</td>
+                                    <td>{{ $pa->nama }}</td>
+                                    <td>{{ number_format($pa->harga, 0, ',', '.') }}</td>
+                                    <td>{{ $pa->durasi }}</td>
+                                    <td>{{ $pa->komisi }}</td>
+                                    <td>{{ $pa->status_komplemen }}</td>
+                                    <td hidden>{{ $pa->deskripsi }}</td>
+                                    <td hidden>{{ date('d-m-Y', strtotime($pa->created_at)) }}</td>
+                                    <td hidden>{{ date('d-m-Y', strtotime($pa->updated_at)) }}</td>
+                                    <td class="text-center"><button data-toggle="modal" data-target="#modalDetailPerawatan"
+                                            idPerawatan="{{ $pa->id }}" namaPerawatan ="{{ $pa->nama }}"
+                                            class=" btn btn-warning waves-effect waves-light btnDetailPerawatan">Detail</button>
+                                    </td>
+                                    <td class="text-center"><a href="{{ route('perawatans.edit', $pa->id) }}"
+                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                    <td class="text-center"><button data-toggle="modal"
+                                            data-target="#modalKonfirmasiDeletePerawatan"
+                                            idPerawatan = "{{ $pa->id }}" namaPerawatan="{{ $pa->nama }}"
+                                            routeUrl = "{{ route('perawatans.destroy', $pa->id) }}"
+                                            class=" btn btn-danger waves-effect waves-light btnHapusPerawatan">Hapus</button>
+                                    </td>
                                 </tr>
-                            @else
-                                @foreach ($perawatansAktif as $pa)
-                                    <tr id="tr_{{ $pa->id }}">
-                                        <td>{{ $pa->kode_perawatan }}</td>
-                                        <td>{{ $pa->nama }}</td>
-                                        <td>{{ number_format($pa->harga, 0, ',', '.') }}</td>
-                                        <td>{{ $pa->durasi }}</td>
-                                        <td>{{ $pa->komisi }}</td>
-                                        <td>{{ $pa->status_komplemen }}</td>
-                                        <td hidden>{{ $pa->deskripsi }}</td>
-                                        <td hidden>{{ date('d-m-Y', strtotime($pa->created_at)) }}</td>
-                                        <td hidden>{{ date('d-m-Y', strtotime($pa->updated_at)) }}</td>
-                                        <td class="text-center"><button data-toggle="modal"
-                                                data-target="#modalDetailPerawatan" idPerawatan="{{ $pa->id }}"
-                                                namaPerawatan ="{{ $pa->nama }}"
-                                                class=" btn btn-warning waves-effect waves-light btnDetailPerawatan">Detail</button>
-                                        </td>
-                                        <td class="text-center"><a href="{{ route('perawatans.edit', $pa->id) }}"
-                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><button data-toggle="modal"
-                                                data-target="#modalKonfirmasiDeletePerawatan"
-                                                idPerawatan = "{{ $pa->id }}" namaPerawatan="{{ $pa->nama }}"
-                                                routeUrl = "{{ route('perawatans.destroy', $pa->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light btnHapusPerawatan">Hapus</button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endif
+                            @endforeach
 
                         </tbody>
                         <tfoot id="grupNonaktif">
@@ -157,38 +150,31 @@
                         </thead>
 
                         <tbody>
-                            @if (count($perawatansNonaktif) == 0)
-                                <tr class="text-center">
-                                    <td colspan="9">Tidak ada Data Perawatan yang Nonaktif!</td>
+                            @foreach ($perawatansNonaktif as $pn)
+                                <tr id="tr_{{ $pn->id }}">
+                                    <td>{{ $pn->kode_perawatan }}</td>
+                                    <td>{{ $pn->nama }}</td>
+                                    <td>{{ number_format($pn->harga, 0, ',', '.') }}</td>
+                                    <td>{{ $pn->durasi }}</td>
+                                    <td>{{ $pn->komisi }}</td>
+                                    <td>{{ $pn->status_komplemen }}</td>
+                                    <td hidden>{{ $pn->deskripsi }}</td>
+                                    <td hidden>{{ date('d-m-Y', strtotime($pn->created_at)) }}</td>
+                                    <td hidden>{{ date('d-m-Y', strtotime($pn->updated_at)) }}</td>
+                                    <td class="text-center"><button data-toggle="modal" data-target="#modalDetailPerawatan"
+                                            idPerawatan="{{ $pn->id }}" namaPerawatan ="{{ $pn->nama }}"
+                                            class=" btn btn-warning waves-effect waves-light btnDetailPerawatan">Detail</button>
+                                    </td>
+                                    <td class="text-center"><a href="{{ route('perawatans.edit', $pn->id) }}"
+                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                    <td class="text-center"><button data-toggle="modal"
+                                            data-target="#modalKonfirmasiDeletePerawatan"
+                                            idPerawatan = "{{ $pn->id }}" namaPerawatan="{{ $pn->nama }}"
+                                            routeUrl = "{{ route('perawatans.destroy', $pn->id) }}"
+                                            class=" btn btn-danger waves-effect waves-light btnHapusPerawatan">Hapus</button>
+                                    </td>
                                 </tr>
-                            @else
-                                @foreach ($perawatansNonaktif as $pn)
-                                    <tr id="tr_{{ $pn->id }}">
-                                        <td>{{ $pn->kode_perawatan }}</td>
-                                        <td>{{ $pn->nama }}</td>
-                                        <td>{{ number_format($pn->harga, 0, ',', '.') }}</td>
-                                        <td>{{ $pn->durasi }}</td>
-                                        <td>{{ $pn->komisi }}</td>
-                                        <td>{{ $pn->status_komplemen }}</td>
-                                        <td hidden>{{ $pn->deskripsi }}</td>
-                                        <td hidden>{{ date('d-m-Y', strtotime($pn->created_at)) }}</td>
-                                        <td hidden>{{ date('d-m-Y', strtotime($pn->updated_at)) }}</td>
-                                        <td class="text-center"><button data-toggle="modal"
-                                                data-target="#modalDetailPerawatan" idPerawatan="{{ $pn->id }}"
-                                                namaPerawatan ="{{ $pn->nama }}"
-                                                class=" btn btn-warning waves-effect waves-light btnDetailPerawatan">Detail</button>
-                                        </td>
-                                        <td class="text-center"><a href="{{ route('perawatans.edit', $pn->id) }}"
-                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><button data-toggle="modal"
-                                                data-target="#modalKonfirmasiDeletePerawatan"
-                                                idPerawatan = "{{ $pn->id }}" namaPerawatan="{{ $pn->nama }}"
-                                                routeUrl = "{{ route('perawatans.destroy', $pn->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light btnHapusPerawatan">Hapus</button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endif
+                            @endforeach
 
                         </tbody>
                     </table>
@@ -258,11 +244,17 @@
     <script>
         $(document).ready(function() {
             $('#tabelDaftarPerawatanAktif').DataTable({
-
+                language: {
+                    emptyTable: "Tidak terdapat data perawatan aktif!",
+                    infoEmpty: "Tidak terdapat data perawatan aktif!",
+                }
             });
 
             $('#tabelDaftarPerawatanNonaktif').DataTable({
-
+                language: {
+                    emptyTable: "Tidak terdapat data perawatan nonaktif!",
+                    infoEmpty: "Tidak terdapat data perawatan nonaktif!",
+                }
             });
 
         });

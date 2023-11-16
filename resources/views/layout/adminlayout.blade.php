@@ -294,7 +294,8 @@
                                         Presensi Karyawan</a></li>
                                 <li></i><a href="{{ route('admin.presensikehadirans.riwayatizinkehadiran') }}">Riwayat
                                         Izin Karyawan</a></li>
-                                <li></i><a href="{{ route('karyawans.index') }}">Komisi Karyawan</a></li>
+                                <li></i><a href="{{ route('admin.karyawans.indexkomisikaryawan') }}">Komisi
+                                        Karyawan</a></li>
                             </ul>
                         </li>
                         <li>
@@ -416,8 +417,8 @@
     <script src="{{ asset('assets_admin/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 
     <!-- Datatable init js -->
-
     <script src="{{ asset('assets_admin/pages/datatables.init.js') }}"></script>
+
 
     <!-- App js -->
     <script src="{{ asset('assets_admin/js/app.js') }}"></script>

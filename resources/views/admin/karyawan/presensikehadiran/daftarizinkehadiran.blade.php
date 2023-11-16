@@ -242,7 +242,6 @@
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
-
                 </div>
                 <div class="modal-footer">
                     <button id="btnKonfirmasTutup" type="button" class="btn btn-danger waves-effect"

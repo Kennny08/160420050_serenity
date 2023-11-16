@@ -749,6 +749,8 @@ class ReservasiController extends Controller
                         $newPenjualanPerawatan->karyawan_id = $idKaryawan;
                         $newPenjualanPerawatan->perawatan_id = $idPerawatan;
                         $newPenjualanPerawatan->penjualan_id = $newPenjualan->id;
+                        $newPenjualanPerawatan->created_at = date("Y-m-d H:i:s");
+                        $newPenjualanPerawatan->updated_at = date("Y-m-d H:i:s");
                         $newPenjualanPerawatan->save();
 
                         //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk array
@@ -779,6 +781,8 @@ class ReservasiController extends Controller
                         $newPenjualanPerawatan->karyawan_id = $idKaryawan;
                         $newPenjualanPerawatan->perawatan_id = $idPerawatan;
                         $newPenjualanPerawatan->penjualan_id = $newPenjualan->id;
+                        $newPenjualanPerawatan->created_at = date("Y-m-d H:i:s");
+                        $newPenjualanPerawatan->updated_at = date("Y-m-d H:i:s");
                         $newPenjualanPerawatan->save();
 
                         //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk array
@@ -966,6 +970,8 @@ class ReservasiController extends Controller
             $newPenjualanPerawatan->karyawan_id = $idKaryawan;
             $newPenjualanPerawatan->perawatan_id = $idPerawatan;
             $newPenjualanPerawatan->penjualan_id = $newPenjualan->id;
+            $newPenjualanPerawatan->created_at = date("Y-m-d H:i:s");
+            $newPenjualanPerawatan->updated_at = date("Y-m-d H:i:s");
             $newPenjualanPerawatan->save();
 
             //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk array
@@ -996,6 +1002,8 @@ class ReservasiController extends Controller
             $newPenjualanPerawatan->karyawan_id = $idKaryawan;
             $newPenjualanPerawatan->perawatan_id = $idPerawatan;
             $newPenjualanPerawatan->penjualan_id = $newPenjualan->id;
+            $newPenjualanPerawatan->created_at = date("Y-m-d H:i:s");
+            $newPenjualanPerawatan->updated_at = date("Y-m-d H:i:s");
             $newPenjualanPerawatan->save();
 
             //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk array
