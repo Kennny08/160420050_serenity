@@ -177,7 +177,7 @@
                                                         <td>{{ $ps['perawatan']->nama }}</td>
                                                         <td>{{ $ps['jammulai'] }}</td>
                                                         <td>{{ $ps['perawatan']->durasi }}</td>
-                                                        <td>{{ number_format($ps['perawatan']->harga, 0, ',', '.') }}</td>
+                                                        <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}</td>
                                                         <td>{{ $ps['karyawan']->nama }}</td>
                                                     </tr>
                                                 @endforeach
@@ -223,14 +223,14 @@
                                                                 rowspan="{{ count($arrKomplemen['perawatans']) }}">
                                                                 {{ $arrKomplemen['durasiterlama'] }}
                                                             </td>
-                                                            <td>{{ number_format($ps['perawatan']->harga, 0, ',', '.') }}
+                                                            <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}
                                                             </td>
                                                             <td>{{ $ps['karyawan']->nama }}</td>
                                                         </tr>
                                                     @else
                                                         <tr class="text-center">
                                                             <td>{{ $ps['perawatan']->nama }}</td>
-                                                            <td>{{ number_format($ps['perawatan']->harga, 0, ',', '.') }}
+                                                            <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}
                                                             </td>
                                                             <td>{{ $ps['karyawan']->nama }}</td>
 
@@ -261,7 +261,7 @@
                                                         @endforeach
                                                         <h6 style="font-weight: normal">Total Harga Perawatan: </h6>
                                                         <h4><strong>Rp.
-                                                                {{ number_format($totalHargaPerawatan, 0, ',', '.') }}</strong>
+                                                                {{ number_format($totalHargaPerawatan, 2, ',', '.') }}</strong>
                                                         </h4>
                                                     </address>
                                                 </div>
@@ -293,7 +293,7 @@
                                                             <td>{{ $p->kode_produk }}</td>
                                                             <td>{{ $p->nama }}</td>
                                                             <td>{{ $p->merek->nama }}</td>
-                                                            <td>{{ number_format($p->harga_jual, 0, ',', '.') }}</td>
+                                                            <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
                                                             <td>{{ $p->pivot->kuantitas }}</td>
                                                             <td>{{ $p->kategori->nama }}</td>
                                                             <td class="text-left">
@@ -307,7 +307,7 @@
 
                                                             <td>{{ $p->deskripsi }}</td>
                                                             <td class="text-center">
-                                                                {{ number_format($p->pivot->kuantitas * $p->pivot->harga, 0, ',', '.') }}
+                                                                {{ number_format($p->pivot->kuantitas * $p->pivot->harga, 2, ',', '.') }}
                                                             </td>
                                                         </tr>
                                                     @endforeach
@@ -345,7 +345,7 @@
                                                         <h6 class="mt-4" style="font-weight: normal">Total Harga
                                                             Produk:</h6>
                                                         <h4><strong>Rp.
-                                                                {{ number_format($totalHargaProduk, 0, ',', '.') }}</strong>
+                                                                {{ number_format($totalHargaProduk, 2, ',', '.') }}</strong>
                                                         </h4>
                                                     </address>
                                                 </div>
@@ -380,7 +380,7 @@
                                             <address>
                                                 <h4 style="font-weight: normal;">Total : </h4>
                                                 <h2 class="text-danger fw-bold">Rp.
-                                                    {{ number_format($totalHargaProduk + $totalHargaPerawatan, 0, ',', '.') }}
+                                                    {{ number_format($totalHargaProduk + $totalHargaPerawatan, 2, ',', '.') }}
                                                 </h2>
                                             </address>
                                         </div>

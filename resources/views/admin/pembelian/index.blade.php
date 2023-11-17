@@ -73,33 +73,36 @@
                                 <th hidden class="align-middle">Tanggal Pembuatan</th>
                                 <th hidden class="align-middle">Tanggal Edit Terakhir</th>
                                 <th class="align-middle">Detail</th>
-                                <th class="align-middle">Edit</th>
+                                <th class="align-middle">Tanggal Pembayaran</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            @if (count($pembeliansBelumBayar) == 0)
-                                <tr class="text-center">
-                                    <td colspan="9">Tidak ada data pembelian yang sedang berlangsung!</td>
+                            @foreach ($pembeliansBelumBayar as $pb)
+                                <tr id="tr_{{ $pb->id }}">
+                                    <td>{{ $pb->nomor_nota }}</td>
+                                    <td>{{ $pb->supplier->nama }}</td>
+                                    <td>{{ date('d-m-Y', strtotime($pb->tanggal_beli)) }}</td>
+                                    <td>{{ number_format($pb->total, 2, ',', '.') }}</td>
+                                    <td>{{ $pb->karyawan->nama }}</td>
+                                    <td hidden>{{ date('d-m-Y', strtotime($pb->created_at)) }}</td>
+                                    <td hidden>{{ date('d-m-Y', strtotime($pb->updated_at)) }}</td>
+                                    <td class="text-center">
+                                        <button data-toggle ="modal" data-target="#modalDetailPembelian"
+                                            class=" btn btn-info waves-effect waves-light btnDetailPembelian"
+                                            idPembelian = "{{ $pb->id }}" namaSupplier="{{ $pb->supplier->nama }}"
+                                            nomorNota = "{{ $pb->nomor_nota }}">
+                                            Detail
+                                        </button>
+                                    </td>
+                                    <td class="text-center"><button data-toggle="modal"
+                                            data-target="#modalPilihTanggalPembayaran" idPembelian="{{ $pb->id }}"
+                                            tanggalBeli="{{ date('Y-m-d', strtotime($pb->tanggal_beli)) }}"
+                                            nomorNota="{{ $pb->nomor_nota }}" namaSupplier = "{{ $pb->supplier->nama }}"
+                                            class="btn btn-warning waves-effect waves-light btnPilihTanggalPembayaran">Pilih
+                                            Tanggal</button></td>
                                 </tr>
-                            @else
-                                @foreach ($pembeliansBelumBayar as $pb)
-                                    <tr id="tr_{{ $pb->id }}">
-                                        <td>{{ $pb->nomor_nota }}</td>
-                                        <td>{{ $pb->supplier->nama }}</td>
-                                        <td>{{ date('d-m-Y', strtotime($pb->tanggal_beli)) }}</td>
-                                        <td>{{ number_format($pb->total, 0, ',', '.') }}</td>
-                                        <td>{{ $pb->karyawan->nama }}</td>
-                                        <td hidden>{{ date('d-m-Y', strtotime($pb->created_at)) }}</td>
-                                        <td hidden>{{ date('d-m-Y', strtotime($pb->updated_at)) }}</td>
-                                        <td class="text-center"><a href="{{ route('pembelians.show', $pb->id) }}"
-                                                class=" btn btn-warning waves-effect waves-light btnDetailPembelian">Detail</a>
-                                        </td>
-                                        <td class="text-center"><a href="{{ route('pembelians.edit', $pb->id) }}"
-                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    </tr>
-                                @endforeach
-                            @endif
+                            @endforeach
 
                         </tbody>
                         <tfoot id="grupRiwayatPembelian">
@@ -110,7 +113,7 @@
                     <br>
                     <div class="form-group row">
                         <div class="col-md-6">
-                            <h4>Riwayat Pembelian Produk</h4>
+                            <h4>Riwayat Pembelian Stok Produk</h4>
                         </div>
                         <div class="col-md-6 text-right">
                             <div class="btn-group btn-group-toggle border">
@@ -133,40 +136,39 @@
                                 <th class="align-middle">Nomor Nota</th>
                                 <th class="align-middle">Nama Supplier</th>
                                 <th class="align-middle">Tanggal Pembelian</th>
-                                <th class="align-middle">Total Pembelian</th>
+                                <th class="align-middle">Tanggal Pembayaran</th>
                                 <th class="align-middle">Total Pembayaran</th>
                                 <th class="align-middle">Karyawan Penerima</th>
                                 <th hidden class="align-middle">Tanggal Pembuatan</th>
                                 <th hidden class="align-middle">Tanggal Edit Terakhir</th>
                                 <th class="align-middle">Detail</th>
-                                <th class="align-middle">Edit</th>
+                                {{-- <th class="align-middle">Edit</th> --}}
                             </tr>
                         </thead>
 
                         <tbody>
-                            @if (count($pembelians) == 0)
-                                <tr class="text-center">
-                                    <td colspan="10">Tidak ada data riwayat pembelian!</td>
+                            @foreach ($pembelians as $p)
+                                <tr id="tr_{{ $p->id }}">
+                                    <td>{{ $p->nomor_nota }}</td>
+                                    <td>{{ $p->supplier->nama }}</td>
+                                    <td>{{ date('d-m-Y', strtotime($p->tanggal_beli)) }}</td>
+                                    <td>{{ date('d-m-Y', strtotime($p->tanggal_bayar)) }}</td>
+                                    <td>{{ number_format($p->total, 2, ',', '.') }}</td>
+                                    <td>{{ $p->karyawan->nama }}</td>
+                                    <td hidden>{{ date('d-m-Y', strtotime($p->created_at)) }}</td>
+                                    <td hidden>{{ date('d-m-Y', strtotime($p->updated_at)) }}</td>
+                                    <td class="text-center">
+                                        <button data-toggle ="modal" data-target="#modalDetailPembelian"
+                                            class=" btn btn-info waves-effect waves-light btnDetailPembelian"
+                                            idPembelian = "{{ $p->id }}" namaSupplier="{{ $p->supplier->nama }}"
+                                            nomorNota = "{{ $p->nomor_nota }}">
+                                            Detail
+                                        </button>
+                                    </td>
+                                    {{-- <td class="text-center"><a href="{{ route('pembelians.edit', $p->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td> --}}
                                 </tr>
-                            @else
-                                @foreach ($pembelians as $p)
-                                    <tr id="tr_{{ $p->id }}">
-                                        <td>{{ $p->nomor_nota }}</td>
-                                        <td>{{ $p->supplier->nama }}</td>
-                                        <td>{{ date('d-m-Y', strtotime($p->tanggal_beli)) }}</td>
-                                        <td>{{ date('d-m-Y', strtotime($p->tanggal_bayar)) }}</td>
-                                        <td>{{ number_format($p->total, 0, ',', '.') }}</td>
-                                        <td>{{ $p->karyawan->nama }}</td>
-                                        <td hidden>{{ date('d-m-Y', strtotime($p->created_at)) }}</td>
-                                        <td hidden>{{ date('d-m-Y', strtotime($p->updated_at)) }}</td>
-                                        <td class="text-center"><a href="{{ route('pembelians.show', $p->id) }}"
-                                                class=" btn btn-warning waves-effect waves-light btnDetailPembelian">Detail</a>
-                                        </td>
-                                        <td class="text-center"><a href="{{ route('pembelians.edit', $p->id) }}"
-                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    </tr>
-                                @endforeach
-                            @endif
+                            @endforeach
 
                         </tbody>
                     </table>
@@ -176,20 +178,133 @@
         </div>
         <!-- end col -->
     </div>
+
+    <div id="modalDetailPembelian" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 90%">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h5 class="modal-title mt-0" id="modalNamaDetailPembelian">Detail Pembelian</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="contentDetailPembelian">
+                    <div class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"> <button type="button" class="btn btn-danger waves-effect"
+                        data-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <div id="modalPilihTanggalPembayaran" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content ">
+                <form action="{{ route('admin.pembelians.prosestanggalbayar') }}" method="post">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title mt-0" id="modalNamaPilihTanggalPembayaran">Pilih Tanggal Pembayaran</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="contentPilihTanggalPembayaran">
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <h6>Silahkan Pilih Tanggal Pembayaran</h6>
+                                <input type="hidden" name="hiddenIdPembelian" value="0" id="hiddenIdPembelian">
+                            </div>
+                            <div class="col-md-12">
+                                <input type="date" class="form-control" name="tanggalPembayaran"
+                                    id="tanggalPembayaran" value="{{ date('Y-m-d') }}" aria-describedby="emailHelp"
+                                    min="{{ date('Y-m-d') }}" placeholder="Silahkan Pilih Tanggal Pembayaran" required>
+                                <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Pembayaran
+                                    disini!</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup
+                        </button>
+                        <button type="submit" class="btn btn-info waves-effect" >Konfirmasi
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @endsection
 
 @section('javascript')
     <script>
         $(document).ready(function() {
             $('#tabelDaftarPembelianBerlangsung').DataTable({
-                ordering: false
+                language: {
+                    emptyTable: "Tidak terdapat Daftar Pembelian Berlangsung",
+                    infoEmpty: "Tidak terdapat Daftar Pembelian Berlangsung",
+                },
+                order: [
+                    [2, "desc"]
+                ]
             });
 
             $('#tabelDaftarRiwayatPembelian').DataTable({
-                ordering: false
+                language: {
+                    emptyTable: "Tidak terdapat Daftar Riwayat Pembelian",
+                    infoEmpty: "Tidak terdapat Daftar Riwayat Pembelian",
+                },
+                order: [
+                    [2, "desc"]
+                ]
             });
 
         });
+
+        $("body").on("click", ".btnDetailPembelian", function() {
+            var idPembelian = $(this).attr("idPembelian");
+            var namaSupplier = $(this).attr("namaSupplier");
+            var nomorNota = $(this).attr("nomorNota");
+
+            $("#modalNamaDetailPembelian").text("Detail Pembelian dari " + namaSupplier + " - " + nomorNota);
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('admin.pembelians.getdetailpembelian') }}',
+                data: {
+                    '_token': '<?php echo csrf_token(); ?>',
+                    'idPembelian': idPembelian,
+                },
+                success: function(data) {
+                    $('#contentDetailPembelian').html(data.msg);
+                    $('#tabelDetailPembelian').DataTable({});
+                }
+            })
+        });
+
+        $("body").on("click", ".btnPilihTanggalPembayaran", function() {
+            var idPembelian = $(this).attr("idPembelian");
+            var nomorNota = $(this).attr("nomorNota");
+            var namaSupplier = $(this).attr("namaSupplier");
+            var tanggalBeli = $(this).attr("tanggalBeli");
+
+            $("#modalNamaPilihTanggalPembayaran").text("Pilih Tanggal Pembayaran " + namaSupplier + " (" +
+                nomorNota + ")");
+
+            $("#hiddenIdPembelian").val(idPembelian);
+            $("#tanggalPembayaran").attr("min", tanggalBeli);
+        });
+
 
         $('.radioPembelianBerlangsung').on('click', function() {
             $(".radioPembelianBerlangsung").addClass("btn-info");
@@ -200,7 +315,5 @@
             $(".radioRiwayatPembelian").addClass("btn-info");
             $(".radioPembelianBerlangsung").removeClass("btn-info");
         });
-
-        
     </script>
 @endsection

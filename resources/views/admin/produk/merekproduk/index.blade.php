@@ -36,6 +36,7 @@
                                 <th>Nama Merek</th>
                                 <th>Tanggal Pembuatan</th>
                                 <th>Tanggal Edit Terakhir</th>
+                                <th>Daftar Produk</th>
                                 <th>Edit</th>
                                 <th>Hapus</th>
                             </tr>
@@ -48,6 +49,11 @@
                                     <td>{{ $m->nama }}</td>
                                     <td>{{ date('d-m-Y H:i:s', strtotime($m->updated_at)) }}</td>
                                     <td>{{ date('d-m-Y H:i:s', strtotime($m->updated_at)) }}</td>
+                                    <td class="text-center"><button idMerek="{{ $m->id }}"
+                                            namaMerek="{{ $m->nama }}" data-toggle="modal"
+                                            data-target="#modalDaftarProdukMerek"
+                                            class=" btn btn-warning waves-effect waves-light btnDaftarProduk">Tampilkan</button>
+                                    </td>
                                     <td class="text-center"><a href="{{ route('mereks.edit', $m->id) }}"
                                             class=" btn btn-info waves-effect waves-light">Edit</a></td>
                                     <td class="text-center"><button data-toggle="modal"
@@ -92,6 +98,32 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+
+    <div id="modalDaftarProdukMerek" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 90%">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h5 class="modal-title mt-0" id="modalNamaDaftarProdukMerek">Daftar Produk</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="contentDaftarProdukMerek">
+                    <div class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"> <button type="button" class="btn btn-danger waves-effect"
+                        data-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @endsection
 
 @section('javascript')
@@ -100,6 +132,38 @@
             $('#tabelDaftarMerek').DataTable({
 
             });
+        });
+
+        $("body").on("click", ".btnDaftarProduk", function() {
+            var idMerek = $(this).attr("idMerek");
+            var namaMerek = $(this).attr("namaMerek");
+
+            $('#contentDaftarProdukMerek').html(
+                "<div class='text-center'>" +
+                "<div class='spinner-border text-info' role='status'>" +
+                "<span class='sr-only'>Loading...</span>" +
+                "</div></div>");
+
+            $("#modalNamaDaftarProdukMerek").text("Daftar Produk untuk Merek " + namaMerek);
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('admin.mereks.getdaftarprodukmerek') }}',
+                data: {
+                    '_token': '<?php echo csrf_token(); ?>',
+                    'idMerek': idMerek,
+                },
+                success: function(data) {
+                    $('#contentDaftarProdukMerek').html(data.msg);
+                    $('#tabelDaftarProdukMerek').DataTable({
+                        language: {
+                            emptyTable: "Tidak terdapat Daftar Produk dengan Merek " +
+                                namaMerek,
+                            infoEmpty: "Tidak terdapat Daftar Produk dengan Merek " +
+                                namaMerek,
+                        },
+                    });
+                }
+            })
         });
 
         $('.btnHapusMerek').on('click', function() {

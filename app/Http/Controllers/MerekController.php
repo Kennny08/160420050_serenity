@@ -103,4 +103,14 @@ class MerekController extends Controller
             return redirect()->route('mereks.index')->with('status', $msg);
         }
     }
+
+    public function getDaftarProdukMerek()
+    {
+        $idMerek = $_POST["idMerek"];
+        $merek = Merek::find($idMerek);
+        $daftarProdukMerek = $merek->produks;
+
+        return response()->json(array('msg' => view('admin.produk.merekproduk.daftarprodukmerek', compact('daftarProdukMerek'))->render()), 200);
+
+    }
 }

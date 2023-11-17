@@ -142,4 +142,29 @@ class PembelianController extends Controller
     {
         //
     }
+
+    public function getDetailPembelian()
+    {
+        $idPembelian = $_POST["idPembelian"];
+        $pembelian = Pembelian::find($idPembelian);
+        $detailPembelianProduk = $pembelian->produks;
+
+        return response()->json(array('msg' => view('admin.pembelian.detailpembelian', compact('detailPembelianProduk'))->render()), 200);
+
+    }
+
+    public function updateTanggalPembayaranPembelian(Request $request)
+    {
+        $idpembelian = $request->get("hiddenIdPembelian");
+        $tanggalPembayaran = $request->get("tanggalPembayaran");
+        $pembelian = Pembelian::find($idpembelian);
+        $pembelian->tanggal_bayar = date("Y-m-d", strtotime($tanggalPembayaran));
+        $pembelian->updated_at = date("Y-m-d H:i:s");
+        $pembelian->save();
+
+        return redirect()->route("pembelians.index")->with("status", "Berhasil menetapkan tanggal pembayaran untuk pembelian pada Supplier " . $pembelian->supplier->nama . " dengan nomor nota " . $pembelian->nomor_nota);
+
+
+    }
+
 }

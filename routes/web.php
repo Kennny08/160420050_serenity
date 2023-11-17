@@ -29,19 +29,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ReservasiController::class, "index"])->name("reservasis.index");
 
-Route::resource('reservasis', ReservasiController::class);
-Route::resource('produks', ProdukController::class);
-Route::resource('perawatans', PerawatanController::class);
-Route::resource('pakets', PaketController::class);
-Route::resource('penjualans', PenjualanController::class);
-Route::resource('pembelians', PembelianController::class);
-Route::resource('karyawans', KaryawanController::class);
-Route::resource('slotjams', SlotJamController::class);
-
-Route::get('/serenity/penjualan/errorpage', [PenjualanController::class, "errorPageNullPenjualan"])->name("penjualan.null.errorpage");
-
 //ADMIN
 //Reservasi
+Route::resource('reservasis', ReservasiController::class);
 Route::get('/reservasi/admin/create', [ReservasiController::class, "reservasiAdminCreate"])->name("reservasi.admin.create");
 Route::get('/reservasi/admin/riwayatreservasiperawatan', [ReservasiController::class, "riwayatReservasiPerawatanAdmin"])->name("riwayatreservasis.index");
 Route::post('/reservasi/admin/getdetailriwayatreservasiperawatan', [ReservasiController::class, "getDetailRiwayatReservasiPerawatan"])->name("admin.getdetailriwayatreservasiperawatan");
@@ -61,21 +51,29 @@ Route::get('/reservasi/admin/detailreservasi/{idReservasi}', [ReservasiControlle
 Route::post('/reservasi/admin/batalkan', [ReservasiController::class, "adminBatalkanReservasi"])->name("reservasi.admin.batalkan");
 Route::post('/reservasi/admin/selesai', [ReservasiController::class, "adminSelesaiReservasi"])->name("reservasi.admin.selesai");
 
-//Produk
+//Penjualan
+Route::resource('penjualans', PenjualanController::class);
+Route::get('/serenity/penjualan/errorpage', [PenjualanController::class, "errorPageNullPenjualan"])->name("penjualan.null.errorpage");
 
+//Produk
+Route::resource('produks', ProdukController::class);
 
 
 //Kategori
 Route::resource("kategoris", KategoriController::class);
+Route::post('/admin/kategori/getdaftarprodukkategori', [KategoriController::class, "getDaftarProdukKategori"])->name("admin.kategoris.getdaftarprodukkategori");
+
 //Route::get("admin/produk/kategori/", [KategoriController::class,"index"])->name("kategoris.index");
 
 
 //Merek
 Route::resource("mereks", MerekController::class);
+Route::post('/admin/merek/getdaftarprodukmerek', [MerekController::class, "getDaftarProdukMerek"])->name("admin.mereks.getdaftarprodukmerek");
 
 
 //Kondisi
 Route::resource("kondisis", KondisiController::class);
+Route::post('/admin/kondisi/getdaftarprodukkondisi', [KondisiController::class, "getDaftarProdukKondisi"])->name("admin.kondisis.getdaftarprodukkondisi");
 
 
 //Rekomendasi Produk
@@ -83,16 +81,19 @@ Route::get('/rekomendasiproduk', [AprioriController::class, "settingApriori"])->
 Route::post('/rekomendasiproduk/proses', [AprioriController::class, "prosesApriori"])->name("admin.prosesrekomendasiproduk");
 
 //Karyawan
+Route::resource('karyawans', KaryawanController::class);
 Route::post('/admin/karyawan/getDetailKaryawan', [KaryawanController::class, "getDetailKaryawan"])->name("admin.getdetailkaryawan");
 
 //Perawatan
+Route::resource('perawatans', PerawatanController::class);
 Route::post('/admin/perawatan/getDetailPerawatan', [PerawatanController::class, "getDetailPerawatanList"])->name("admin.getdetailperawatan");
 
 //Supplier
 Route::resource("suppliers", SupplierController::class);
-Route::post('/admin/karyawan/getDetailSupplier', [SupplierController::class, "getDetailSupplier"])->name("admin.getdetailsupplier");
+Route::post('/admin/karyawan/getdetailpembeliansupplier', [SupplierController::class, "getDetailPembelianSupplier"])->name("admin.suppliers.getdetailpembeliansupplier");
 
 //Slot Jam
+Route::resource('slotjams', SlotJamController::class);
 Route::post('/admin/slotjam/editstatusslotjam', [SlotJamController::class, "editStatusSlotJam"])->name("admin.editstatusslotjam");
 
 //Presensi Kehadiran
@@ -109,3 +110,12 @@ Route::post('/admin/presensi/updatestatusizinkehadrian', [PresensiKehadiranContr
 Route::get('/admin/karyawan/komisikaryawan', [KaryawanController::class, "indexKomisiKaryawan"])->name("admin.karyawans.indexkomisikaryawan");
 Route::post('/admin/karyawan/proseskomisikaryawan', [KaryawanController::class, "prosesKomisiKaryawan"])->name("admin.karyawans.proseskomisikaryawan");
 Route::post('/admin/karyawan/detailkomisikaryawan', [KaryawanController::class, "getDetailKomisiKaryawan"])->name("admin.karyawans.detailkomisikaryawan");
+
+
+//Pembelian
+Route::resource('pembelians', PembelianController::class);
+Route::post('/admin/pembelian/getdetailpembelian', [PembelianController::class, 'getDetailPembelian'])->name('admin.pembelians.getdetailpembelian');
+Route::post('/admin/pembelian/prosestanggalbayar', [PembelianController::class, 'updateTanggalPembayaranPembelian'])->name('admin.pembelians.prosestanggalbayar');
+
+//Paket
+Route::resource('pakets', PaketController::class);

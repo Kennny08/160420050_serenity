@@ -104,4 +104,14 @@ class KategoriController extends Controller
             return redirect()->route('kategoris.index')->with('status', $msg);
         }
     }
+
+    public function getDaftarProdukKategori()
+    {
+        $idKategori = $_POST["idKategori"];
+        $kategori = Kategori::find($idKategori);
+        $daftarProdukKategori = $kategori->produks;
+
+        return response()->json(array('msg' => view('admin.produk.kategoriproduk.daftarprodukkategori', compact('daftarProdukKategori'))->render()), 200);
+
+    }
 }

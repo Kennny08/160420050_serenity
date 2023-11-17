@@ -103,4 +103,14 @@ class KondisiController extends Controller
             return redirect()->route('kondisis.index')->with('status', $msg);
         }
     }
+
+    public function getDaftarProdukKondisi()
+    {
+        $idKondisi = $_POST["idKondisi"];
+        $kondisi = Kondisi::find($idKondisi);
+        $daftarProdukKondisi = $kondisi->produks;
+
+        return response()->json(array('msg' => view('admin.produk.kondisiproduk.daftarprodukkondisi', compact('daftarProdukKondisi'))->render()), 200);
+
+    }
 }

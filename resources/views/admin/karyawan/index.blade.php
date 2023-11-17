@@ -150,7 +150,9 @@
     <script>
         $(document).ready(function() {
             $('#tabelDaftarKaryawan').DataTable({
-
+                order:[
+                    [1, "asc"]
+                ]
             });
 
         });
@@ -169,7 +171,11 @@
                 },
                 success: function(data) {
                     $('#contentDetailKaryawan').html(data.msg);
-                    $('#tabelDaftarKaryawanPerawatan').DataTable({});
+                    $('#tabelDaftarKaryawanPerawatan').DataTable({
+                        order:[
+                    [1, "desc"]
+                ]
+                    });
                 }
             })
         });

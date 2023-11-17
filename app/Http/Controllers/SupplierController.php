@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pembelian;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -228,12 +229,6 @@ class SupplierController extends Controller
                     return redirect()->route('suppliers.index')->with('status', 'Berhasil mengedit supplier ' . $namaSupplier . '!');
                 }
             }
-
-
-
-
-
-
         } else {
             $validatedData = $request->validate(
                 [
@@ -277,5 +272,13 @@ class SupplierController extends Controller
             $msg = "Data Gagal dihapus. Pastikan kembali tidak ada data yang berelasi sebelum dihapus";
             return redirect()->route('suppliers.index')->with('status', $msg);
         }
+    }
+
+    public function getDetailPembelianSupplier()
+    {
+        $idSupplier = $_POST["idSupplier"];
+        $supplier = Supplier::find($idSupplier);
+        $pembelianDariSupplier = Pembelian::where("supplier_id", $idSupplier)->get();
+        return response()->json(array('msg' => view('admin.supplier.detailpembeliansupplier', compact('pembelianDariSupplier', 'supplier'))->render()), 200);
     }
 }

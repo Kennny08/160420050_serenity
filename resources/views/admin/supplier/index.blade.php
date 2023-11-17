@@ -29,7 +29,7 @@
                     @endif
 
                     <div>
-                        <table id="tabelDaftarKaryawan" class="table table-bordered dt-responsive wrap text-center w-100"
+                        <table id="tabelDaftarSupplier" class="table table-bordered dt-responsive wrap text-center w-100"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -58,9 +58,9 @@
                                             <td>{{ date('d-m-Y H:i:s', strtotime($s->created_at)) }}</td>
                                             <td>{{ date('d-m-Y H:i:s', strtotime($s->updated_at)) }}</td>
                                             <td class="text-center"><button data-toggle="modal"
-                                                    data-target="#modalDetailKaryawan" nama ="{{ $s->nama }}"
+                                                    data-target="#modalDetailPembelianSupplier" nama ="{{ $s->nama }}"
                                                     idSupplier = "{{ $s->id }}"
-                                                    class=" btn btn-warning waves-effect waves-light btnDetailKaryawan">Detail</button>
+                                                    class=" btn btn-warning waves-effect waves-light btnDetailPembelianSupplier">Detail</button>
                                             </td>
                                             <td class="text-center"><a href="{{ route('suppliers.edit', $s->id) }}"
                                                     class=" btn btn-info waves-effect waves-light">Edit</a></td>
@@ -91,17 +91,17 @@
         <!-- end col -->
     </div>
 
-    <div id="modalDetailSupplier" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+    <div id="modalDetailPembelianSupplier" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 600px;">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content ">
                 <div class="modal-header">
-                    <h5 class="modal-title mt-0" id="modalNamaSupplier">Detail Supplier</h5>
+                    <h5 class="modal-title mt-0" id="modalNamaDetailPembelianSupplier">Detail Supplier</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="contentDetailSupplier">
+                <div class="modal-body" id="contentDetailPembelianSupplier">
                     <div class="text-center">
                         <div class="spinner-border text-info" role="status">
                             <span class="sr-only">Loading...</span>
@@ -150,27 +150,27 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            $('#tabelDaftarKaryawan').DataTable({
+            $('#tabelDaftarSupplier').DataTable({
 
             });
 
         });
 
-        $('.btnDetailSupplier').on('click', function() {
+        $('.btnDetailPembelianSupplier').on('click', function() {
             var idSupplier = $(this).attr("idSupplier");
             var nama = $(this).attr('nama');
 
-            $("#modalNamaSupplier").text(" Detail Supplier " + nama);
+            $("#modalNamaDetailPembelianSupplier").text(" Detail Pembelian Stok Produk pada Supplier " + nama);
             $.ajax({
                 type: 'POST',
-                url: '{{ route('admin.getdetailsupplier') }}',
+                url: '{{ route('admin.suppliers.getdetailpembeliansupplier') }}',
                 data: {
                     '_token': '<?php echo csrf_token(); ?>',
                     'idSupplier': idSupplier,
                 },
                 success: function(data) {
-                    $('#contentDetailSupplier').html(data.msg);
-                    $('#tabelDaftarSupplierProduk').DataTable({});
+                    $('#contentDetailPembelianSupplier').html(data.msg);
+                    $('#tabelDaftarPembelianDariSupplier').DataTable({});
                 }
             })
         });

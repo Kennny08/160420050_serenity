@@ -167,6 +167,7 @@
                     emptyTable: "Tidak terdapat Daftar Komisi Karyawan",
                     infoEmpty: "Tidak terdapat Daftar Komisi Karyawan",
                 }
+                
             });
         });
 
