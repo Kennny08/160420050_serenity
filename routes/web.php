@@ -12,6 +12,7 @@ use App\Http\Controllers\PerawatanController;
 use App\Http\Controllers\PresensiKehadiranController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ReservasiController;
+use App\Http\Controllers\RiwayatPengambilanProdukController;
 use App\Http\Controllers\SlotJamController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
@@ -119,3 +120,8 @@ Route::post('/admin/pembelian/prosestanggalbayar', [PembelianController::class, 
 
 //Paket
 Route::resource('pakets', PaketController::class);
+
+//Riwayat Pengambilan Produk
+Route::resource('riwayatpengambilanproduks', RiwayatPengambilanProdukController::class);
+Route::post('/admin/riwayatpengambilanproduk/getdetailpengambilanproduk', [RiwayatPengambilanProdukController::class, 'getDetailRiwayatPengambilanProduk'])->name('admin.riwayatpengambilanproduks.getdetailriwayatpengambilanproduk');
+

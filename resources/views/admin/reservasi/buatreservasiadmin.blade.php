@@ -475,20 +475,6 @@
             }
         });
 
-        $('#btnKonfirmasiPerawatan').on('click', function() {
-            var hargaJual = parseInt($("#numHargaJual").val());
-            var hargaBeli = parseInt($("#numHargaBeli").val());
-            var namaProduk = $("#txtNamaProduk").val();
-            if (hargaJual < hargaBeli) {
-                $("#bodyModalPengecekanHarga").html("<p>Harga jual produk " + namaProduk +
-                    " yang Anda masukkan(Rp. " + hargaJual + ") lebih kecil dari harga beli produk(Rp. " +
-                    hargaBeli + "). Apakah Anda yakin untuk mengkonfirmasi penyimpanan data produk?</p>");
-                $("#modalPengecekanHargaJualBeli").modal("show");
-            } else {
-                $("#formStoreProduk").submit();
-            }
-        });
-
         $('body').on('click', '#btnPilihKaryawan', function() {
 
             $("#inputPilihKaryawan").val("ya");

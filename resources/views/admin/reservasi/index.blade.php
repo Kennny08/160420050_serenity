@@ -167,7 +167,7 @@
                 ordering: false,
                 language: {
                     emptyTable: "Tidak terdapat reservasi perawatan untuk hari ini!",
-                    infoEmpty: "Tidak terdapat reservasi perawatan untuk hari ini!",
+                   
                 }
             });
 
@@ -175,7 +175,7 @@
                 ordering: false,
                 language: {
                     emptyTable: "Tidak terdapat reservasi perawatan untuk hari yang akan datang!",
-                    infoEmpty: "Tidak terdapat reservasi perawatan untuk hari yang akan datang!",
+                    
                 }
             });
 

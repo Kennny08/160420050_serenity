@@ -272,7 +272,7 @@
                                 </li>
                                 <li></i><a href="{{ route('mereks.index') }}">Merek</a></li>
                                 <li></i><a href="{{ route('kondisis.index') }}">Kondisi</a></li>
-                                <li></i><a href="{{ route('produks.index') }}">Riwayat Pengambilan Produk</a></li>
+                                <li></i><a href="{{ route('riwayatpengambilanproduks.index') }}">Riwayat Pengambilan Produk</a></li>
                             </ul>
                         </li>
 
