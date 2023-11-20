@@ -126,7 +126,7 @@
         $(document).ready(function() {
             $('#tabelDaftarRiwayatPresensiKaryawan').DataTable({
                 "order": [
-                    [0, "desc"]
+                    [1, "desc"]
                 ]
             });
         });
@@ -157,7 +157,7 @@
                 success: function(data) {
                     $('#contentDetailRiwayatPresensi').html(data.msg);
                     $('#tabelDaftarDetailRiwayatPresensi').DataTable({
-                        "scrollY": "380px",
+                        
 
                     });
                 }

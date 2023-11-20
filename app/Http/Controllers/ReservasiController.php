@@ -710,6 +710,7 @@ class ReservasiController extends Controller
                     //-----------------------------------------------------------
 
                     //Mulai Insert Data Reservasi jika ada slot kosong tersedia
+
                     $newPenjualan = new Penjualan();
                     $newPenjualan->nomor_nota = $idPelanggan . "/" . (count($daftarKaryawanPerawatan) + count($daftarKaryawanPerawatanKomplemen)) . "/" . date('d') . date('m') . date('Y');
 
@@ -1157,11 +1158,14 @@ class ReservasiController extends Controller
             $totalPenjualanPerawatan = 0;
             $totalPenjualanProduk = 0;
             foreach ($reservasi as $r) {
-                $totalPenjualanPerawatan += $r->penjualan->total_pembayaran;
+                if ($r->status == "selesai") {
+                    $totalPenjualanPerawatan += $r->penjualan->total_pembayaran;
 
-                foreach ($r->penjualan->produks as $p) {
-                    $totalPenjualanProduk += $p->pivot->kuantitas * $p->pivot->harga;
+                    foreach ($r->penjualan->produks as $p) {
+                        $totalPenjualanProduk += $p->pivot->kuantitas * $p->pivot->harga;
+                    }
                 }
+
             }
 
             $objectRiwayat["totalpenjualanproduk"] = $totalPenjualanProduk;

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AprioriController;
+use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KondisiController;
@@ -124,4 +125,10 @@ Route::resource('pakets', PaketController::class);
 //Riwayat Pengambilan Produk
 Route::resource('riwayatpengambilanproduks', RiwayatPengambilanProdukController::class);
 Route::post('/admin/riwayatpengambilanproduk/getdetailpengambilanproduk', [RiwayatPengambilanProdukController::class, 'getDetailRiwayatPengambilanProduk'])->name('admin.riwayatpengambilanproduks.getdetailriwayatpengambilanproduk');
+
+//Diskon
+Route::resource('diskons', DiskonController::class);
+Route::get('/admin/diskon/daftardiskonberlaku', [DiskonController::class, "daftarDiskonBerlaku"])->name("diskons.daftardiskonberlaku");
+Route::get('/admin/diskon/daftardiskonselesai', [DiskonController::class, "daftarDiskonSelesai"])->name("diskons.daftardiskonselesai");
+Route::post('/admin/diskon/getdetaildiskon', [DiskonController::class, 'getDetailDiskon'])->name('admin.diskons.getdetaildiskons');
 

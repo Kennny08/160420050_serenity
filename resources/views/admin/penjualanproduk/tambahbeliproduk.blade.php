@@ -68,7 +68,7 @@
                                     <td>{{ $p->kode_produk }}</td>
                                     <td>{{ $p->nama }}</td>
                                     <td>{{ $p->merek->nama }}</td>
-                                    <td>{{ $p->harga_jual }}</td>
+                                    <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
                                     <td>{{ $p->stok }}</td>
                                     <td>{{ $p->kategori->nama }}</td>
                                     <td class="text-left">

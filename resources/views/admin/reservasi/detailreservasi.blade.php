@@ -15,7 +15,6 @@
                 <div class="card-body">
 
                     <h3 class="mt-0 header-title">Detail Reservasi</h3>
-                    <p class="sub-title">
                     </p>
                     @if ($errors->any())
                         <div class="alert alert-danger alert-dismissible" role="alert">
@@ -160,29 +159,32 @@
                                             </div>
                                         </div>
 
-
-                                        <table class="table table-bordered">
-                                            <thead class="thead-default">
-                                                <tr class="text-center">
-                                                    <th>Nama Perawatan</th>
-                                                    <th>Jam Mulai</th>
-                                                    <th>Durasi</th>
-                                                    <th>Harga (Rp)</th>
-                                                    <th>Karyawan</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($perawatanSlotJamNonKomplemen as $ps)
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead class="thead-default">
                                                     <tr class="text-center">
-                                                        <td>{{ $ps['perawatan']->nama }}</td>
-                                                        <td>{{ $ps['jammulai'] }}</td>
-                                                        <td>{{ $ps['perawatan']->durasi }}</td>
-                                                        <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}</td>
-                                                        <td>{{ $ps['karyawan']->nama }}</td>
+                                                        <th>Nama Perawatan</th>
+                                                        <th>Jam Mulai</th>
+                                                        <th>Durasi</th>
+                                                        <th>Harga (Rp)</th>
+                                                        <th>Karyawan</th>
                                                     </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($perawatanSlotJamNonKomplemen as $ps)
+                                                        <tr class="text-center">
+                                                            <td>{{ $ps['perawatan']->nama }}</td>
+                                                            <td>{{ $ps['jammulai'] }}</td>
+                                                            <td>{{ $ps['perawatan']->durasi }}</td>
+                                                            <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}
+                                                            </td>
+                                                            <td>{{ $ps['karyawan']->nama }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+
                                         <br>
                                         <div class="mb-2">
                                             <div class="d-inline-block">
@@ -198,50 +200,53 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <table class="table table-bordered">
-                                            <thead class="thead-default">
-                                                <tr class="text-center">
-                                                    <th>Nama Perawatan</th>
-                                                    <th>Jam Mulai</th>
-                                                    <th>Durasi</th>
-                                                    <th>Harga (Rp)</th>
-                                                    <th>Karyawan</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @php
-                                                    $counter = 1;
-                                                @endphp
-                                                @foreach ($arrKomplemen['perawatans'] as $ps)
-                                                    @if ($counter == 1)
-                                                        <tr class="text-center">
-                                                            <td>{{ $ps['perawatan']->nama }}</td>
-                                                            <td class="text-center align-middle"
-                                                                rowspan="{{ count($arrKomplemen['perawatans']) }}">
-                                                                {{ $arrKomplemen['jammulai'] }}</td>
-                                                            <td class="text-center align-middle"
-                                                                rowspan="{{ count($arrKomplemen['perawatans']) }}">
-                                                                {{ $arrKomplemen['durasiterlama'] }}
-                                                            </td>
-                                                            <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}
-                                                            </td>
-                                                            <td>{{ $ps['karyawan']->nama }}</td>
-                                                        </tr>
-                                                    @else
-                                                        <tr class="text-center">
-                                                            <td>{{ $ps['perawatan']->nama }}</td>
-                                                            <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}
-                                                            </td>
-                                                            <td>{{ $ps['karyawan']->nama }}</td>
-
-                                                        </tr>
-                                                    @endif
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead class="thead-default">
+                                                    <tr class="text-center">
+                                                        <th>Nama Perawatan</th>
+                                                        <th>Jam Mulai</th>
+                                                        <th>Durasi</th>
+                                                        <th>Harga (Rp)</th>
+                                                        <th>Karyawan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
                                                     @php
-                                                        $counter = $counter + 1;
+                                                        $counter = 1;
                                                     @endphp
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                    @foreach ($arrKomplemen['perawatans'] as $ps)
+                                                        @if ($counter == 1)
+                                                            <tr class="text-center">
+                                                                <td>{{ $ps['perawatan']->nama }}</td>
+                                                                <td class="text-center align-middle"
+                                                                    rowspan="{{ count($arrKomplemen['perawatans']) }}">
+                                                                    {{ $arrKomplemen['jammulai'] }}</td>
+                                                                <td class="text-center align-middle"
+                                                                    rowspan="{{ count($arrKomplemen['perawatans']) }}">
+                                                                    {{ $arrKomplemen['durasiterlama'] }}
+                                                                </td>
+                                                                <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}
+                                                                </td>
+                                                                <td>{{ $ps['karyawan']->nama }}</td>
+                                                            </tr>
+                                                        @else
+                                                            <tr class="text-center">
+                                                                <td>{{ $ps['perawatan']->nama }}</td>
+                                                                <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}
+                                                                </td>
+                                                                <td>{{ $ps['karyawan']->nama }}</td>
+
+                                                            </tr>
+                                                        @endif
+                                                        @php
+                                                            $counter = $counter + 1;
+                                                        @endphp
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+
                                         <div class="form-group col-md-12">
                                             <div class="row">
                                                 <div class="col-12 mt-2 text-right">
@@ -269,57 +274,60 @@
                                         </div>
                                     </div>
                                     <div class="tab-pane p-3" id="produk" role="tabpanel">
-                                        <table id="tabelDaftarProduk"
-                                            class="table table-striped table-bordered dt-responsive wrap text-center"
-                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                            <thead>
-                                                <tr>
-                                                    <th>Kode Produk</th>
-                                                    <th>Nama</th>
-                                                    <th>Merek</th>
-                                                    <th>Harga(Rp)</th>
-                                                    <th>Stok Dibeli</th>
-                                                    <th>Kategori</th>
-                                                    <th>Kondisi</th>
-                                                    <th>Deskripsi</th>
-                                                    <th>Subtotal(Rp)</th>
-                                                </tr>
-                                            </thead>
+                                        <div class="table-responsive">
+                                            <table id="tabelDaftarProduk"
+                                                class="table table-striped table-bordered dt-responsive wrap text-center"
+                                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Kode Produk</th>
+                                                        <th>Nama</th>
+                                                        <th>Merek</th>
+                                                        <th>Harga(Rp)</th>
+                                                        <th>Stok Dibeli</th>
+                                                        <th>Kategori</th>
+                                                        <th>Kondisi</th>
+                                                        <th>Deskripsi</th>
+                                                        <th>Subtotal(Rp)</th>
+                                                    </tr>
+                                                </thead>
 
-                                            <tbody>
-                                                @if (count($reservasi->penjualan->produks) > 0)
-                                                    @foreach ($reservasi->penjualan->produks as $p)
-                                                        <tr id="tr_{{ $p->id }}">
-                                                            <td>{{ $p->kode_produk }}</td>
-                                                            <td>{{ $p->nama }}</td>
-                                                            <td>{{ $p->merek->nama }}</td>
-                                                            <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                                            <td>{{ $p->pivot->kuantitas }}</td>
-                                                            <td>{{ $p->kategori->nama }}</td>
-                                                            <td class="text-left">
-                                                                <ul>
-                                                                    @foreach ($p->kondisis as $kondisi)
-                                                                        <li>{{ $kondisi->keterangan }}</li>
-                                                                    @endforeach
-                                                                </ul>
+                                                <tbody>
+                                                    @if (count($reservasi->penjualan->produks) > 0)
+                                                        @foreach ($reservasi->penjualan->produks as $p)
+                                                            <tr id="tr_{{ $p->id }}">
+                                                                <td>{{ $p->kode_produk }}</td>
+                                                                <td>{{ $p->nama }}</td>
+                                                                <td>{{ $p->merek->nama }}</td>
+                                                                <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                                                <td>{{ $p->pivot->kuantitas }}</td>
+                                                                <td>{{ $p->kategori->nama }}</td>
+                                                                <td class="text-left">
+                                                                    <ul>
+                                                                        @foreach ($p->kondisis as $kondisi)
+                                                                            <li>{{ $kondisi->keterangan }}</li>
+                                                                        @endforeach
+                                                                    </ul>
 
-                                                            </td>
+                                                                </td>
 
-                                                            <td>{{ $p->deskripsi }}</td>
-                                                            <td class="text-center">
-                                                                {{ number_format($p->pivot->kuantitas * $p->pivot->harga, 2, ',', '.') }}
+                                                                <td>{{ $p->deskripsi }}</td>
+                                                                <td class="text-center">
+                                                                    {{ number_format($p->pivot->kuantitas * $p->pivot->harga, 2, ',', '.') }}
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @else
+                                                        <tr class="text-center">
+                                                            <td colspan="9">Tidak terdapat produk tambahan yang dibeli!
                                                             </td>
                                                         </tr>
-                                                    @endforeach
-                                                @else
-                                                    <tr class="text-center">
-                                                        <td colspan="9">Tidak terdapat produk tambahan yang dibeli!
-                                                        </td>
-                                                    </tr>
-                                                @endif
+                                                    @endif
 
-                                            </tbody>
-                                        </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
                                         <div class="form-group col-md-12">
                                             <div class="row">
                                                 <div class="col-6 mt-2">
@@ -356,9 +364,22 @@
 
                                 <div class="form-group col-md-12 mt-3">
                                     <div class="row">
-                                        <div class="col-6 mt-3">
+                                        <div class="col-7 mt-3">
                                             <address>
+
                                                 @if ($reservasi->penjualan->status_selesai == 'belum')
+                                                    @if (date('Y-m-d', strtotime($reservasi->tanggal_reservasi)) >= date('Y-m-d'))
+                                                        <a class="btn btn-lg btn-info waves-effect waves-light mt-3 mr-3"
+                                                            href={{ route('reservasis.index') }}><i
+                                                                class="mdi mdi-keyboard-backspace"></i>
+                                                            &nbsp;Daftar Reservasi</a>
+                                                    @else
+                                                        <a class="btn btn-lg btn-info waves-effect waves-light mt-3 mr-3"
+                                                            href={{ route('riwayatreservasis.index') }}><i
+                                                                class="mdi mdi-keyboard-backspace"></i>
+                                                            &nbsp;Daftar Riwayat Reservasi</a>
+                                                    @endif
+
                                                     <button
                                                         class="btn btn-lg btn-danger waves-effect waves-light mt-3 mr-3"
                                                         data-toggle="modal"
@@ -373,10 +394,22 @@
                                                         namaPelanggan = "{{ $reservasi->penjualan->pelanggan->nama }}"
                                                         nomorNotaPenjualan = "{{ $reservasi->penjualan->nomor_nota }}">
                                                         Selesai Reservasi</button>
+                                                @else
+                                                    @if (date('Y-m-d', strtotime($reservasi->tanggal_reservasi)) >= date('Y-m-d'))
+                                                        <a class="btn btn-lg btn-info waves-effect waves-light mt-3 mr-3"
+                                                            href={{ route('reservasis.index') }}><i
+                                                                class="mdi mdi-keyboard-backspace"></i>
+                                                            &nbsp;Daftar Reservasi</a>
+                                                    @else
+                                                        <a class="btn btn-lg btn-info waves-effect waves-light mt-3 mr-3"
+                                                            href={{ route('riwayatreservasis.index') }}><i
+                                                                class="mdi mdi-keyboard-backspace"></i>
+                                                            &nbsp;Daftar Riwayat Reservasi</a>
+                                                    @endif
                                                 @endif
                                             </address>
                                         </div>
-                                        <div class="col-6 text-right">
+                                        <div class="col-5 text-right">
                                             <address>
                                                 <h4 style="font-weight: normal;">Total : </h4>
                                                 <h2 class="text-danger fw-bold">Rp.

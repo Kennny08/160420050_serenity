@@ -208,17 +208,8 @@
                                         Reservasi</button>
                                 </div>
                             @endif
-
-
                         </div>
-
-
                     </form>
-
-
-
-
-
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@
         <thead>
             <tr>
                 <th>Nama Karyawan</th>
-                <th>Waktu Karyawan Presensi</th>
+                <th>Waktu Presensi Karyawan</th>
                 <th>Keterangan</th>
                 <th>Status</th>
                 <th>Dikonfirmasi Terakhir Pukul</th>
@@ -18,12 +18,16 @@
                     <td>
                         @if (date('H:i:s', strtotime($p->created_at)) == date('H:i:s', strtotime($p->tanggal_presensi)))
                             @if ($p->keterangan == 'izin')
-                                {{ date('d-m-Y H:i', strtotime($p->tanggal_presensi)) }}
+                                {{ date('d-m-Y H:i', strtotime($p->created_at)) }}
                             @else
                                 <span class="text-danger">Tidak Presensi</span>
                             @endif
                         @else
-                            {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                            @if ($p->keterangan == 'izin')
+                                {{ date('d-m-Y H:i', strtotime($p->created_at)) }}
+                            @else
+                                {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                            @endif
                         @endif
                     </td>
 

@@ -232,10 +232,10 @@
                                     Reservasi <span class="float-right menu-arrow"><i
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="submenu">
-                                <li></i><a href="{{ route('reservasis.index') }}">Reservasi Perawatan</a></li>
-                                <li></i><a href="{{ route('riwayatreservasis.index') }}">Riwayat Reservasi
+                                <li><a href="{{ route('reservasis.index') }}">Reservasi Perawatan</a></li>
+                                <li><a href="{{ route('riwayatreservasis.index') }}">Riwayat Reservasi
                                         Perawatan</a></li>
-                                <li></i><a href="{{ route('reservasis.index') }}">Reservasi Paket Perawatan</a></li>
+                                <li><a href="{{ route('reservasis.index') }}">Reservasi Paket Perawatan</a></li>
                             </ul>
                         </li>
                         <li>
@@ -248,8 +248,8 @@
                                     Pembelian <span class="float-right menu-arrow"><i
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="submenu">
-                                <li></i><a href="{{ route('pembelians.index') }}">Daftar Pembelian</a></li>
-                                <li></i><a href="{{ route('suppliers.index') }}">Supplier</a></li>
+                                <li><a href="{{ route('pembelians.index') }}">Daftar Pembelian</a></li>
+                                <li><a href="{{ route('suppliers.index') }}">Supplier</a></li>
                             </ul>
                         </li>
 
@@ -270,9 +270,10 @@
                                     class="{{ request()->is('kategoris/create') || request()->is('kategoris/*/edit') ? ' mm-active' : '' }}">
                                     <a href="{{ route('kategoris.index') }}">Kategori</a>
                                 </li>
-                                <li></i><a href="{{ route('mereks.index') }}">Merek</a></li>
-                                <li></i><a href="{{ route('kondisis.index') }}">Kondisi</a></li>
-                                <li></i><a href="{{ route('riwayatpengambilanproduks.index') }}">Riwayat Pengambilan Produk</a></li>
+                                <li><a href="{{ route('mereks.index') }}">Merek</a></li>
+                                <li><a href="{{ route('kondisis.index') }}">Kondisi</a></li>
+                                <li><a href="{{ route('riwayatpengambilanproduks.index') }}">Riwayat Pengambilan
+                                        Produk</a></li>
                             </ul>
                         </li>
 
@@ -288,13 +289,13 @@
                                     Karyawan <span class="float-right menu-arrow"><i
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="submenu">
-                                <li></i><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
-                                <li></i><a href="{{ route('presensikehadirans.index') }}">Presensi Karyawan</a></li>
-                                <li></i><a href="{{ route('admin.presensikehadirans.riwayatpresensi') }}">Riwayat
+                                <li><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
+                                <li><a href="{{ route('presensikehadirans.index') }}">Presensi Karyawan</a></li>
+                                <li><a href="{{ route('admin.presensikehadirans.riwayatpresensi') }}">Riwayat
                                         Presensi Karyawan</a></li>
-                                <li></i><a href="{{ route('admin.presensikehadirans.riwayatizinkehadiran') }}">Riwayat
+                                <li><a href="{{ route('admin.presensikehadirans.riwayatizinkehadiran') }}">Riwayat
                                         Izin Karyawan</a></li>
-                                <li></i><a href="{{ route('admin.karyawans.indexkomisikaryawan') }}">Komisi
+                                <li><a href="{{ route('admin.karyawans.indexkomisikaryawan') }}">Komisi
                                         Karyawan</a></li>
                             </ul>
                         </li>
@@ -303,10 +304,23 @@
                                 <i class="dripicons-clock"></i> <span> Slot Jam </span>
                             </a>
                         </li>
-                        <li>
+                        {{-- <li>
                             <a href="{{ route('pakets.index') }}" class="waves-effect">
                                 <i class="mdi mdi-ticket-percent"></i> <span> Diskon </span>
                             </a>
+                        </li> --}}
+                        <li>
+                            <a href="javascript:void(0);" class="waves-effect"><i
+                                    class="mdi mdi-ticket-percent"></i><span>
+                                    Diskon <span class="float-right menu-arrow"><i
+                                            class="mdi mdi-chevron-right"></i></span> </span></a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('diskons.index') }}">Daftar Diskon</a></li>
+                                <li><a href="{{ route('diskons.daftardiskonberlaku') }}">Daftar Diskon Sedang
+                                        Berlaku</a></li>
+                                <li><a href="{{ route('diskons.daftardiskonselesai') }}">Daftar Diskon Telah
+                                        Selesai</a></li>
+                            </ul>
                         </li>
                         <li>
                             <a href="{{ route('admin.settingrekomendasiproduk') }}" class="waves-effect">

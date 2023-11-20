@@ -178,7 +178,7 @@
                                     <tr>
                                         <th>Nama Karyawan</th>
                                         <th>Tanggal Presensi</th>
-                                        <th>Waktu Presensi</th>
+                                        <th>Waktu Pembuatan</th>
                                         <th>Waktu Karyawan Presensi</th>
                                         <th>Keterangan</th>
                                         <th>Status</th>
@@ -190,13 +190,25 @@
                                     @foreach ($presensisHariIni as $p)
                                         <tr id="tr_{{ $p->id }}">
                                             <td>{{ $p->karyawan->nama }}</td>
-                                            <td>{{ date('Y-m-d', strtotime($p->tanggal_presensi)) }}</td>
-                                            <td>{{ date('H:i', strtotime($p->tanggal_presensi)) }}</td>
+                                            <td>{{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}</td>
+
+                                            <td>
+                                                @if ($p->keterangan == 'izin')
+                                                    {{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}
+                                                @else
+                                                    {{ date('H:i', strtotime($p->created_at)) }}
+                                                @endif
+
+                                            </td>
                                             <td>
                                                 @if (date('H:i:s', strtotime($p->created_at)) == date('H:i:s', strtotime($p->tanggal_presensi)))
                                                     Menunggu Karyawan Presensi
                                                 @else
-                                                    {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                                                    @if ($p->keterangan == 'izin')
+                                                        {{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}
+                                                    @else
+                                                        {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                                                    @endif
                                                 @endif
                                             </td>
 

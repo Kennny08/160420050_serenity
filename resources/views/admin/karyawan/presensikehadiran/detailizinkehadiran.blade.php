@@ -45,12 +45,12 @@
                                 class="btn btn-info waves-effect mr-2 btnKonfirmasiIzin"
                                 idPresensi="{{ $p->id }}" keterangan="konfirmasi"
                                 namaKaryawan = "{{ $p->karyawan->nama }}"
-                                tanggalIzin = "{{ $p->tanggal_presensi }}">Konfirmasi</button>
+                                tanggalIzin = "{{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}">Konfirmasi</button>
                             <button id="btnTolakIzin" type="button" data-toggle= "modal"
                                 data-target="#modalKonfirmasiIzin" class="btn btn-danger waves-effect btnKonfirmasiIzin"
                                 idPresensi="{{ $p->id }}" keterangan="tolak"
                                 namaKaryawan = "{{ $p->karyawan->nama }}"
-                                tanggalIzin = "{{ date('d-m-Y H:i:s', strtotime($p->tanggal_presensi)) }}">Tolak</button>
+                                tanggalIzin = "{{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}">Tolak</button>
                         @else
                             {{ date('d-m-Y H:i', strtotime($p->updated_at)) }}
                         @endif

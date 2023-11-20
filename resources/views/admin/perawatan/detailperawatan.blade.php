@@ -31,7 +31,7 @@
 <div class="form-group text-center">
     <div class="form-group col-md-12">
         <h6>Produk yang digunakan :</h6>
-        <table id="tabelDaftarPerawatanProduk" class="table table-bordered table-striped text-center"
+        <table id="tabelDaftarPerawatanProduk" class="table dt-responsive table-bordered table-striped text-center"
             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead>
                 <tr>
@@ -63,7 +63,7 @@
 <div class="form-group text-center">
     <div class="form-group col-md-12">
         <h6>Karyawan yang Menguasai :</h6>
-        <table id="tabelDaftarPerawatanKaryawan" class="table table-bordered table-striped text-center"
+        <table id="tabelDaftarPerawatanKaryawan" class="table dt-responsive table-bordered table-striped text-center"
             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead>
                 <tr>

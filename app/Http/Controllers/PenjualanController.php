@@ -91,6 +91,7 @@ class PenjualanController extends Controller
 
     public function konfirmasiPenambahanProduk(Request $request)
     {
+        date_default_timezone_set('Asia/Jakarta');
         $arrayIdProduk = $request->get('arrayproduk');
         $arrayStokProduk = $request->get('arraystokproduk');
         $idPenjualan = $request->get('idPenjualan');
@@ -102,12 +103,20 @@ class PenjualanController extends Controller
             // Jika ya maka dicek lagi, apakah array id produk dan stok produk dari form berisi null atau tidak karena kalau null artinya dia ingin menghapus semua detail penjualan produk(sebelum penjualan dikonfirmasi selesai)
             if ($arrayIdProduk == null && $arrayStokProduk == null) {
                 //Menghapus/detach semua produk dari detail penjualan produk
+
+                $totalPenguranganPembayaran = 0;
                 foreach ($penjualan->produks as $p) {
+                    $totalPenguranganPembayaran += $p->pivot->kuantitas * $p->pivot->harga;
                     $produkTerpilih = Produk::find($p->id);
                     $produkTerpilih->stok = $produkTerpilih->stok + $p->pivot->kuantitas;
                     $produkTerpilih->save();
                     $penjualan->produks()->detach($p);
                 }
+
+                $penjualanBaru = Penjualan::find($idPenjualan);
+                $penjualanBaru->total_pembayaran = $penjualanBaru->total_pembayaran - $totalPenguranganPembayaran;
+                $penjualanBaru->updated_at = date("Y-m-d H:i:s");
+                $penjualanBaru->save();
 
                 if ($penjualan->reservasi != null) {
                     return redirect()->route('reservasi.admin.detailreservasi', $penjualan->reservasi->id)->with('status', 'Berhasil menambah produk yang ingin dibeli!');
@@ -151,19 +160,34 @@ class PenjualanController extends Controller
                     }
                 }
 
+                $totalPenguranganPembayaran = 0;
+
+                //Menghapus detail penjualan produk dan mengembalikan stok
                 foreach ($penjualan->produks as $p) {
+                    $totalPenguranganPembayaran += $p->pivot->kuantitas * $p->pivot->harga;
                     $produkTerpilih = Produk::find($p->id);
                     $produkTerpilih->stok = $produkTerpilih->stok + $p->pivot->kuantitas;
                     $produkTerpilih->save();
                     $penjualan->produks()->detach($p);
                 }
 
+                //Menambah detail penjualan produk dan mengurangi stok
                 for ($i = 0; $i < count($arrayIdProduk); $i++) {
                     $produkTerpilih = Produk::find($arrayIdProduk[$i]);
                     $penjualan->produks()->attach($arrayIdProduk[$i], ['kuantitas' => $arrayStokProduk[$i], 'harga' => $produkTerpilih->harga_jual]);
                     $produkTerpilih->stok = $produkTerpilih->stok - $arrayStokProduk[$i];
                     $produkTerpilih->save();
                 }
+
+                $penjualanBaru = Penjualan::find($idPenjualan);
+                $totalSubtotalProduk = 0;
+                foreach ($penjualanBaru->produks as $produk) {
+                    $totalSubtotalProduk += $produk->pivot->kuantitas * $produk->pivot->harga;
+                }
+
+                $penjualanBaru->total_pembayaran = $penjualanBaru->total_pembayaran - $totalPenguranganPembayaran + $totalSubtotalProduk;
+                $penjualanBaru->updated_at = date("Y-m-d H:i:s");
+                $penjualanBaru->save();
 
                 if ($penjualan->reservasi != null) {
                     return redirect()->route('reservasi.admin.detailreservasi', $penjualan->reservasi->id)->with('status', 'Berhasil menambah produk yang ingin dibeli!');
@@ -180,6 +204,7 @@ class PenjualanController extends Controller
                     //
                 }
             } else {
+
                 for ($i = 0; $i < count($arrayIdProduk); $i++) {
                     $produk = Produk::find($arrayIdProduk[$i]);
                     if ($produk->stok < $arrayStokProduk[$i]) {
@@ -195,6 +220,19 @@ class PenjualanController extends Controller
                     $produkTerpilih->stok = $produkTerpilih->stok - $arrayStokProduk[$i];
                     $produkTerpilih->save();
                 }
+
+                $penjualanBaru = Penjualan::find($idPenjualan);
+                $totalSubtotalProduk = 0;
+                foreach ($penjualanBaru->produks as $produk) {
+                    $totalSubtotalProduk += $produk->pivot->kuantitas * $produk->pivot->harga;
+                }
+
+                $totalPembayaranSaatIni = $penjualan->total_pembayaran;
+                $totalPembayaranBaru = $totalPembayaranSaatIni + $totalSubtotalProduk;
+                $penjualanBaru->total_pembayaran = $totalPembayaranBaru;
+                $penjualanBaru->updated_at = date("Y-m-d H:i:s");
+                $penjualanBaru->save();
+                
 
                 if ($penjualan->reservasi != null) {
                     return redirect()->route('reservasi.admin.detailreservasi', $penjualan->reservasi->id)->with('status', 'Berhasil menambah produk yang ingin dibeli!');

@@ -167,15 +167,13 @@
                 ordering: false,
                 language: {
                     emptyTable: "Tidak terdapat reservasi perawatan untuk hari ini!",
-                   
                 }
             });
 
             $("#tabelDaftarReservasiAkanDatang").DataTable({
                 ordering: false,
                 language: {
-                    emptyTable: "Tidak terdapat reservasi perawatan untuk hari yang akan datang!",
-                    
+                    emptyTable: "Tidak terdapat reservasi perawatan untuk hari yang akan datang!",   
                 }
             });
 
