@@ -121,6 +121,8 @@ Route::post('/admin/pembelian/prosestanggalbayar', [PembelianController::class, 
 
 //Paket
 Route::resource('pakets', PaketController::class);
+Route::post('/admin/diskon/getdetailpaket', [PaketController::class, 'getDetailPaket'])->name('admin.pakets.getdetailpaket');
+
 
 //Riwayat Pengambilan Produk
 Route::resource('riwayatpengambilanproduks', RiwayatPengambilanProdukController::class);
@@ -131,4 +133,6 @@ Route::resource('diskons', DiskonController::class);
 Route::get('/admin/diskon/daftardiskonberlaku', [DiskonController::class, "daftarDiskonBerlaku"])->name("diskons.daftardiskonberlaku");
 Route::get('/admin/diskon/daftardiskonselesai', [DiskonController::class, "daftarDiskonSelesai"])->name("diskons.daftardiskonselesai");
 Route::post('/admin/diskon/getdetaildiskon', [DiskonController::class, 'getDetailDiskon'])->name('admin.diskons.getdetaildiskons');
+Route::get('/admin/diskon/pilihdiskon/{idPenjualan}', [DiskonController::class, 'pilihDiskon'])->name('admin.diskons.pilihdiskon');
+Route::post('/admin/diskon/prosespemakaiandiskon', [DiskonController::class, 'prosesPemakaianDiskon'])->name('admin.diskons.prosespemakaiandiskon');
 

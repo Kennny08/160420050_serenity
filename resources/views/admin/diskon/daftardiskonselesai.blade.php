@@ -51,9 +51,6 @@
                                 <th class="align-middle">Kode Diskon</th>
                                 <th hidden class="align-middle">Tanggal Pembuatan</th>
                                 <th hidden class="align-middle">Tanggal Terakhir Diedit</th>
-                                <th class="align-middle">Detail</th>
-                                <th class="align-middle">Edit</th>
-                                <th class="align-middle">Hapus</th>
                             </tr>
                         </thead>
 
@@ -68,19 +65,7 @@
                                     <td>{{ date('d-m-Y', strtotime($d->tanggal_berakhir)) }}</td>
                                     <td>{{ $d->kode_diskon }}</td>
                                     <td hidden>{{ date('d-m-Y', strtotime($d->created_at)) }}</td>
-                                    <td hidden>{{ date('d-m-Y', strtotime($d->updated_at)) }}</td>
-                                    <td class="text-center"><button data-toggle="modal" data-target="#modalDetailDiskon"
-                                            idDiskon="{{ $d->id }}" namaDiskon ="{{ $d->nama }}"
-                                            class=" btn btn-warning waves-effect waves-light btnDetailDiskon">Detail</button>
-                                    </td>
-                                    <td class="text-center"><a href="{{ route('diskons.edit', $d->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeleteDiskon" idDiskon = "{{ $d->id }}"
-                                            namaDiskon="{{ $d->nama }}"
-                                            routeUrl = "{{ route('diskons.destroy', $d->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusDiskon">Hapus</button>
-                                    </td>
+                                    <td hidden>{{ date('d-m-Y', strtotime($d->updated_at)) }}</td>    
                                 </tr>
                             @endforeach
 
@@ -95,31 +80,6 @@
         <!-- end col -->
     </div>
 
-    <div id="modalDetailDiskonSelesai" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
-        aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 600px;">
-            <div class="modal-content ">
-                <div class="modal-header">
-                    <h5 class="modal-title mt-0" id="modalNamaDiskonSelesai">Detail Diskon</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="contentDetailDiskonSelesai">
-                    <div class="text-center">
-                        <div class="spinner-border text-info" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
 
 @endsection
 
@@ -131,28 +91,6 @@
                     emptyTable: "Tidak terdapat data diskon yang telah berakhir!",
                 }
             });
-        });
-
-
-
-        $('.btnDetailDiskon').on('click', function() {
-
-            var idDiskon = $(this).attr("idDiskon");
-            var nama = $(this).attr('namaDiskon');
-            $("#modalNamaDiskon").text(" Detail Diskon " + nama);
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('admin.diskons.getdetaildiskons') }}',
-                data: {
-                    '_token': '<?php echo csrf_token(); ?>',
-                    'idDiskon': idDiskon,
-                },
-                success: function(data) {
-                    $('#contentDetailDiskon').html(data.msg);
-                    $('#tabelDaftarDiskonProduk').DataTable({});
-                }
-            })
-
         });
     </script>
 @endsection

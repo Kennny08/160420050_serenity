@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paket;
+use App\Models\Perawatan;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 
 class PaketController extends Controller
@@ -14,7 +16,10 @@ class PaketController extends Controller
      */
     public function index()
     {
-        //
+        $paketsAktif = Paket::where("status", "aktif")->get();
+        $paketsNonaktif = Paket::where("status", "nonaktif")->get();
+
+        return view("admin.paket.index", compact("paketsAktif", "paketsNonaktif"));
     }
 
     /**
@@ -24,7 +29,10 @@ class PaketController extends Controller
      */
     public function create()
     {
-        //
+        $perawatanAktif = Perawatan::where("status", "aktif")->get();
+        $produkAktif = Produk::where("status", "aktif")->where("status_jual", "aktif")->get();
+
+        return view("admin.paket.tambahpaket", compact("perawatanAktif", "produkAktif"));
     }
 
     /**

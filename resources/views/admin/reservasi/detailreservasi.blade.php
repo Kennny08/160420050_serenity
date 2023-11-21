@@ -114,13 +114,11 @@
                             </div>
                         </div>
                     </div>
-
-
                     <div class="form-group col-md-12">
                         <div class="card">
                             <div class="card-body">
 
-                                <h5 class="mt-0">Detail Perawatan dan Produk</h5>
+                                <h5 class="mt-0">Detail Perawatan || Produk || Diskon || Ulasan</h5>
 
 
                                 <!-- Nav tabs -->
@@ -135,6 +133,12 @@
                                     <li class="nav-item waves-effect waves-light">
                                         <a class="nav-link" data-toggle="tab" href="#produk" role="tab">
                                             <span class="d-none d-md-block font-16">Produk</span><span
+                                                class="d-block d-md-none"><i class="mdi mdi-account h5"></i></span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item waves-effect waves-light">
+                                        <a class="nav-link" data-toggle="tab" href="#diskon" role="tab">
+                                            <span class="d-none d-md-block font-16">Diskon</span><span
                                                 class="d-block d-md-none"><i class="mdi mdi-account h5"></i></span>
                                         </a>
                                     </li>
@@ -360,6 +364,121 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="tab-pane p-3 text-center" id="diskon" role="tabpanel">
+                                        @if ($reservasi->penjualan->diskon == null)
+                                            <div class="col-md-12 text-center">
+                                                <div class="card text-white bg-danger text-center w-60 mx-auto">
+                                                    <div class="card-body">
+                                                        <blockquote class="card-bodyquote mb-0">
+                                                            <h4>
+                                                                Tidak ada Diskon yang digunakan!
+                                                            </h4>
+                                                            <footer class=" text-white font-12">
+                                                                @php
+                                                                    $jumlahDiskonValid = 0;
+                                                                    foreach ($diskonAktifBerlaku as $diskon) {
+                                                                        if ($reservasi->penjualan->total_pembayaran >= $diskon->minimal_transaksi) {
+                                                                            $jumlahDiskonValid += 1;
+                                                                        }
+                                                                    }
+                                                                @endphp
+                                                                @if ($jumlahDiskonValid > 0)
+                                                                    <h5>Silahkan pilih diskon yang tersedia! (Tersedia
+                                                                        {{ $jumlahDiskonValid }} yang berlaku)</h5>
+                                                                @else
+                                                                    <h5>Tidak terdapat Diskon yang tersedia</h5>
+                                                                @endif
+                                                            </footer>
+                                                        </blockquote>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="col-md-12 text-center">
+                                                <div class="card text-white bg-info text-center w-60 mx-auto">
+                                                    <div class="card-body">
+                                                        <blockquote class="card-bodyquote mb-0">
+                                                            <h4>
+                                                                {{ $reservasi->penjualan->diskon->nama }}
+                                                            </h4>
+                                                            <footer class=" text-white font-12">
+                                                                <h5>Potongan sebesar
+                                                                    {{ $reservasi->penjualan->diskon->jumlah_potongan }}%
+                                                                    dengan maksimum potongan sebesar Rp.
+                                                                    {{ number_format($reservasi->penjualan->diskon->maksimum_potongan, 2, ',', '.') }}
+                                                                </h5>
+                                                            </footer>
+                                                        </blockquote>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <div class="form-group col-md-12">
+                                            <div class="row">
+                                                @if ($reservasi->penjualan->diskon == null)
+                                                    <div class="col-6 mt-2 text-left">
+                                                        <address>
+                                                            @if ($reservasi->penjualan->status_selesai == 'belum')
+                                                                <a class="btn btn-lg btn-info waves-effect waves-light mt-3"
+                                                                    style="width: 40%"
+                                                                    href="{{ route('admin.diskons.pilihdiskon', $reservasi->penjualan->id) }}">Pilih
+                                                                    Diskon</a>
+                                                            @endif
+
+                                                        </address>
+                                                    </div>
+                                                    <div class="col-6 text-right">
+                                                        <address>
+                                                            <h6 class="mt-3" style="font-weight: normal">Total Potongan:
+                                                            </h6>
+                                                            @php
+                                                                $jumlahPotongan = 0;
+                                                                if ($reservasi->penjualan->diskon != null) {
+                                                                    $jumlahPotongan = ($reservasi->penjualan->total_pembayaran * $reservasi->penjualan->diskon->jumlah_potongan) / 100;
+                                                                    if ($jumlahPotongan > $reservasi->penjualan->diskon->maksimum_potongan) {
+                                                                        $jumlahPotongan = $reservasi->penjualan->diskon->maksimum_potongan;
+                                                                    }
+                                                                }
+
+                                                            @endphp
+                                                            <h4>
+                                                                <strong>
+                                                                    Rp. {{ number_format($jumlahPotongan, 2, ',', '.') }}
+                                                                </strong>
+                                                            </h4>
+                                                        </address>
+                                                    </div>
+                                                @else
+                                                    <div class="col-12 text-right">
+                                                        <address>
+                                                            <h6 class="mt-3" style="font-weight: normal">Total Potongan:
+                                                            </h6>
+                                                            @php
+                                                                $jumlahPotongan = 0;
+                                                                if ($reservasi->penjualan->diskon != null) {
+                                                                    $jumlahPotongan = ($reservasi->penjualan->total_pembayaran * $reservasi->penjualan->diskon->jumlah_potongan) / 100;
+                                                                    if ($jumlahPotongan > $reservasi->penjualan->diskon->maksimum_potongan) {
+                                                                        $jumlahPotongan = $reservasi->penjualan->diskon->maksimum_potongan;
+                                                                    }
+                                                                }
+
+                                                            @endphp
+                                                            <h4>
+                                                                <strong>
+                                                                    Rp. {{ number_format($jumlahPotongan, 2, ',', '.') }}
+                                                                </strong>
+                                                            </h4>
+                                                        </address>
+                                                    </div>
+                                                @endif
+
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
                                 </div>
 
                                 <div class="form-group col-md-12 mt-3">
@@ -413,7 +532,7 @@
                                             <address>
                                                 <h4 style="font-weight: normal;">Total : </h4>
                                                 <h2 class="text-danger fw-bold">Rp.
-                                                    {{ number_format($totalHargaProduk + $totalHargaPerawatan, 2, ',', '.') }}
+                                                    {{ number_format($totalHargaProduk + $totalHargaPerawatan - $jumlahPotongan, 2, ',', '.') }}
                                                 </h2>
                                             </address>
                                         </div>

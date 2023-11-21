@@ -46,7 +46,7 @@ class PerawatanController extends Controller
                 'namaPerawatan' => 'required|max:255',
                 'kode_perawatan' => 'required|unique:perawatans',
                 'hargaPerawatan' => 'required|numeric|min:1',
-                'durasi' => 'required|numeric|min:30',
+                'durasi' => 'required|numeric|min:30|multiple_of:30',
                 'komisiKaryawan' => 'required|numeric|min:1|max:100',
             ],
             [
@@ -59,6 +59,7 @@ class PerawatanController extends Controller
                 'durasi.required' => 'Durasi perawatan produk tidak boleh kosong',
                 'durasi.numeric' => 'Harga Beli produk harus berupa angka',
                 'durasi.min' => 'Durasi perawatan minimal 30 menit!',
+                'durasi.multiple_of' => 'Durasi perawatan harus kelipatan 30 menit!',
                 'komisiKaryawan.required' => 'Stok produk tidak boleh kosong',
                 'komisiKaryawan.numeric' => 'Stok produk harus berupa angka',
                 'komisiKaryawan.min' => 'Minimal komisi karyawan adalah 1%!',
@@ -146,7 +147,7 @@ class PerawatanController extends Controller
                     'namaPerawatan' => 'required|max:255',
                     'kode_perawatan' => 'required|unique:perawatans',
                     'hargaPerawatan' => 'required|numeric|min:1',
-                    'durasi' => 'required|numeric|min:30',
+                    'durasi' => 'required|numeric|min:30|multiple_of:30',
                     'komisiKaryawan' => 'required|numeric|min:1|max:100',
                 ],
                 [
@@ -159,6 +160,7 @@ class PerawatanController extends Controller
                     'durasi.required' => 'Durasi perawatan produk tidak boleh kosong',
                     'durasi.numeric' => 'Harga Beli produk harus berupa angka',
                     'durasi.min' => 'Durasi perawatan minimal 30 menit!',
+                    'durasi.multiple_of' => 'Durasi perawatan harus kelipatan 30 menit!',
                     'komisiKaryawan.required' => 'Stok produk tidak boleh kosong',
                     'komisiKaryawan.numeric' => 'Stok produk harus berupa angka',
                     'komisiKaryawan.min' => 'Minimal komisi karyawan adalah 1%!',
@@ -196,7 +198,7 @@ class PerawatanController extends Controller
                 [
                     'namaPerawatan' => 'required|max:255',
                     'hargaPerawatan' => 'required|numeric|min:1',
-                    'durasi' => 'required|numeric|min:30',
+                    'durasi' => 'required|numeric|min:30|multiple_of:30',
                     'komisiKaryawan' => 'required|numeric|min:1|max:100',
                 ],
                 [
@@ -207,6 +209,7 @@ class PerawatanController extends Controller
                     'durasi.required' => 'Durasi perawatan produk tidak boleh kosong',
                     'durasi.numeric' => 'Harga Beli produk harus berupa angka',
                     'durasi.min' => 'Durasi perawatan minimal 30 menit!',
+                    'durasi.multiple_of' => 'Durasi perawatan harus kelipatan 30 menit!',
                     'komisiKaryawan.required' => 'Stok produk tidak boleh kosong',
                     'komisiKaryawan.numeric' => 'Stok produk harus berupa angka',
                     'komisiKaryawan.min' => 'Minimal komisi karyawan adalah 1%!',

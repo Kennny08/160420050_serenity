@@ -75,7 +75,6 @@
                                 <th hidden class="align-middle">Tanggal Terakhir Diedit</th>
                                 <th class="align-middle">Detail</th>
                                 <th class="align-middle">Edit</th>
-                                <th class="align-middle">Hapus</th>
                             </tr>
                         </thead>
 
@@ -97,12 +96,7 @@
                                     </td>
                                     <td class="text-center"><a href="{{ route('diskons.edit', $d->id) }}"
                                             class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeleteDiskon" idDiskon = "{{ $d->id }}"
-                                            namaDiskon="{{ $d->nama }}"
-                                            routeUrl = "{{ route('diskons.destroy', $d->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusDiskon">Hapus</button>
-                                    </td>
+                                    
                                 </tr>
                             @endforeach
 
@@ -145,7 +139,6 @@
                                 <th hidden class="align-middle">Tanggal Terakhir Diedit</th>
                                 <th class="align-middle">Detail</th>
                                 <th class="align-middle">Edit</th>
-                                <th class="align-middle">Hapus</th>
                             </tr>
                         </thead>
 
@@ -167,12 +160,6 @@
                                     </td>
                                     <td class="text-center"><a href="{{ route('diskons.edit', $d->id) }}"
                                             class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeleteDiskon" idDiskon = "{{ $d->id }}"
-                                            namaDiskon="{{ $d->nama }}"
-                                            routeUrl = "{{ route('diskons.destroy', $d->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusDiskon">Hapus</button>
-                                    </td>
                                 </tr>
                             @endforeach
 
@@ -187,7 +174,7 @@
 
     <div id="modalDetailDiskon" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 600px;">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" >
             <div class="modal-content ">
                 <div class="modal-header">
                     <h5 class="modal-title mt-0" id="modalNamaDiskon">Detail Diskon</h5>
@@ -207,34 +194,6 @@
                 </div>
             </div>
             <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
-
-    <div id="modalKonfirmasiDeleteDiskon" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
-        aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <form id="formDeleteDiskon" action="{{ route('diskons.destroy', '1') }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-header">
-                        <h5 id="modalNamaDiskonDelete" class="modal-title mt-0">Konfirmasi Penghapusan Diskon</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div id="modalBodyHapusDiskon" class="modal-body text-center">
-                        <h6>Apakah Anda yakin untuk menghapus diskon?</h6>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Batal</button>
-                        <button id="btnKonfirmasiHapusDiskon" type="submit"
-                            class="btn btn-info waves-effect waves-light btnKonfirmasiHapusDiskon">Hapus</button>
-                    </div>
-                </form>
-            </div>
-
         </div>
         <!-- /.modal-dialog -->
     </div>
@@ -267,7 +226,7 @@
             $(".radioAktif").removeClass("btn-info");
         });
 
-        $('.btnDetailDiskon').on('click', function() {
+        $('body').on('click', '.btnDetailDiskon' , function() {
 
             var idDiskon = $(this).attr("idDiskon");
             var nama = $(this).attr('namaDiskon');
@@ -281,21 +240,10 @@
                 },
                 success: function(data) {
                     $('#contentDetailDiskon').html(data.msg);
-                    $('#tabelDaftarDiskonProduk').DataTable({});
+                    $('#tabelDetailDiskonProduk').DataTable({});
                 }
             })
 
-        });
-
-        $('.btnHapusDiskon').on('click', function() {
-
-            var idDiskon = $(this).attr("idDiskon");
-            var namaDiskon = $(this).attr('namaDiskon');
-            var routeUrl = $(this).attr('routeUrl');
-            $("#modalNamaDiskonDelete").text("Konfirmasi Penghapusan Diskon " + namaDiskon);
-            $("#modalBodyHapusDiskon").html("<h6>Apakah Anda yakin untuk menghapus diskon " + namaDiskon +
-                "?</h6>")
-            $("#formDeleteDiskon").attr("action", routeUrl);
         });
     </script>
 @endsection

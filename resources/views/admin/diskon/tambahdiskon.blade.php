@@ -74,11 +74,11 @@
                                     disini!</small>
                             </div>
                             <div class="col-md-6">
-                                <label for="exampleInputEmail1"><strong>Maksimal Potongan (Rp)</strong></label>
-                                <input type="number" class="form-control" name="maksimalPotongan" id="numMaksimalPotongan"
+                                <label for="exampleInputEmail1"><strong>Maksimum Potongan (Rp)</strong></label>
+                                <input type="number" class="form-control" name="maksimumPotongan" id="numMaksimumPotongan"
                                     min="1" aria-describedby="emailHelp"
-                                    placeholder="Silahkan masukkan maksimal potongan diskon" required
-                                    value="{{ old('maksimalPotongan') }}">
+                                    placeholder="Silahkan masukkan maksimum potongan diskon" required
+                                    value="{{ old('maksimumPotongan') }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan maskimal potongan diskon
                                     disini!</small>
                             </div>

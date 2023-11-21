@@ -48,7 +48,7 @@
                                 <label for="exampleInputEmail1"><strong>Kode Perawatan</strong></label>
                                 <input type="text" class="form-control" name="kode_perawatan" id="txtKodePerawatan"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan kode perawatan" required
-                                    value="{{ $perawatan->kode_perawatan }}" disabled>
+                                    value="{{ $perawatan->kode_perawatan }}" readonly>
                                 <small id="emailHelp" class="form-text text-muted">Kode Perawatan</small>
                             </div>
                             <div class="col-md-4">

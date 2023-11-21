@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Diskon;
 use App\Models\Karyawan;
 use App\Models\Pelanggan;
 use App\Models\Penjualan;
@@ -1091,8 +1092,12 @@ class ReservasiController extends Controller
         $arrKomplemen['durasiterlama'] = $durasiTerlamaPerawatanKomplemen;
         $arrKomplemen['perawatans'] = $arrayPerawatanKomplemen;
 
+        $idDiskonUnikYangSudahPernahDipakai = Penjualan::select("diskon_id")->distinct()->where("pelanggan_id", $reservasi->penjualan->pelanggan_id)->where("diskon_id", "!=", null)->get();
+        $tanggalHariIni = date("Y-m-d");
+        $diskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->where("minimal_transaksi", "<=", $reservasi->penjualan->total_pembayaran)->get();
 
-        return view('admin.reservasi.detailreservasi', compact('reservasi', 'jamMulai', 'arrKomplemen', 'perawatanSlotJamNonKomplemen'));
+
+        return view('admin.reservasi.detailreservasi', compact('reservasi', 'jamMulai', 'arrKomplemen', 'perawatanSlotJamNonKomplemen', 'diskonAktifBerlaku'));
 
     }
 
