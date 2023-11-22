@@ -240,13 +240,13 @@
                                     @endforeach
                                     <tr>
                                         <td id="tabelTotalHarga" colspan="5" class="font-weight-bold">Total Harga :
-                                            Rp. {{ $totalSementara }}
+                                            Rp. {{ number_format($totalSementara, 2, ",", ".") }}
                                         </td>
                                     </tr>
                                 @else
                                     <tr>
                                         <td id="tabelTotalHarga" colspan="5" class="font-weight-bold">Total Harga :
-                                            Rp. 0
+                                            Rp. 0,00
                                         </td>
                                     </tr>
                                 @endif

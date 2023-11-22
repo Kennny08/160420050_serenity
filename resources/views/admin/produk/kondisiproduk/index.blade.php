@@ -173,8 +173,8 @@
             var keteranganKondisi = $(this).attr('keteranganKondisi');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalKeteranganKondisi").text("Konfirmasi Penghapusan Kondisi " + keteranganKondisi);
-            $("#modalBodyHapusKondisi").html("<h6>Apakah Anda yakin untuk menghapus kondisi " + keteranganKondisi +
-                "?</h6>")
+            $("#modalBodyHapusKondisi").html("<h6>Apakah Anda yakin untuk menghapus kondisi <span class='text-danger'>" + keteranganKondisi +
+                "</span>?</h6>")
             $("#formDeleteKondisi").attr("action", routeUrl);
         });
     </script>

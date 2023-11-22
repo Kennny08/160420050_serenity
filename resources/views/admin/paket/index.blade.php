@@ -81,8 +81,8 @@
                                 <tr id="tr_{{ $pa->id }}">
                                     <td>{{ $pa->kode_paket }}</td>
                                     <td>{{ $pa->nama }}</td>
-                                    <td>{{ number_format($pa->harga, 0, ',', '.') }}</td>
-                                    <td>{{ $pa->perawatans->sum("durasi") }}</td>
+                                    <td>{{ number_format($pa->harga, 2, ',', '.') }}</td>
+                                    <td>{{ $pa->perawatans->sum('durasi') }}</td>
                                     <td>{{ $pa->deskripsi }}</td>
                                     <td hidden>{{ date('d-m-Y', strtotime($pa->created_at)) }}</td>
                                     <td hidden>{{ date('d-m-Y', strtotime($pa->updated_at)) }}</td>
@@ -147,8 +147,8 @@
                                 <tr id="tr_{{ $pn->id }}">
                                     <td>{{ $pn->kode_paket }}</td>
                                     <td>{{ $pn->nama }}</td>
-                                    <td>{{ number_format($pn->harga, 0, ',', '.') }}</td>
-                                    <td>{{ $pn->perawatans->sum("durasi") }}</td>
+                                    <td>{{ number_format($pn->harga, 2, ',', '.') }}</td>
+                                    <td>{{ $pn->perawatans->sum('durasi') }}</td>
                                     <td>{{ $pn->deskripsi }}</td>
                                     <td hidden>{{ date('d-m-Y', strtotime($pn->created_at)) }}</td>
                                     <td hidden>{{ date('d-m-Y', strtotime($pn->updated_at)) }}</td>
@@ -159,7 +159,7 @@
                                     <td class="text-center"><a href="{{ route('pakets.edit', $pn->id) }}"
                                             class=" btn btn-info waves-effect waves-light">Edit</a></td>
                                     <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeletePaket" idPaket = "{{ $pa->id }}"
+                                            data-target="#modalKonfirmasiDeletePaket" idPaket = "{{ $pn->id }}"
                                             namaPaket="{{ $pn->nama }}"
                                             routeUrl = "{{ route('pakets.destroy', $pn->id) }}"
                                             class=" btn btn-danger waves-effect waves-light btnHapusPaket">Hapus</button>
@@ -258,10 +258,11 @@
             $(".radioAktif").removeClass("btn-info");
         });
 
-        $('.btnDetailPaket').on('click', function() {
+        $('body').on('click', ".btnDetailPaket", function() {
 
             var idPaket = $(this).attr("idPaket");
             var nama = $(this).attr('namaPaket');
+
             $("#modalNamaPaket").text(" Detail Paket " + nama);
             $.ajax({
                 type: 'POST',
@@ -273,10 +274,8 @@
                 success: function(data) {
                     $('#contentDetailPaket').html(data.msg);
                     $('#tabelDaftarPaketProduk').DataTable({});
-                    $('#tabelDaftarPaketKaryawan').DataTable({
-                        order: [
-                            [1, "desc"]
-                        ]
+                    $('#tabelDaftarPaketPerawatan').DataTable({
+                        ordering: false,
                     });
                 }
             })
@@ -289,8 +288,8 @@
             var namaPaket = $(this).attr('namaPaket');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalNamaPaketDelete").text("Konfirmasi Penghapusan Paket " + namaPaket);
-            $("#modalBodyHapusPaket").html("<h6>Apakah Anda yakin untuk menghapus paket " + namaPaket +
-                "?</h6>")
+            $("#modalBodyHapusPaket").html("<h6>Apakah Anda yakin untuk menghapus paket <span class='text-danger'>" + namaPaket +
+                "</span>?</h6>")
             $("#formDeletePaket").attr("action", routeUrl);
         });
     </script>

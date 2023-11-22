@@ -176,8 +176,8 @@
             var namaKategori = $(this).attr('namaKategori');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalNamaKategori").text("Konfirmasi Penghapusan Kategori " + namaKategori);
-            $("#modalBodyHapusKategori").html("<h6>Apakah Anda yakin untuk menghapus kategori " + namaKategori +
-                "?</h6>")
+            $("#modalBodyHapusKategori").html("<h6>Apakah Anda yakin untuk menghapus kategori <span class='text-danger'>" + namaKategori +
+                "</span>?</h6>")
             $("#formDeleteKategori").attr("action", routeUrl);
         });
     </script>

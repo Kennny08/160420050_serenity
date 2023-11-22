@@ -180,8 +180,8 @@
             var namaSupplier = $(this).attr('namaSupplier');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalNamaSupplierDelete").text("Konfirmasi Penghapusan Supplier " + namaSupplier);
-            $("#modalBodyHapusSupplier").html("<h6>Apakah Anda yakin untuk menghapus supplier " + namaSupplier +
-                "?</h6>")
+            $("#modalBodyHapusSupplier").html("<h6>Apakah Anda yakin untuk menghapus supplier <span class='text-danger'>" + namaSupplier +
+                "</span>?</h6>")
             $("#formDeleteSupplier").attr("action", routeUrl);
         });
     </script>

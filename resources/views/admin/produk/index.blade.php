@@ -380,8 +380,8 @@
             var namaProduk = $(this).attr('namaProduk');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalNamaProdukDelete").text("Konfirmasi Penghapusan Produk " + namaProduk);
-            $("#modalBodyHapusProduk").html("<h6>Apakah Anda yakin untuk menghapus produk " + namaProduk +
-                "?</h6>")
+            $("#modalBodyHapusProduk").html("<h6>Apakah Anda yakin untuk menghapus produk <span class='text-danger'>" + namaProduk +
+                "</span>?</h6>")
             $("#formDeleteProduk").attr("action", routeUrl);
         });
     </script>

@@ -29,8 +29,8 @@ class PaketController extends Controller
      */
     public function create()
     {
-        $perawatanAktif = Perawatan::where("status", "aktif")->get();
-        $produkAktif = Produk::where("status", "aktif")->where("status_jual", "aktif")->get();
+        $perawatanAktif = Perawatan::where("status", "aktif")->orderBy("nama")->get();
+        $produkAktif = Produk::where("status", "aktif")->where("status_jual", "aktif")->orderBy("nama")->get();
 
         return view("admin.paket.tambahpaket", compact("perawatanAktif", "produkAktif"));
     }
@@ -43,7 +43,60 @@ class PaketController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all());
+        date_default_timezone_set('Asia/Jakarta');
+        $validatedData = $request->validate(
+            [
+                'namaPaket' => 'required|max:255',
+                'kode_paket' => 'required|unique:pakets',
+                'hargaPaket' => 'required|numeric|min:1',
+                'arrayperawatanid' => 'required|array|min:2',
+            ],
+            [
+                'namaPaket.required' => 'Nama paket tidak boleh kosong!',
+                'kode_paket.required' => 'Kode Paket tidak boleh kosong!',
+                'kode_paket.unique' => 'Kode paket sudah pernah dipakai, mohon masukkan kode paket lainnya!',
+                'hargaPaket.required' => 'Harga Paket tidak boleh kosong!',
+                'hargaPaket.numeric' => 'Harga Paket harus berupa angka!',
+
+                'hargaPaket.min' => 'Harga Paket Paket minimal Rp. 1!',
+                'arrayperawatanid.required' => 'Perawatan Paket tidak boleh kosong!',
+                'arrayperawatanid.min' => 'Minimal terdapat 2 perawatan dalam satu Paket!'
+            ]
+        );
+
+        $namaPaket = $request->get("namaPaket");
+        $kodePaket = $request->get("kode_paket");
+        $hargaPaket = $request->get("hargaPaket");
+        $arrPerawatanId = $request->get("arrayperawatanid");
+        $arrProdukId = $request->get("arrayprodukid");
+        $arrProdukKuantitas = $request->get("arrayprodukkuantitas");
+        $statusPaket = $request->get("radioStatusPaket");
+
+        $newPaket = new Paket();
+        $newPaket->nama = $namaPaket;
+        $newPaket->kode_paket = $kodePaket;
+        $newPaket->harga = $hargaPaket;
+        $newPaket->status = $statusPaket;
+        $newPaket->created_at = date("Y-m-d H:i:s");
+        $newPaket->updated_at = date("Y-m-d H:i:s");
+        $newPaket->save();
+
+        foreach ($arrPerawatanId as $idPerawatan) {
+            $newPaket->perawatans()->attach($idPerawatan);
+        }
+
+        if ($arrProdukId != null) {
+            for ($i = 0; $i < count($arrProdukId); $i++) {
+                $newPaket->produks()->attach($arrProdukId[$i], ['jumlah' => $arrProdukKuantitas[$i]]);
+            }
+
+        }
+
+        return redirect()->route("pakets.index")->with("status", "Berhasil menambahkan data paket " . $newPaket->nama . "!");
+
+
+
     }
 
     /**
@@ -65,7 +118,22 @@ class PaketController extends Controller
      */
     public function edit(Paket $paket)
     {
-        //
+        $perawatanAktif = Perawatan::where("status", "aktif")->orderBy("nama")->get();
+        $produkAktif = Produk::where("status", "aktif")->where("status_jual", "aktif")->orderBy("nama")->get();
+
+        $arrPerawatanId = [];
+        foreach ($paket->perawatans as $perawatan) {
+            array_push($arrPerawatanId, $perawatan->id);
+        }
+
+        $arrProdukId = [];
+        if (count($paket->produks) != 0) {
+            foreach ($paket->produks as $produk) {
+                array_push($arrProdukId, $produk->id);
+            }
+        }
+
+        return view("admin.paket.editpaket", compact("perawatanAktif", "produkAktif", "paket", "arrPerawatanId", "arrProdukId"));
     }
 
     /**
@@ -77,7 +145,59 @@ class PaketController extends Controller
      */
     public function update(Request $request, Paket $paket)
     {
-        //
+        date_default_timezone_set('Asia/Jakarta');
+        $validatedData = $request->validate(
+            [
+                'namaPaket' => 'required|max:255',
+                'hargaPaket' => 'required|numeric|min:1',
+                'arrayperawatanid' => 'required|array|min:2',
+            ],
+            [
+                'namaPaket.required' => 'Nama paket tidak boleh kosong!',
+                'hargaPaket.required' => 'Harga Paket tidak boleh kosong!',
+                'hargaPaket.numeric' => 'Harga Paket harus berupa angka!',
+
+                'hargaPaket.min' => 'Harga Paket Paket minimal Rp. 1!',
+                'arrayperawatanid.required' => 'Perawatan Paket tidak boleh kosong!',
+                'arrayperawatanid.min' => 'Minimal terdapat 2 perawatan dalam satu Paket!'
+            ]
+        );
+
+        $namaPaket = $request->get("namaPaket");
+        $hargaPaket = $request->get("hargaPaket");
+        $arrPerawatanId = $request->get("arrayperawatanid");
+        $arrProdukId = $request->get("arrayprodukid");
+        $arrProdukKuantitas = $request->get("arrayprodukkuantitas");
+        $statusPaket = $request->get("radioStatusPaket");
+
+        $paket->nama = $namaPaket;
+        $paket->harga = $hargaPaket;
+        $paket->status = $statusPaket;
+        $paket->updated_at = date("Y-m-d H:i:s");
+        $paket->save();
+
+        foreach ($paket->perawatans as $perawatan) {
+            $paket->perawatans()->detach($perawatan);
+        }
+        foreach ($arrPerawatanId as $idPerawatan) {
+            $paket->perawatans()->attach($idPerawatan);
+        }
+
+        if ($arrProdukId != null) {
+            foreach ($paket->produks as $produk) {
+                $paket->produks()->detach($produk);
+            }
+
+            for ($i = 0; $i < count($arrProdukId); $i++) {
+                $paket->produks()->attach($arrProdukId[$i], ['jumlah' => $arrProdukKuantitas[$i]]);
+            }
+        } else {
+            foreach ($paket->produks as $produk) {
+                $paket->produks()->detach($produk);
+            }
+        }
+
+        return redirect()->route("pakets.index")->with("status", "Berhasil mengedit data paket " . $paket->nama . "!");
     }
 
     /**
@@ -88,6 +208,38 @@ class PaketController extends Controller
      */
     public function destroy(Paket $paket)
     {
-        //
+        $objPaket = $paket;
+        try {
+            $objPaket->delete();
+            return redirect()->route('pakets.index')->with('status', 'Paket ' . $objPaket->nama . ' telah berhasil dihapus');
+        } catch (\PDOException $ex) {
+            $msg = "Data Gagal dihapus. Pastikan kembali tidak ada data yang berelasi sebelum dihapus";
+            return redirect()->route('pakets.index')->with('status', $msg);
+        }
     }
+
+    public function getDetailPaket()
+    {
+        $idPaket = $_POST["idPaket"];
+        $paket = Paket::find($idPaket);
+
+        $jmlhReservasi = 0;
+        $jmlTanpaReservasi = 0;
+        foreach ($paket->penjualans as $pp) {
+            if ($pp->reservasi != null) {
+                if ($pp->reservasi->status == 'selesai') {
+                    $jmlhReservasi++;
+                }
+            } else {
+                if ($pp->status_selesai == 'selesai') {
+                    $jmlTanpaReservasi++;
+                }
+            }
+        }
+        $paket['jmlh_reservasi'] = $jmlhReservasi;
+        $paket['jmlh_tanpa_reservasi'] = $jmlTanpaReservasi;
+
+        return response()->json(array('msg' => view('admin.paket.detailpaket', compact('paket'))->render()), 200);
+    }
+
 }

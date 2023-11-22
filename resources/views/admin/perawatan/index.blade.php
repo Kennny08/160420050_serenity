@@ -300,8 +300,8 @@
             var namaPerawatan = $(this).attr('namaPerawatan');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalNamaPerawatanDelete").text("Konfirmasi Penghapusan Perawatan " + namaPerawatan);
-            $("#modalBodyHapusPerawatan").html("<h6>Apakah Anda yakin untuk menghapus perawatan " + namaPerawatan +
-                "?</h6>")
+            $("#modalBodyHapusPerawatan").html("<h6>Apakah Anda yakin untuk menghapus perawatan <span class='text-danger'>" + namaPerawatan +
+                "</span>?</h6>")
             $("#formDeletePerawatan").attr("action", routeUrl);
         });
     </script>

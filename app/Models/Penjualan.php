@@ -34,4 +34,9 @@ class Penjualan extends Model
         return $this->belongsTo(Diskon::class, 'diskon_id');
     }
 
+    public function pakets()
+    {
+        return $this->belongsToMany(Paket::class, 'paket_penjualan', 'penjualan_id', 'paket_id')->withPivot('jumlah', 'harga')->withTrashed();
+    }
+
 }

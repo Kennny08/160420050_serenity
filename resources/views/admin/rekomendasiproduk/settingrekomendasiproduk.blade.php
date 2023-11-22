@@ -97,7 +97,7 @@
                                                 <table class="table table-bordered">
                                                     <thead class="thead-default">
                                                         <tr class="text-center">
-                                                            <th>Nama Perawatan / Produk</th>
+                                                            <th>Pasangan Perawatan atau Produk beserta Jumlah Kemunculannya</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>

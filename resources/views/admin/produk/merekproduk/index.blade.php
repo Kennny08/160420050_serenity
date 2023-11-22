@@ -172,8 +172,8 @@
             var namaMerek = $(this).attr('namaMerek');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalNamaMerek").text("Konfirmasi Penghapusan Merek " + namaMerek);
-            $("#modalBodyHapusMerek").html("<h6>Apakah Anda yakin untuk menghapus merek " + namaMerek +
-                "?</h6>")
+            $("#modalBodyHapusMerek").html("<h6>Apakah Anda yakin untuk menghapus merek <span class='text-danger'>" + namaMerek +
+                "</span>?</h6>")
             $("#formDeleteMerek").attr("action", routeUrl);
         });
     </script>
