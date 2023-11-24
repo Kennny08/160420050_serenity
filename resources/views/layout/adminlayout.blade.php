@@ -61,26 +61,26 @@
             </div>
 
             <!-- Search input -->
-            <div class="search-wrap" id="search-wrap">
+            {{-- <div class="search-wrap" id="search-wrap">
                 <div class="search-bar">
                     <input class="search-input" type="search" placeholder="Search" />
                     <a href="#" class="close-search toggle-search" data-target="#search-wrap">
                         <i class="mdi mdi-close-circle"></i>
                     </a>
                 </div>
-            </div>
+            </div> --}}
 
             <nav class="navbar-custom">
                 <ul class="navbar-right list-inline float-right mb-0">
 
-                    <li class="list-inline-item dropdown notification-list d-none d-md-inline-block">
+                    {{-- <li class="list-inline-item dropdown notification-list d-none d-md-inline-block">
                         <a class="nav-link waves-effect toggle-search" href="#" data-target="#search-wrap">
                             <i class="fas fa-search noti-icon"></i>
                         </a>
-                    </li>
+                    </li> --}}
 
                     <!-- language-->
-                    <li class="dropdown notification-list list-inline-item d-none d-md-inline-block">
+                    {{-- <li class="dropdown notification-list list-inline-item d-none d-md-inline-block">
                         <a class="nav-link dropdown-toggle arrow-none waves-effect" data-toggle="dropdown"
                             href="#" role="button" aria-haspopup="false" aria-expanded="false">
                             <img src="{{ asset('assets_admin/images/flags/us_flag.jpg') }}" class="mr-2"
@@ -103,7 +103,7 @@
                                     src="{{ asset('assets_admin/images/flags/italy_flag.jpg') }}" alt=""
                                     height="16" /><span> Italian </span></a>
                         </div>
-                    </li>
+                    </li> --}}
 
                     <!-- full screen -->
                     <li class="dropdown notification-list list-inline-item d-none d-md-inline-block">
@@ -113,7 +113,7 @@
                     </li>
 
                     <!-- notification -->
-                    <li class="dropdown notification-list list-inline-item">
+                    {{-- <li class="dropdown notification-list list-inline-item">
                         <a class="nav-link dropdown-toggle arrow-none waves-effect" data-toggle="dropdown"
                             href="#" role="button" aria-haspopup="false" aria-expanded="false">
                             <i class="fas fa-bell noti-icon"></i>
@@ -170,7 +170,7 @@
                                 View all <i class="fi-arrow-right"></i>
                             </a>
                         </div>
-                    </li>
+                    </li> --}}
 
                     <li class="dropdown notification-list list-inline-item">
                         <div class="dropdown notification-list nav-pro-img">
@@ -184,12 +184,12 @@
                                 <!-- item-->
                                 <a class="dropdown-item" href="#"><i class="mdi mdi-account-circle"></i>
                                     Profile</a>
-                                <a class="dropdown-item" href="#"><i class="mdi mdi-wallet"></i> My Wallet</a>
+                                {{-- <a class="dropdown-item" href="#"><i class="mdi mdi-wallet"></i> My Wallet</a>
                                 <a class="dropdown-item d-block" href="#"><span
                                         class="badge badge-success float-right">11</span><i
                                         class="mdi mdi-settings"></i> Settings</a>
                                 <a class="dropdown-item" href="#"><i class="mdi mdi-lock-open-outline"></i>
-                                    Lock screen</a>
+                                    Lock screen</a> --}}
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item text-danger" href="#"><i
                                         class="mdi mdi-power text-danger"></i> Logout</a>
