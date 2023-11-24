@@ -133,31 +133,57 @@
                                 <label for="exampleInputEmail1"><strong>Layanan Perawatan</strong></label>
                             </div>
                             <div class="col-md-12">
-                                <div class="input-group" style="width: 100%">
+                                <div class="input-group">
                                     <select name="perawatan" id="perawatanSelect" class="form-control"
                                         aria-label="Default select example" required>
                                         <option value="null" selected disabled>Pilih Perawatan</option>
                                         @if (session('arrPerawatan'))
-                                            @foreach ($perawatans as $p)
-                                                @if (!in_array($p->id, session('arrPerawatan')))
-                                                    <option value="{{ $p->id }}" durasi="{{ $p->durasi }}"
-                                                        harga="{{ $p->harga }}" deskripsi="{{ $p->deskripsi }}">
-                                                        {{ $p->nama }}
-                                                    </option>
-                                                @endif
-                                            @endforeach
+                                            @if (session('arrPaketObject'))
+                                                @php
+                                                    $arrIdPerawatanDariPaketDanPerawatan = [];
+                                                    foreach (session('arrPerawatan') as $idPerawatan) {
+                                                        array_push($arrIdPerawatanDariPaketDanPerawatan, $idPerawatan);
+                                                    }
+                                                    foreach (session('arrPaketObject') as $objPaket) {
+                                                        foreach ($objPaket->perawatans as $objPerawatan) {
+                                                            array_push($arrIdPerawatanDariPaketDanPerawatan, $objPerawatan->id);
+                                                        }
+                                                    }
+                                                @endphp
+                                                @foreach ($perawatans as $p)
+                                                    @if (!in_array($p->id, $arrIdPerawatanDariPaketDanPerawatan))
+                                                        <option value="{{ $p->id }}" durasi="{{ $p->durasi }}"
+                                                            harga="{{ $p->harga }}" deskripsi="{{ $p->deskripsi }}"
+                                                            kode = "{{ $p->kode_perawatan }}">
+                                                            {{ $p->nama }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                @foreach ($perawatans as $p)
+                                                    @if (!in_array($p->id, session('arrPerawatan')))
+                                                        <option value="{{ $p->id }}" durasi="{{ $p->durasi }}"
+                                                            harga="{{ $p->harga }}" deskripsi="{{ $p->deskripsi }}"
+                                                            kode = "{{ $p->kode_perawatan }}">
+                                                            {{ $p->nama }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            @endif
                                         @else
                                             @foreach ($perawatans as $p)
                                                 <option value="{{ $p->id }}" durasi="{{ $p->durasi }}"
-                                                    harga="{{ $p->harga }}" deskripsi="{{ $p->deskripsi }}">
+                                                    harga="{{ $p->harga }}" deskripsi="{{ $p->deskripsi }}"
+                                                    kode = "{{ $p->kode_perawatan }}">
                                                     {{ $p->nama }}
                                                 </option>
                                             @endforeach
                                         @endif
 
                                     </select>
-                                    <button type="button" id="btnTambahLayanan" style="width: 150px"
-                                        class="btn btn-info waves-effect waves-light ml-2">Tambah Layanan</button>
+                                    <button type="button" id="btnTambahLayanan" style="width: 200px;"
+                                        class="btn btn-info waves-effect waves-light ml-2">Tambah
+                                        Layanan</button>
                                 </div>
 
                                 <small id="emailHelp" class="form-text text-muted">Pilih Layanan Perawatan disini!</small>
@@ -172,30 +198,60 @@
                             @endif
                         </div>
 
+                        <div class="form-group row" id="containerPaket">
+                            <div class="col-md-12">
+                                <label for="exampleInputEmail1"><strong>Paket Layanan</strong></label>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <select name="paket" id="paketSelect" class="form-control"
+                                        aria-label="Default select example" required>
+                                        <option value="null" selected disabled>Pilih Paket</option>
+                                        @if (session('arrPaket'))
+                                            @foreach ($pakets as $pk)
+                                                @if (!in_array($pk->id, session('arrPaket')))
+                                                    <option value="{{ $pk->id }}" kode="{{ $pk->kode_paket }}">
+                                                        {{ $pk->nama }}
+                                                    </option>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            @foreach ($pakets as $pk)
+                                                <option value="{{ $pk->id }}" kode="{{ $pk->kode_paket }}">
+                                                    {{ $pk->nama }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+
+                                    </select>
+                                    <button type="button" id="btnTambahPaket" style="width: 200px;"
+                                        class="btn btn-info waves-effect waves-light ml-2">Tambah
+                                        Paket</button>
+                                </div>
+
+                                <small id="emailHelp" class="form-text text-muted">Pilih Layanan Perawatan disini!</small>
+                            </div>
+
+                            @if (session('arrPaketObject'))
+                                @foreach (session('arrPaketObject') as $apo)
+                                    <input id="paket{{ $apo->id }}" type="hidden" class='classarraypaketid'
+                                        value="{{ $apo->id }}" name="arraypaketid[]">
+                                @endforeach
+                            @endif
+                        </div>
+
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <div class="shadow card">
                                     <div class="card-body text-center" id="cardDetailPerawatan">
                                         <div class="align-middle alert alert-info" role="alert">
-                                            <h6><strong>Silahkan Pilih Perawatan terlebih dahulu!</strong></h6>
+                                            <h6><strong>Silahkan Pilih Perawatan atau Paket terlebih dahulu!</strong></h6>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-
-                            {{-- <div class="card"
-                                style="border: 1px solid #ccc;
-                    border-radius: 5px;
-                    padding: 15px;
-                    margin-top: 5px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                                <div class="card-body text-center" id="cardDetailPerawatan">
-                                    <h5 class="card-header"><strong>Silahkan Pilih Perawatan terlebih dahulu!</strong></h5>
-
-                                </div>
-                            </div> --}}
                         </div>
+
 
                         <div class="form-group row text-center">
                             <div class="form-group col-md-12 table-responsive">
@@ -203,16 +259,168 @@
                                     <table class="table table-bordered table-striped dt-responsive wrap">
                                         <thead>
                                             <tr>
-                                                <th class="text-center">Nama Perawatan</th>
+                                                <th class="text-center">Nama Perawatan/Paket</th>
                                                 <th class="text-center">Durasi (Menit)</th>
-                                                <th class="text-center">Harga (Rp)</th>
+                                                <th class="text-center">Detail Paket <span
+                                                        class="text-danger">(*paket)</span></th>
                                                 <th class="text-center">Deskripsi</th>
+                                                <th class="text-center">Harga (Rp)</th>
                                                 <th class="text-center">Hapus</th>
                                             </tr>
                                         </thead>
                                         <tbody id="bodyListPerawatan">
-                                            @if (session('arrPerawatanObject'))
+
+                                            @if (session('arrKodeKeseluruhan'))
+                                                @foreach (session('arrKodeKeseluruhan') as $kode)
+                                                    @php
+                                                        $kodeDepan = substr($kode, 0, 1);
+                                                    @endphp
+                                                    @if ($kodeDepan == 's')
+                                                        @php
+                                                            $perawatanTerpilih = $perawatans->firstWhere('kode_perawatan', $kode);
+                                                        @endphp
+                                                        <tr>
+                                                            <td> {{ $perawatanTerpilih->nama }} </td>
+                                                            <td>{{ $perawatanTerpilih->durasi }} </td>
+                                                            <td> - </td>
+                                                            <td>{{ $perawatanTerpilih->deskripsi }}</td>
+                                                            <td>{{ $perawatanTerpilih->harga }} </td>
+                                                            <td><button type='button'
+                                                                    class='deletePerawatan btn btn-danger waves-effect waves-light'
+                                                                    idPerawatan="{{ $perawatanTerpilih->id }}"
+                                                                    namaPerawatan="{{ $perawatanTerpilih->nama }}"
+                                                                    durasiPerawatan="{{ $perawatanTerpilih->durasi }}"
+                                                                    hargaPerawatan="{{ $perawatanTerpilih->harga }}"
+                                                                    deskripsiPerawatan="{{ $perawatanTerpilih->deskripsi }}"
+                                                                    kodePerawatan="{{ $perawatanTerpilih->kode_perawatan }}">Hapus</button>
+                                                            </td>
+                                                        </tr>
+                                                    @else
+                                                        @php
+                                                            $paketTerpilih = $pakets->firstWhere('kode_paket', $kode);
+                                                        @endphp
+                                                        <tr>
+                                                            <td> {{ $paketTerpilih->nama }} </td>
+
+                                                            <td>
+                                                                {{ $paketTerpilih->perawatans->sum('durasi') }}
+                                                            </td>
+                                                            <td class="text-left">
+                                                                <strong class="font-weight-bold">Detail Perawatan</strong>
+                                                                <ul>
+                                                                    @foreach ($paketTerpilih->perawatans as $perawatan)
+                                                                        <li>{{ $perawatan->nama }} -
+                                                                            {{ $perawatan->durasi }} menit</li>
+                                                                    @endforeach
+                                                                </ul>
+                                                                @if (count($paketTerpilih->produks) > 0)
+                                                                    <strong class="font-weight-bold">Detail Produk</strong>
+                                                                    <ul>
+                                                                        @foreach ($paketTerpilih->produks as $produk)
+                                                                            <li>{{ $produk->nama }} -
+                                                                                ({{ $produk->pivot->jumlah }})
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                @endif
+
+                                                            </td>
+                                                            <td> {{ $paketTerpilih->deskripsi }} </td>
+                                                            <td>{{ number_format($paketTerpilih->harga, 2, ',', '.') }}
+                                                            </td>
+                                                            <td>
+                                                                <button type='button'
+                                                                    class='deletePaket btn btn-danger waves-effect waves-light'
+                                                                    idPaket = "{{ $paketTerpilih->id }}"
+                                                                    namaPaket = "{{ $paketTerpilih->nama }}"
+                                                                    kodePaket="{{ $paketTerpilih->kode_paket }}">Hapus</button>
+                                                            </td>
+
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                <tr id="trSilahkan">
+                                                    <td colspan="6">
+                                                        Silahkan pilih Layanan Perawatan atau Paket
+                                                    </td>
+                                                </tr>
+                                            @endif
+
+                                            {{-- @if (session('arrPerawatanObject'))
                                                 @foreach (session('arrPerawatanObject') as $aro)
+                                                    
+                                                @endforeach
+                                            @else
+                                            @endif --}}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div id="containerKodeKeseluruhan">
+                            @if (session('arrKodeKeseluruhan'))
+                                @foreach (session('arrKodeKeseluruhan') as $kode)
+                                    <input id='kode{{ $kode }}' type="hidden" class='classarraykodeid'
+                                        value="{{ $kode }}" name="arraykodekeseluruhan[]">
+                                    {{-- @php
+                                        $kodeDepan = substr($kode, 0, 1);
+                                    @endphp
+                                    @if ($kodeDepan == 's')
+                                        @php
+                                            $perawatanTerpilih = $perawatans->firstWhere('kode_perawatan', $kode);
+                                        @endphp
+                                        <input id='kode{{ $perawatanTerpilih->id }}' type="hidden"
+                                            class='classarraykodeid' value="{{ $kode }}"
+                                            name="arraykodekeseluruhan[]">
+                                    @else
+                                        @php
+                                            $paketTerpilih = $pakets->firstWhere('kode_paket', $kode);
+                                        @endphp
+                                        <input id='kode{{ $paketTerpilih->id }}' type="hidden" class='classarraykodeid'
+                                            value="{{ $kode }}" name="arraykodekeseluruhan[]">
+                                    @endif --}}
+                                @endforeach
+                            @endif
+                        </div>
+
+
+
+
+                        {{-- <div class="form-group row">
+                            <div class="col-md-12">
+                                <div class="shadow card">
+                                    <div class="card-body text-center" id="cardDetailPaket">
+                                        <div class="align-middle alert alert-info" role="alert">
+                                            <h6><strong>Silahkan Pilih Paket terlebih dahulu!</strong></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> --}}
+
+                        {{-- <div class="form-group row text-center">
+                            <div class="form-group col-md-12 table-responsive">
+                                <div>
+                                    <table class="table table-bordered table-striped dt-responsive wrap">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">Nama Paket</th>
+                                                <th class="text-center">Detail Perawatan</th>
+                                                <th class="text-center">Durasi (Menit)</th>
+                                                <th class="text-center">Detail Produk</th>
+                                                <th class="text-center">Deskripsi</th>
+                                                <th class="text-center">Harga (Rp)</th>
+                                                <th class="text-center">Hapus</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bodyListPaket">
+                                            @if (session('arrPaketObject'))
+                                                @foreach (session('arrPaketObject') as $aro)
                                                     <tr>
                                                         <td> {{ $aro->nama }} </td>
                                                         <td>{{ $aro->durasi }} </td>
@@ -242,11 +450,12 @@
 
                             </div>
 
-                        </div>
+                        </div> --}}
+
                         <div class="form-group text-right">
                             <button id="btnKonfirmasiPerawatan" type="button" data-toggle = "modal"
                                 data-target="#modalKonfirmasiPerawatan"
-                                class="btn btn-primary btn-lg waves-effect waves-light">Konfirmasi Perawatan</button>
+                                class="btn btn-primary btn-lg waves-effect waves-light">Konfirmasi Reservasi</button>
                         </div>
 
                         <div id="modalKonfirmasiPerawatan" class="modal fade bs-example-modal-center" tabindex="-1"
@@ -283,6 +492,30 @@
         </div>
         <!-- end col -->
     </div>
+
+    <div id="modalPemberitahuanPerawatan" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title mt-0">Pemberitahuan untuk Menambah Paket</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center" id="bodyModalPemberitahuanPerawatan">
+                    <h6></h6>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup</button>
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @endsection
 
 @section('javascript')
@@ -310,39 +543,7 @@
             })
         });
 
-        $('#slotJamSelect').on('change', function() {
-            // jamReservasi = $("#slotJamSelect option:selected").text();
-            // $(".deletePerawatan").each(function(index) {
-            //     var perawatanid = $(this).attr('idPerawatan');
-            //     var namaPerawatan = $(this).attr('namaPerawatan');
-            //     var durasiperawatan = $(this).attr('durasiPerawatan');
-            //     var hargaperawatan = $(this).attr('hargaPerawatan');
-            //     var deskripsiperawatan = $(this).attr('deskripsiPerawatan');
-
-            //     $("#perawatanSelect").append("<option value='" + perawatanid + "' durasi='" +
-            //         durasiperawatan +
-            //         "' harga='" + hargaperawatan + "' deskripsi='" + deskripsiperawatan + "'>" +
-            //         namaPerawatan +
-            //         "</option>");
-
-            //     var select = $("#perawatanSelect");
-            //     $("#perawatanSelect option[value='null']").remove();
-            //     var options = select.find("option");
-            //     options.sort(function(a, b) {
-            //         return a.text.localeCompare(b.text);
-            //     });
-            //     select.empty();
-            //     select.append("<option value='null' selected disabled>Pilih Perawatan</option>")
-            //     select.append(options);
-            //     select.val("null");
-            // });
-            // $('#bodyListPerawatan').html(
-            //     "<tr id='trSilahkan'><td colspan='5'>Silahkan Pilih Perawatan</td></tr>");
-
-            // $(".classarrayperawatanid").remove();
-
-
-        });
+        $('#slotJamSelect').on('change', function() {});
 
         $('#perawatanSelect').on('change', function() {
             var idPerawatan = $(this).val();
@@ -359,12 +560,28 @@
             })
         });
 
+        $('#paketSelect').on('change', function() {
+            var idPaket = $(this).val();
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('reservasi.admin.getdetailpaketreservasi') }}',
+                data: {
+                    '_token': '<?php echo csrf_token(); ?>',
+                    'idPaket': idPaket,
+                },
+                success: function(data) {
+                    $('#cardDetailPerawatan').html(data.msg);
+                }
+            })
+        });
+
         $('body').on('click', '#btnTambahLayanan', function() {
             var perawatanid = $("#perawatanSelect").val();
             var namaperawatan = $("#perawatanSelect option:selected").text();
             var durasiperawatan = $("#perawatanSelect option:selected").attr('durasi');
             var hargaperawatan = $("#perawatanSelect option:selected").attr('harga');
             var deskripsiperawatan = $("#perawatanSelect option:selected").attr('deskripsi');
+            var kodeperawatan = $("#perawatanSelect option:selected").attr('kode');
             var tanggalReservasi = $("#tanggalReservasi").val();
 
             if (perawatanid != null) {
@@ -372,58 +589,112 @@
                     "' type='hidden' class='classarrayperawatanid' value='" +
                     perawatanid +
                     "' name='arrayperawatanid[]'>");
+                $("#containerKodeKeseluruhan").append("<input id='kode" + kodeperawatan +
+                    "' type='hidden' class='classarraykodeid' value='" +
+                    kodeperawatan +
+                    "' name='arraykodekeseluruhan[]'>");
                 $('#trSilahkan').remove();
                 $("#bodyListPerawatan").append(
                     "<tr><td>" + namaperawatan + "</td>" +
                     "<td>" + durasiperawatan + "</td>" +
+                    "<td> - </td>" +
+                    "<td>" + deskripsiperawatan + "</td>" +
                     "<td>" + parseInt(hargaperawatan).toLocaleString('id-ID', {
                         style: 'currency',
                         currency: 'IDR'
                     }).toString().replace("Rp", "") + "</td>" +
-                    "<td>" + deskripsiperawatan + "</td>" +
                     "<td>" +
                     "<button type='button' class='deletePerawatan btn btn-danger waves-effect waves-light' idPerawatan='" +
                     perawatanid +
                     "' namaPerawatan='" + namaperawatan + "' durasiPerawatan='" + durasiperawatan +
                     "' hargaPerawatan='" +
-                    hargaperawatan + "' deskripsiPerawatan='" + deskripsiperawatan + "' >Hapus</button>" +
+                    hargaperawatan + "' deskripsiPerawatan='" + deskripsiperawatan + "' kodePerawatan='" +
+                    kodeperawatan + "'>Hapus</button>" +
                     "</td>" +
                     "</tr>");
                 $("#perawatanSelect option:selected").remove();
                 $("#perawatanSelect").val('null');
                 $('#cardDetailPerawatan').html(
-                    "<div class='alert alert-info' role='alert'><h6><strong>Silahkan Pilih Perawatan terlebih dahulu!</strong></h6></div>"
+                    "<div class='alert alert-info' role='alert'><h6><strong>Silahkan Pilih Perawatan atau Paket terlebih dahulu!</strong></h6></div>"
                 );
+            }
+        });
 
-                // //Pengecekan agar perawatan yang ditambah tidak melebihi jam tutup
-                // //Jam Reservasi
-                // var waktuAwal = jamReservasi.split(".");
-                // var jamAwal = parseInt(waktuAwal[0]);
-                // var menitAwal = parseInt(waktuAwal[1]);
-                // var waktuAwal = jamAwal + ":" + menitAwal;
-                // var tanggalAwal = new Date(tanggalReservasi + " " + waktuAwal);
+        $('body').on('click', '#btnTambahPaket', function() {
+            var paketId = $("#paketSelect").val();
+            var paketKode = $("#paketSelect option:selected").attr("kode");
+
+            var arrPerawatan = [];
+            $('.classarrayperawatanid').each(function() {
+                arrPerawatan.push($(this).val());
+
+            });
+
+            if (paketId != null) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('reservasi.admin.addpaketreservasitolist') }}',
+                    data: {
+                        '_token': '<?php echo csrf_token(); ?>',
+                        'idPaket': paketId,
+                    },
+                    success: function(data) {
+
+                        var check = 0;
+                        var arrPerawatanSudahAda = [];
+                        data.perawatans.forEach(function(perawatan) {
+                            if (jQuery.inArray(perawatan.id.toString(), arrPerawatan) != -1) {
+                                check = check + 1;
+                                arrPerawatanSudahAda.push(perawatan.nama);
+                            }
+                        });
+
+                        if (check > 0) {
+                            var pesan = "Paket ini memiliki perawatan <span class='text-danger'>" +
+                                arrPerawatanSudahAda.join(", ") +
+                                "</span> yang sudah pernah Anda tambahkan sebelumnya!";
+                            $("#bodyModalPemberitahuanPerawatan").html("<h6>" + pesan + "</h6>");
+                            $("#modalPemberitahuanPerawatan").modal("show");
+                        } else {
+                            $("#containerPaket").append("<input id='paket" + paketId +
+                                "' type='hidden' class='classarraypaketid' value='" +
+                                paketId +
+                                "' name='arraypaketid[]'>");
+                            $("#containerKodeKeseluruhan").append("<input id='kode" + paketKode +
+                                "' type='hidden' class='classarraykodeid' value='" +
+                                paketKode +
+                                "' name='arraykodekeseluruhan[]'>");
+                            $('#trSilahkan').remove();
+
+                            $("#bodyListPerawatan").append(data.msg);
+
+                            $("#paketSelect option:selected").remove();
+                            $("#paketSelect").val('null');
+                            $('#cardDetailPerawatan').html(
+                                "<div class='alert alert-info' role='alert'><h6><strong>Silahkan Pilih Perawatan atau Paket terlebih dahulu!</strong></h6></div>"
+                            );
+                            data.perawatans.forEach(function(perawatan) {
+                                $("#perawatanSelect option[value='" + perawatan.id + "']")
+                                    .remove();
+                            });
+
+                            var select = $("#perawatanSelect");
+                            $("#perawatanSelect option[value='null']").remove();
+                            var options = select.find("option");
+                            options.sort(function(a, b) {
+                                return a.text.localeCompare(b.text);
+                            });
+                            select.empty();
+                            select.append(
+                                "<option value='null' selected disabled>Pilih Perawatan</option>"
+                            )
+                            select.append(options);
+                            select.val("null");
+                        }
+                    }
+                })
 
 
-                // tanggalAwal.setMinutes(tanggalAwal.getMinutes() + parseInt(durasiperawatan));
-                // var jamAkhir = tanggalAwal.getHours();
-                // var menitAkhir = tanggalAwal.getMinutes();
-                // jamAkhir = (jamAkhir < 10 ? "0" : "") + jamAkhir;
-                // menitAkhir = (menitAkhir < 10 ? "0" : "") + menitAkhir;
-
-                // var timestampAwal = Date.parse(tanggalReservasi + " " + jamAkhir + ":" + menitAkhir);
-
-                // //Jam TUTUP
-                // var tanggalTutup = new Date(tanggalReservasi + " " + jamTutup);
-                // var timestampTutup = Date.parse(tanggalTutup);
-
-                // if (timestampAwal <= timestampTutup) {
-                //     jamReservasi = jamAkhir + "." + menitAkhir;
-
-
-                //     // alert(jamReservasi);
-                // } else {
-                //     alert("Perawatan yang dipilih sudah melebih jam tutup!");
-                // }
             }
         });
 
@@ -433,13 +704,16 @@
             var durasiperawatan = $(this).attr('durasiPerawatan');
             var hargaperawatan = $(this).attr('hargaPerawatan');
             var deskripsiperawatan = $(this).attr('deskripsiPerawatan');
+            var kodeperawatan = $(this).attr('kodePerawatan');
             var tanggalReservasi = $("#tanggalReservasi").val();
 
             $("#perawatanSelect").append("<option value='" + perawatanid + "' durasi='" + durasiperawatan +
-                "' harga='" + hargaperawatan + "' deskripsi='" + deskripsiperawatan + "'>" + namaPerawatan +
+                "' harga='" + hargaperawatan + "' deskripsi='" + deskripsiperawatan + "' kode='" +
+                kodeperawatan + "'>" + namaPerawatan +
                 "</option>");
             $(this).parent().parent().remove();
             $("#perawatan" + perawatanid).remove();
+            $("#kode" + kodeperawatan).remove();
 
             var select = $("#perawatanSelect");
             $("#perawatanSelect option[value='null']").remove();
@@ -452,27 +726,75 @@
             select.append(options);
             select.val("null");
 
-            //Pengurangan variabel jamReservasi di JQuery
-            // var waktuAwal = jamReservasi.split(".");
-            // var jamAwal = parseInt(waktuAwal[0]);
-            // var menitAwal = parseInt(waktuAwal[1]);
-            // var waktuAwal = jamAwal + ":" + menitAwal;
-            // var tanggalAwal = new Date(tanggalReservasi + " " + waktuAwal);
+            if ($('#bodyListPerawatan').find("tr").length == 0) {
+                $('#bodyListPerawatan').html(
+                    "<tr id='trSilahkan'><td colspan='6'>Silahkan Pilih Perawatan atau Paket</td></tr>");
+            }
 
 
-            // tanggalAwal.setMinutes(tanggalAwal.getMinutes() - parseInt(durasiperawatan));
-            // var jamAkhir = tanggalAwal.getHours();
-            // var menitAkhir = tanggalAwal.getMinutes();
-            // jamAkhir = (jamAkhir < 10 ? "0" : "") + jamAkhir;
-            // menitAkhir = (menitAkhir < 10 ? "0" : "") + menitAkhir;
-            // jamReservasi = jamAkhir + "." + menitAkhir;
-            // alert(jamReservasi);
-            //------------------------------------------------------------------
+        });
+
+        $('body').on('click', '.deletePaket', function() {
+            var paketId = $(this).attr('idPaket');
+            var paketNama = $(this).attr('namaPaket');
+            var paketKode = $(this).attr('kodePaket');
+
+
+            $("#paketSelect").append("<option value='" + paketId + "' kode='" + paketKode +
+                "'>" + paketNama +
+                "</option>");
+            $(this).parent().parent().remove();
+            $("#paket" + paketId).remove();
+            $("#kode" + paketKode).remove();
+
+
+            var select = $("#paketSelect");
+            $("#paketSelect option[value='null']").remove();
+            var options = select.find("option");
+            options.sort(function(a, b) {
+                return a.text.localeCompare(b.text);
+            });
+            select.empty();
+            select.append("<option value='null' selected disabled>Pilih Paket</option>")
+            select.append(options);
+            select.val("null");
 
             if ($('#bodyListPerawatan').find("tr").length == 0) {
                 $('#bodyListPerawatan').html(
-                    "<tr id='trSilahkan'><td colspan='5'>Silahkan Pilih Perawatan</td></tr>");
+                    "<tr id='trSilahkan'><td colspan='6'>Silahkan Pilih Perawatan atau Paket</td></tr>");
             }
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('reservasi.admin.updatecbperawatanafterdeletepaket') }}',
+                data: {
+                    '_token': '<?php echo csrf_token(); ?>',
+                    'idPaket': paketId,
+                },
+                success: function(data) {
+                    data.perawatans.forEach(function(perawatan) {
+                        $("#perawatanSelect").append("<option value='" + perawatan.id +
+                            "' durasi='" + perawatan.durasi +
+                            "' harga='" + perawatan.harga + "' deskripsi='" +
+                            perawatan.deskripsi + "' kode='" +
+                            perawatan.kode_perawatan + "'>" + perawatan.nama +
+                            "</option>"
+                        );
+
+                    });
+                    var select = $("#perawatanSelect");
+                    $("#perawatanSelect option[value='null']").remove();
+                    var options = select.find("option");
+                    options.sort(function(a, b) {
+                        return a.text.localeCompare(b.text);
+                    });
+                    select.empty();
+                    select.append(
+                        "<option value='null' selected disabled>Pilih Perawatan</option>"
+                    )
+                    select.append(options);
+                    select.val("null");
+                }
+            })
         });
 
         $('body').on('click', '#btnPilihKaryawan', function() {

@@ -106,6 +106,20 @@
                     </li> --}}
 
                     <!-- full screen -->
+                    <li class="dropdown notification-list list-inline-item d-none d-md-inline-block mr-3 align-middle">
+                        <div>
+                            @if (Auth::user()->role == 'admin')
+                                <h5> <span class="font-weight-normal">Welcome, </span><strong>Admin</strong> </h5>
+                            @else
+                                <h5><span class="font-weight-normal">Welcome, </span>
+                                    <strong>{{ Auth::user()->karyawan->nama }}</strong>
+                                </h5>
+                            @endif
+
+                        </div>
+                    </li>
+
+                    <!-- full screen -->
                     <li class="dropdown notification-list list-inline-item d-none d-md-inline-block">
                         <a class="nav-link waves-effect" href="#" id="btn-fullscreen">
                             <i class="fas fa-expand noti-icon"></i>
@@ -174,9 +188,8 @@
 
                     <li class="dropdown notification-list list-inline-item">
                         <div class="dropdown notification-list nav-pro-img">
-                            <a class="dropdown-toggle nav-link arrow-none waves-effect nav-user"
-                                data-toggle="dropdown" href="#" role="button" aria-haspopup="false"
-                                aria-expanded="false">
+                            <a class="dropdown-toggle nav-link arrow-none waves-effect nav-user" data-toggle="dropdown"
+                                href="#" role="button" aria-haspopup="false" aria-expanded="false">
                                 <img src="{{ asset('assets_admin/images/users/user-1.jpg') }}" alt="user"
                                     class="rounded-circle">
                             </a>
@@ -191,14 +204,20 @@
                                 <a class="dropdown-item" href="#"><i class="mdi mdi-lock-open-outline"></i>
                                     Lock screen</a> --}}
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-danger" href="#"><i
-                                        class="mdi mdi-power text-danger"></i> Logout</a>
+                                <a class="dropdown-item text-danger btn waves-effect waves-light"
+                                    onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                    <i class="mdi mdi-power text-danger"></i> Logout
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                    {{-- <button type="submit" class="dropdown-item text-danger"></button> --}}
+
+                                </form>
                             </div>
                         </div>
                     </li>
-
                 </ul>
-
                 <ul class="list-inline menu-left mb-0">
                     <li class="float-left">
                         <button class="button-menu-mobile open-left waves-effect">
@@ -226,13 +245,106 @@
                                 <i class="mdi mdi-view-dashboard-outline"></i> <span> Dashboard </span>
                             </a>
                         </li>
+
+                        <li>
+                            <a href="javascript:void(0);" class="waves-effect"><i
+                                    class="mdi mdi-inbox-multiple-outline"></i><span>
+                                    Master <span class="float-right menu-arrow"><i
+                                            class="mdi mdi-chevron-right"></i></span> </span>
+                            </a>
+                            <ul class="submenu">
+                                <li>
+                                    <a href="javascript:void(0);" class="waves-effect"><i
+                                            class="mdi mdi-inbox"></i><span>
+                                            Pembelian <span class="float-right menu-arrow"><i
+                                                    class="mdi mdi-chevron-right"></i></span> </span></a>
+                                    <ul class="submenu">
+                                        <li><a href="{{ route('pembelians.index') }}">Daftar Pembelian</a></li>
+                                        <li><a href="{{ route('suppliers.index') }}">Supplier</a></li>
+                                    </ul>
+                                </li>
+
+                                <li>
+                                    <a href="{{ route('perawatans.index') }}" class="waves-effect">
+                                        <i class="mdi mdi-content-cut"></i> <span> Perawatan </span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="javascript:void(0);" class="waves-effect"><i
+                                            class="mdi mdi-spray-bottle"></i><span>
+                                            Produk <span class="float-right menu-arrow"><i
+                                                    class="mdi mdi-chevron-right"></i></span> </span></a>
+                                    <ul class="submenu">
+                                        <li><a href="{{ route('produks.index') }}">Daftar Produk</a></li>
+                                        <li
+                                            class="{{ request()->is('kategoris/create') || request()->is('kategoris/*/edit') ? ' mm-active' : '' }}">
+                                            <a href="{{ route('kategoris.index') }}">Kategori</a>
+                                        </li>
+                                        <li><a href="{{ route('mereks.index') }}">Merek</a></li>
+                                        <li><a href="{{ route('kondisis.index') }}">Kondisi</a></li>
+                                        <li><a href="{{ route('riwayatpengambilanproduks.index') }}">Riwayat
+                                                Pengambilan
+                                                Produk</a></li>
+                                    </ul>
+                                </li>
+
+                                <li>
+                                    <a href="{{ route('pakets.index') }}" class="waves-effect">
+                                        <i class="mdi mdi-package"></i> <span> Paket </span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="javascript:void(0);" class="waves-effect"><i
+                                            class="mdi mdi-account-multiple-outline"></i><span>
+                                            Karyawan <span class="float-right menu-arrow"><i
+                                                    class="mdi mdi-chevron-right"></i></span> </span></a>
+                                    <ul class="submenu">
+                                        <li><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
+                                        <li><a href="{{ route('presensikehadirans.index') }}">Presensi Karyawan</a>
+                                        </li>
+                                        <li><a href="{{ route('admin.presensikehadirans.riwayatpresensi') }}">Riwayat
+                                                Presensi Karyawan</a></li>
+                                        <li><a href="{{ route('admin.presensikehadirans.riwayatizinkehadiran') }}">Riwayat
+                                                Izin Karyawan</a></li>
+                                        <li><a href="{{ route('admin.karyawans.indexkomisikaryawan') }}">Komisi
+                                                Karyawan</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="{{ route('slotjams.index') }}" class="waves-effect">
+                                        <i class="dripicons-clock"></i> <span> Slot Jam </span>
+                                    </a>
+                                </li>
+                                {{-- <li>
+                            <a href="{{ route('pakets.index') }}" class="waves-effect">
+                                <i class="mdi mdi-ticket-percent"></i> <span> Diskon </span>
+                            </a>
+                        </li> --}}
+                                <li>
+                                    <a href="javascript:void(0);" class="waves-effect"><i
+                                            class="mdi mdi-ticket-percent"></i><span>
+                                            Diskon <span class="float-right menu-arrow"><i
+                                                    class="mdi mdi-chevron-right"></i></span> </span></a>
+                                    <ul class="submenu">
+                                        <li><a href="{{ route('diskons.index') }}">Daftar Diskon</a></li>
+                                        <li><a href="{{ route('diskons.daftardiskonberlaku') }}">Daftar Diskon Sedang
+                                                Berlaku</a></li>
+                                        <li><a href="{{ route('diskons.daftardiskonselesai') }}">Daftar Diskon Telah
+                                                Selesai</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+
                         <li>
                             <a href="javascript:void(0);" class="waves-effect"><i
                                     class="mdi mdi-playlist-edit"></i><span>
                                     Reservasi <span class="float-right menu-arrow"><i
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="submenu">
-                                <li><a href="{{ route('reservasis.index') }}">Reservasi Perawatan</a></li>
+                                <li><a href="{{ route('reservasis.index') }}"> Perawatan</a></li>
                                 <li><a href="{{ route('riwayatreservasis.index') }}">Riwayat Reservasi
                                         Perawatan</a></li>
                                 <li><a href="{{ route('reservasis.index') }}">Reservasi Paket Perawatan</a></li>
@@ -243,85 +355,7 @@
                                 <i class="mdi mdi-cash-multiple"></i> <span> Penjualan </span>
                             </a>
                         </li>
-                        <li>
-                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-inbox"></i><span>
-                                    Pembelian <span class="float-right menu-arrow"><i
-                                            class="mdi mdi-chevron-right"></i></span> </span></a>
-                            <ul class="submenu">
-                                <li><a href="{{ route('pembelians.index') }}">Daftar Pembelian</a></li>
-                                <li><a href="{{ route('suppliers.index') }}">Supplier</a></li>
-                            </ul>
-                        </li>
 
-                        <li>
-                            <a href="{{ route('perawatans.index') }}" class="waves-effect">
-                                <i class="mdi mdi-content-cut"></i> <span> Perawatan </span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="javascript:void(0);" class="waves-effect"><i
-                                    class="mdi mdi-spray-bottle"></i><span>
-                                    Produk <span class="float-right menu-arrow"><i
-                                            class="mdi mdi-chevron-right"></i></span> </span></a>
-                            <ul class="submenu">
-                                <li><a href="{{ route('produks.index') }}">Daftar Produk</a></li>
-                                <li
-                                    class="{{ request()->is('kategoris/create') || request()->is('kategoris/*/edit') ? ' mm-active' : '' }}">
-                                    <a href="{{ route('kategoris.index') }}">Kategori</a>
-                                </li>
-                                <li><a href="{{ route('mereks.index') }}">Merek</a></li>
-                                <li><a href="{{ route('kondisis.index') }}">Kondisi</a></li>
-                                <li><a href="{{ route('riwayatpengambilanproduks.index') }}">Riwayat Pengambilan
-                                        Produk</a></li>
-                            </ul>
-                        </li>
-
-                        <li>
-                            <a href="{{ route('pakets.index') }}" class="waves-effect">
-                                <i class="mdi mdi-package"></i> <span> Paket </span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="javascript:void(0);" class="waves-effect"><i
-                                    class="mdi mdi-account-multiple-outline"></i><span>
-                                    Karyawan <span class="float-right menu-arrow"><i
-                                            class="mdi mdi-chevron-right"></i></span> </span></a>
-                            <ul class="submenu">
-                                <li><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
-                                <li><a href="{{ route('presensikehadirans.index') }}">Presensi Karyawan</a></li>
-                                <li><a href="{{ route('admin.presensikehadirans.riwayatpresensi') }}">Riwayat
-                                        Presensi Karyawan</a></li>
-                                <li><a href="{{ route('admin.presensikehadirans.riwayatizinkehadiran') }}">Riwayat
-                                        Izin Karyawan</a></li>
-                                <li><a href="{{ route('admin.karyawans.indexkomisikaryawan') }}">Komisi
-                                        Karyawan</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="{{ route('slotjams.index') }}" class="waves-effect">
-                                <i class="dripicons-clock"></i> <span> Slot Jam </span>
-                            </a>
-                        </li>
-                        {{-- <li>
-                            <a href="{{ route('pakets.index') }}" class="waves-effect">
-                                <i class="mdi mdi-ticket-percent"></i> <span> Diskon </span>
-                            </a>
-                        </li> --}}
-                        <li>
-                            <a href="javascript:void(0);" class="waves-effect"><i
-                                    class="mdi mdi-ticket-percent"></i><span>
-                                    Diskon <span class="float-right menu-arrow"><i
-                                            class="mdi mdi-chevron-right"></i></span> </span></a>
-                            <ul class="submenu">
-                                <li><a href="{{ route('diskons.index') }}">Daftar Diskon</a></li>
-                                <li><a href="{{ route('diskons.daftardiskonberlaku') }}">Daftar Diskon Sedang
-                                        Berlaku</a></li>
-                                <li><a href="{{ route('diskons.daftardiskonselesai') }}">Daftar Diskon Telah
-                                        Selesai</a></li>
-                            </ul>
-                        </li>
                         <li>
                             <a href="{{ route('admin.settingrekomendasiproduk') }}" class="waves-effect">
                                 <i class="mdi mdi-star-box"></i> <span> Rekomendasi Produk</span>
@@ -329,31 +363,13 @@
                         </li>
 
 
-                        <li class="menu-title">Components</li>
+                        <li class="menu-title">Lainnya</li>
 
                         <li>
                             <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-logout"></i>
-                                <span> Logout <span class="float-right menu-arrow"><i
-                                            class="mdi mdi-chevron-right"></i></span> </span> </a>
-                            <ul class="submenu">
-                                <li><a href="ui-alerts.html">Alerts</a></li>
-                                <li><a href="ui-badge.html">Badge</a></li>
-                                <li><a href="ui-buttons.html">Buttons</a></li>
-                                <li><a href="ui-cards.html">Cards</a></li>
-                                <li><a href="ui-dropdowns.html">Dropdowns</a></li>
-                                <li><a href="ui-navs.html">Navs</a></li>
-                                <li><a href="ui-tabs-accordions.html">Tabs &amp; Accordions</a></li>
-                                <li><a href="ui-modals.html">Modals</a></li>
-                                <li><a href="ui-images.html">Images</a></li>
-                                <li><a href="ui-progressbars.html">Progress Bars</a></li>
-                                <li><a href="ui-pagination.html">Pagination</a></li>
-                                <li><a href="ui-popover-tooltips.html">Popover & Tooltips</a></li>
-                                <li><a href="ui-spinner.html">Spinner</a></li>
-                                <li><a href="ui-carousel.html">Carousel</a></li>
-                                <li><a href="ui-video.html">Video</a></li>
-                                <li><a href="ui-typography.html">Typography</a></li>
-                                <li><a href="ui-grid.html">Grid</a></li>
-                            </ul>
+                                <span> Logout </span>
+                            </a>
+
                         </li>
 
 
@@ -412,7 +428,7 @@
     <script src="{{ asset('assets_admin/plugins/morris/morris.min.js') }}"></script>
     <script src="{{ asset('assets_admin/plugins/raphael/raphael.min.js') }}"></script>
 
-    <script src="assets_admin/pages/dashboard.init.js')}}"></script>
+    <script src="{{ asset('assets_admin/pages/dashboard.init.js') }}"></script>
 
     <!-- Required datatable js -->
     <script src="{{ asset('assets_admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>

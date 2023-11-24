@@ -242,4 +242,27 @@ class PaketController extends Controller
         return response()->json(array('msg' => view('admin.paket.detailpaket', compact('paket'))->render()), 200);
     }
 
+    public function getDetailPaketReservasi()
+    {
+        $idPaket = $_POST['idPaket'];
+        $paket = Paket::find($idPaket);
+        return response()->json(array('msg' => view('admin.reservasi.detailpaket', compact('paket'))->render()), 200);
+    }
+
+    public function addpaketToListReservasi()
+    {
+        $idPaket = $_POST['idPaket'];
+        $paket = Paket::find($idPaket);
+        $perawatans = $paket->perawatans;
+        return response()->json(array('msg' => view('admin.reservasi.adddetailpaket', compact('paket'))->render(), "perawatans" => $perawatans), 200);
+    }
+
+    public function updatePerawatanAfterDeletePaket()
+    {
+        $idPaket = $_POST['idPaket'];
+        $paket = Paket::find($idPaket);
+        $perawatans = $paket->perawatans;
+        return response()->json(array("perawatans" => $perawatans), 200);
+    }
+
 }

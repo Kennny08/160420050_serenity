@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Diskon;
 use App\Models\Karyawan;
+use App\Models\Paket;
 use App\Models\Pelanggan;
 use App\Models\Penjualan;
 use App\Models\PenjualanPerawatan;
@@ -105,6 +106,7 @@ class ReservasiController extends Controller
         date_default_timezone_set('Asia/Jakarta');
         $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
         $perawatans = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->orderBy('nama')->get();
+        $pakets = Paket::where('status', 'aktif')->orderBy("nama")->get();
 
         $tanggal = date('d-m-Y');
         $tanggalPertamaDalamMinggu = date('Y-m-d');
@@ -116,12 +118,67 @@ class ReservasiController extends Controller
 
         $slotJams = SlotJam::where('hari', $hariIndonesia[$nomorHariDalamMingguan])->where('jam', ">=", date("H.i"))->get();
         $daftarPelanggans = Pelanggan::all();
-        return view('admin.reservasi.buatreservasiadmin', compact('perawatans', 'slotJams', 'tanggalHariIni', 'tanggalPertamaDalamMinggu', 'tanggalTerakhirDalamMinggu', 'daftarPelanggans'));
+        return view('admin.reservasi.buatreservasiadmin', compact('perawatans', 'slotJams', 'tanggalHariIni', 'tanggalPertamaDalamMinggu', 'tanggalTerakhirDalamMinggu', 'daftarPelanggans', 'pakets'));
     }
 
     public function reservasiAdminPilihKaryawan(Request $request)
     {
+        $tanggalReservasi = $request->get("tanggalReservasi");
+        $idSlotJam = $request->get("slotJam");
+        $arrPerawatan = $request->get("arrayperawatanid");
+        $idPelanggan = $request->get("idPelanggan");
+        $arrKodeKeseluruhan = $request->get("arraykodekeseluruhan");
+        $arrPaket = $request->get("arraypaketid");
+        $keteranganPilihKaryawan = $request->get("keteranganPilihKaryawan");
 
+        $pesanError = [];
+        if ($idSlotJam == null || ($arrPerawatan == null && $arrPaket == null) || $idPelanggan == null) {
+            if ($idSlotJam == null) {
+                array_push($pesanError, "Slot Jam tidak boleh kosong!");
+            }
+            if ($arrPerawatan == null && $arrPaket == null) {
+                array_push($pesanError, "Harap memilih setidaknya satu perawatan atau satu paket!");
+            }
+            if ($idPelanggan == null) {
+                array_push($pesanError, "Nama Pelanggan tidak boleh kosong!");
+            }
+            return redirect()->back()->withErrors($pesanError);
+        }
+
+        $arrPerawatanSend = [];
+        if ($arrPerawatan != null) {
+            foreach ($arrPerawatan as $ap) {
+                $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
+                array_push($arrPerawatanSend, $p);
+            }
+        }
+
+        $arrPaketSend = [];
+        if ($arrPaket != null) {
+            foreach ($arrPaket as $idPaket) {
+                $paketvar = Paket::where('status', 'aktif')->where('id', $idPaket)->first();
+                array_push($arrPaketSend, $paketvar);
+            }
+        }
+
+        $daftarPelanggans = Pelanggan::all();
+        $varSlotJam = SlotJam::find($idSlotJam);
+        $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('status', 'aktif')->orderBy('id')->get();
+        return redirect()->route('reservasi.admin.create')->with([
+            'idPelanggan' => $idPelanggan,
+            'daftarPelanggans' => $daftarPelanggans,
+            'idSlotJam' => $idSlotJam,
+            'daftarSlotJam' => $daftarSlotJam,
+            'tanggalReservasi' => $tanggalReservasi,
+            'arrPerawatan' => $arrPerawatan,
+            'arrPerawatanObject' => $arrPerawatanSend,
+            'arrPaket' => $arrPaket,
+            'arrPaketObject' => $arrPaketSend,
+            'arrKodeKeseluruhan' => $arrKodeKeseluruhan,
+
+        ])->withErrors('Perawatan yang dipilih telah melewati batas jam buka pada hari tersebut!');
+
+        dd($request->all());
         //ambil data dari form buatreservasiadmin
         date_default_timezone_set('Asia/Jakarta');
         $tanggalReservasi = $request->get("tanggalReservasi");
@@ -135,8 +192,8 @@ class ReservasiController extends Controller
             if ($idSlotJam == null) {
                 array_push($pesanError, "Slot Jam tidak boleh kosong!");
             }
-            if ($arrPerawatan == null) {
-                array_push($pesanError, "Harap memilih setidaknya satu perawatan!");
+            if ($arrPerawatan == null || $arrPaket == null) {
+                array_push($pesanError, "Harap memilih setidaknya satu perawatan atau satu paket!");
             }
             if ($idPelanggan == null) {
                 array_push($pesanError, "Nama Pelanggan tidak boleh kosong!");
@@ -1121,6 +1178,14 @@ class ReservasiController extends Controller
 
         $penjualanTerpilih->status_selesai = "batal";
         $penjualanTerpilih->save();
+
+        $emailPelanggan = $selectedReservasi->penjualan->pelanggan->user->email;
+        $namaPelanggan = $selectedReservasi->penjualan->pelanggan->nama;
+        $pesanEmail = "Mohon maaf untuk reservasi Anda kami batalkan.";
+        $nomorNota = $selectedReservasi->penjualan->nomor_nota;
+
+        MailController::mailBatalReservasiAdmin($emailPelanggan, $namaPelanggan, $pesanEmail, $nomorNota);
+
         return redirect()->route('reservasi.admin.detailreservasi', $selectedReservasi->id)->with('status', 'Berhasil membatalkan reservasi!');
     }
 
