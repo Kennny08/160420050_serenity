@@ -240,11 +240,14 @@
                     <!-- Left Menu Start -->
                     <ul class="metismenu" id="side-menu">
                         <li class="menu-title">Menu</li>
-                        <li>
-                            <a href="{{ route('reservasis.index') }}" class="waves-effect">
-                                <i class="mdi mdi-view-dashboard-outline"></i> <span> Dashboard </span>
-                            </a>
-                        </li>
+
+                        @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                            <li>
+                                <a href="{{ route('reservasis.index') }}" class="waves-effect">
+                                    <i class="mdi mdi-view-dashboard-outline"></i> <span> Dashboard </span>
+                                </a>
+                            </li>
+                        @endif
 
                         <li>
                             <a href="javascript:void(0);" class="waves-effect"><i
@@ -253,16 +256,18 @@
                                             class="mdi mdi-chevron-right"></i></span> </span>
                             </a>
                             <ul class="submenu">
-                                <li>
-                                    <a href="javascript:void(0);" class="waves-effect"><i
-                                            class="mdi mdi-inbox"></i><span>
-                                            Pembelian <span class="float-right menu-arrow"><i
-                                                    class="mdi mdi-chevron-right"></i></span> </span></a>
-                                    <ul class="submenu">
-                                        <li><a href="{{ route('pembelians.index') }}">Daftar Pembelian</a></li>
-                                        <li><a href="{{ route('suppliers.index') }}">Supplier</a></li>
-                                    </ul>
-                                </li>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <li>
+                                        <a href="javascript:void(0);" class="waves-effect"><i
+                                                class="mdi mdi-inbox"></i><span>
+                                                Pembelian <span class="float-right menu-arrow"><i
+                                                        class="mdi mdi-chevron-right"></i></span> </span></a>
+                                        <ul class="submenu">
+                                            <li><a href="{{ route('pembelians.index') }}">Daftar Pembelian</a></li>
+                                            <li><a href="{{ route('suppliers.index') }}">Supplier</a></li>
+                                        </ul>
+                                    </li>
+                                @endif
 
                                 <li>
                                     <a href="{{ route('perawatans.index') }}" class="waves-effect">
@@ -283,9 +288,12 @@
                                         </li>
                                         <li><a href="{{ route('mereks.index') }}">Merek</a></li>
                                         <li><a href="{{ route('kondisis.index') }}">Kondisi</a></li>
-                                        <li><a href="{{ route('riwayatpengambilanproduks.index') }}">Riwayat
-                                                Pengambilan
-                                                Produk</a></li>
+                                        @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                            <li><a href="{{ route('riwayatpengambilanproduks.index') }}">Riwayat
+                                                    Pengambilan
+                                                    Produk</a>
+                                            </li>
+                                        @endif
                                     </ul>
                                 </li>
 
@@ -301,22 +309,38 @@
                                             Karyawan <span class="float-right menu-arrow"><i
                                                     class="mdi mdi-chevron-right"></i></span> </span></a>
                                     <ul class="submenu">
-                                        <li><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
-                                        <li><a href="{{ route('presensikehadirans.index') }}">Presensi Karyawan</a>
-                                        </li>
-                                        <li><a href="{{ route('admin.presensikehadirans.riwayatpresensi') }}">Riwayat
-                                                Presensi Karyawan</a></li>
-                                        <li><a href="{{ route('admin.presensikehadirans.riwayatizinkehadiran') }}">Riwayat
-                                                Izin Karyawan</a></li>
-                                        <li><a href="{{ route('admin.karyawans.indexkomisikaryawan') }}">Komisi
-                                                Karyawan</a></li>
+                                        @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                            <li><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
+                                            <li><a href="{{ route('presensikehadirans.index') }}">Presensi
+                                                    Karyawan</a>
+                                            </li>
+                                            <li><a href="{{ route('admin.presensikehadirans.riwayatpresensi') }}">Riwayat
+                                                    Presensi Karyawan</a></li>
+                                            <li><a
+                                                    href="{{ route('admin.presensikehadirans.riwayatizinkehadiran') }}">Riwayat
+                                                    Izin Karyawan</a></li>
+                                            @if (Auth::user()->role == 'admin')
+                                                <li><a href="{{ route('admin.karyawans.indexkomisikaryawan') }}">Komisi
+                                                        Karyawan</a></li>
+                                            @endif
+                                        @else
+                                            {{-- Nanti diisi dengan menu karyawan untuk karyawan salon --}}
+                                        @endif
+
+
+
+
                                     </ul>
                                 </li>
-                                <li>
-                                    <a href="{{ route('slotjams.index') }}" class="waves-effect">
-                                        <i class="dripicons-clock"></i> <span> Slot Jam </span>
-                                    </a>
-                                </li>
+
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <li>
+                                        <a href="{{ route('slotjams.index') }}" class="waves-effect">
+                                            <i class="dripicons-clock"></i> <span> Slot Jam </span>
+                                        </a>
+                                    </li>
+                                @endif
+
                                 {{-- <li>
                             <a href="{{ route('pakets.index') }}" class="waves-effect">
                                 <i class="mdi mdi-ticket-percent"></i> <span> Diskon </span>
@@ -344,23 +368,32 @@
                                     Reservasi <span class="float-right menu-arrow"><i
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="submenu">
-                                <li><a href="{{ route('reservasis.index') }}"> Perawatan</a></li>
-                                <li><a href="{{ route('riwayatreservasis.index') }}">Riwayat Reservasi
-                                        Perawatan</a></li>
-                                <li><a href="{{ route('reservasis.index') }}">Reservasi Paket Perawatan</a></li>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <li><a href="{{ route('reservasis.index') }}"> Reservasi Salon</a></li>
+                                    <li><a href="{{ route('riwayatreservasis.index') }}">Riwayat Reservasi
+                                            Perawatan</a></li>
+                                @else
+                                    {{-- Nanti diisi dengan menu karyawan salon untuk reservasi dirinya dan riwayat reservasi dirinya --}}
+                                @endif
                             </ul>
                         </li>
-                        <li>
-                            <a href="{{ route('penjualans.index') }}" class="waves-effect">
-                                <i class="mdi mdi-cash-multiple"></i> <span> Penjualan </span>
-                            </a>
-                        </li>
 
-                        <li>
-                            <a href="{{ route('admin.settingrekomendasiproduk') }}" class="waves-effect">
-                                <i class="mdi mdi-star-box"></i> <span> Rekomendasi Produk</span>
-                            </a>
-                        </li>
+                        @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                            <li>
+                                <a href="{{ route('penjualans.index') }}" class="waves-effect">
+                                    <i class="mdi mdi-cash-multiple"></i> <span> Penjualan </span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                            <li>
+                                <a href="{{ route('admin.settingrekomendasiproduk') }}" class="waves-effect">
+                                    <i class="mdi mdi-star-box"></i> <span> Rekomendasi Produk</span>
+                                </a>
+                            </li>
+                        @endif
+
 
 
                         <li class="menu-title">Lainnya</li>

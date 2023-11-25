@@ -15,9 +15,12 @@
                     <h3 class="mt-0 header-title">Daftar Merek Produk</h3>
                     <p class="sub-title">
                     </p>
-                    {{-- <a class="btn btn-primary" data-toggle="modal" href="{{ route('categories.create') }}">Add Category</a> --}}
-                    <a class="btn btn-info waves-effect waves-light" href={{ route('mereks.create') }}>Tambah
-                        Merek</a><br>
+                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                        <a class="btn btn-info waves-effect waves-light" href={{ route('mereks.create') }}>Tambah
+                            Merek</a>
+                            <br>
+                    @endif
+
                     <br>
                     @if (session('status'))
                         <div class="alert alert-success">
@@ -37,8 +40,11 @@
                                 <th>Tanggal Pembuatan</th>
                                 <th>Tanggal Edit Terakhir</th>
                                 <th>Daftar Produk</th>
-                                <th>Edit</th>
-                                <th>Hapus</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
+                                @endif
+
                             </tr>
                         </thead>
 
@@ -54,13 +60,16 @@
                                             data-target="#modalDaftarProdukMerek"
                                             class=" btn btn-warning waves-effect waves-light btnDaftarProduk">Tampilkan</button>
                                     </td>
-                                    <td class="text-center"><a href="{{ route('mereks.edit', $m->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeleteMerek"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusMerek"
-                                            idMerek = "{{ $m->id }}" namaMerek="{{ $m->nama }}"
-                                            routeUrl = "{{ route('mereks.destroy', $m->id) }}">Hapus</button></td>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('mereks.edit', $m->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeleteMerek"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusMerek"
+                                                idMerek = "{{ $m->id }}" namaMerek="{{ $m->nama }}"
+                                                routeUrl = "{{ route('mereks.destroy', $m->id) }}">Hapus</button></td>
+                                    @endif
+
                                 </tr>
                             @endforeach
                         </tbody>
@@ -172,7 +181,8 @@
             var namaMerek = $(this).attr('namaMerek');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalNamaMerek").text("Konfirmasi Penghapusan Merek " + namaMerek);
-            $("#modalBodyHapusMerek").html("<h6>Apakah Anda yakin untuk menghapus merek <span class='text-danger'>" + namaMerek +
+            $("#modalBodyHapusMerek").html(
+                "<h6>Apakah Anda yakin untuk menghapus merek <span class='text-danger'>" + namaMerek +
                 "</span>?</h6>")
             $("#formDeleteMerek").attr("action", routeUrl);
         });

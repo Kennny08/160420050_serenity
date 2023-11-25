@@ -15,9 +15,13 @@
                     <h3 class="mt-0 header-title">Daftar Kategori Produk</h3>
                     <p class="sub-title">
                     </p>
-                    {{-- <a class="btn btn-primary" data-toggle="modal" href="{{ route('categories.create') }}">Add Category</a> --}}
-                    <a class="btn btn-info waves-effect waves-light" href={{ route('kategoris.create') }}>Tambah
-                        Kategori</a><br>
+                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                        <a class="btn btn-info waves-effect waves-light" href={{ route('kategoris.create') }}>Tambah
+                            Kategori
+                        </a>
+                        <br>
+                    @endif
+
                     <br>
                     @if (session('status'))
                         <div class="alert alert-success">
@@ -37,8 +41,11 @@
                                 <th>Tanggal Pembuatan</th>
                                 <th>Tanggal Edit Terakhir</th>
                                 <th>Daftar Produk</th>
-                                <th>Edit</th>
-                                <th>Hapus</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
+                                @endif
+
                             </tr>
                         </thead>
 
@@ -54,15 +61,18 @@
                                             data-target="#modalDaftarProdukKategori"
                                             class=" btn btn-warning waves-effect waves-light btnDaftarProduk">Tampilkan</button>
                                     </td>
-                                    <td class="text-center"><a href="{{ route('kategoris.edit', $k->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a>
-                                    </td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeleteKategori"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusKategori"
-                                            idKategori = "{{ $k->id }}" namaKategori="{{ $k->nama }}"
-                                            routeUrl = "{{ route('kategoris.destroy', $k->id) }}">Hapus</button>
-                                    </td>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('kategoris.edit', $k->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a>
+                                        </td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeleteKategori"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusKategori"
+                                                idKategori = "{{ $k->id }}" namaKategori="{{ $k->nama }}"
+                                                routeUrl = "{{ route('kategoris.destroy', $k->id) }}">Hapus</button>
+                                        </td>
+                                    @endif
+
                                 </tr>
                             @endforeach
                         </tbody>
@@ -162,8 +172,10 @@
                     $('#contentDaftarProdukKategori').html(data.msg);
                     $('#tabelDaftarProdukKategori').DataTable({
                         language: {
-                            emptyTable: "Tidak terdapat Daftar Produk dengan Kategori " + namaKategori,
-                            infoEmpty: "Tidak terdapat Daftar Produk dengan Kategori " + namaKategori,
+                            emptyTable: "Tidak terdapat Daftar Produk dengan Kategori " +
+                                namaKategori,
+                            infoEmpty: "Tidak terdapat Daftar Produk dengan Kategori " +
+                                namaKategori,
                         },
                     });
                 }
@@ -176,7 +188,8 @@
             var namaKategori = $(this).attr('namaKategori');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalNamaKategori").text("Konfirmasi Penghapusan Kategori " + namaKategori);
-            $("#modalBodyHapusKategori").html("<h6>Apakah Anda yakin untuk menghapus kategori <span class='text-danger'>" + namaKategori +
+            $("#modalBodyHapusKategori").html(
+                "<h6>Apakah Anda yakin untuk menghapus kategori <span class='text-danger'>" + namaKategori +
                 "</span>?</h6>")
             $("#formDeleteKategori").attr("action", routeUrl);
         });

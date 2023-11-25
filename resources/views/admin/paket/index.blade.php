@@ -15,11 +15,14 @@
                     <h3 class="mt-0 header-title" id="grupAktif">Daftar Paket</h3>
                     <p class="sub-title">
                     </p>
-                    <a class="btn btn-info waves-effect waves-light" href="{{ route('pakets.create') }}" id="btnTambahPaket">
-                        Tambah Paket
-                    </a>
+                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                        <a class="btn btn-info waves-effect waves-light" href="{{ route('pakets.create') }}"
+                            id="btnTambahPaket">
+                            Tambah Paket
+                        </a>
+                        <br>
+                    @endif
 
-                    <br>
                     <br>
                     @if (session('status'))
                         <div class="alert alert-success alert-dismissible" role="alert">
@@ -71,8 +74,11 @@
                                 <th hidden>Tanggal Pembuatan</th>
                                 <th hidden>Tanggal Terakhir Diedit</th>
                                 <th class="align-middle">Detail</th>
-                                <th class="align-middle">Edit</th>
-                                <th class="align-middle">Hapus</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th class="align-middle">Edit</th>
+                                    <th class="align-middle">Hapus</th>
+                                @endif
+
                             </tr>
                         </thead>
 
@@ -90,14 +96,17 @@
                                             idPaket="{{ $pa->id }}" namaPaket ="{{ $pa->nama }}"
                                             class=" btn btn-warning waves-effect waves-light btnDetailPaket">Detail</button>
                                     </td>
-                                    <td class="text-center"><a href="{{ route('pakets.edit', $pa->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeletePaket" idPaket = "{{ $pa->id }}"
-                                            namaPaket="{{ $pa->nama }}"
-                                            routeUrl = "{{ route('pakets.destroy', $pa->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusPaket">Hapus</button>
-                                    </td>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('pakets.edit', $pa->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeletePaket" idPaket = "{{ $pa->id }}"
+                                                namaPaket="{{ $pa->nama }}"
+                                                routeUrl = "{{ route('pakets.destroy', $pa->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusPaket">Hapus</button>
+                                        </td>
+                                    @endif
+
                                 </tr>
                             @endforeach
 
@@ -137,8 +146,11 @@
                                 <th hidden>Tanggal Pembuatan</th>
                                 <th hidden>Tanggal Terakhir Diedit</th>
                                 <th class="align-middle">Detail</th>
-                                <th class="align-middle">Edit</th>
-                                <th class="align-middle">Hapus</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th class="align-middle">Edit</th>
+                                    <th class="align-middle">Hapus</th>
+                                @endif
+
                             </tr>
                         </thead>
 
@@ -156,14 +168,17 @@
                                             idPaket="{{ $pn->id }}" namaPaket ="{{ $pn->nama }}"
                                             class=" btn btn-warning waves-effect waves-light btnDetailPaket">Detail</button>
                                     </td>
-                                    <td class="text-center"><a href="{{ route('pakets.edit', $pn->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeletePaket" idPaket = "{{ $pn->id }}"
-                                            namaPaket="{{ $pn->nama }}"
-                                            routeUrl = "{{ route('pakets.destroy', $pn->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusPaket">Hapus</button>
-                                    </td>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('pakets.edit', $pn->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeletePaket" idPaket = "{{ $pn->id }}"
+                                                namaPaket="{{ $pn->nama }}"
+                                                routeUrl = "{{ route('pakets.destroy', $pn->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusPaket">Hapus</button>
+                                        </td>
+                                    @endif
+
                                 </tr>
                             @endforeach
 
@@ -288,7 +303,8 @@
             var namaPaket = $(this).attr('namaPaket');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalNamaPaketDelete").text("Konfirmasi Penghapusan Paket " + namaPaket);
-            $("#modalBodyHapusPaket").html("<h6>Apakah Anda yakin untuk menghapus paket <span class='text-danger'>" + namaPaket +
+            $("#modalBodyHapusPaket").html(
+                "<h6>Apakah Anda yakin untuk menghapus paket <span class='text-danger'>" + namaPaket +
                 "</span>?</h6>")
             $("#formDeletePaket").attr("action", routeUrl);
         });

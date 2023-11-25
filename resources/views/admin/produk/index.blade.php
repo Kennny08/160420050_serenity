@@ -16,12 +16,14 @@
                     <h3 class="mt-0 header-title" id="grupAktif">Daftar Produk</h3>
                     <p class="sub-title">
                     </p>
-                    <a class="btn btn-info waves-effect waves-light" href="{{ route('produks.create') }}"
-                        id="btnTambahProduk">
-                        Tambah Produk
-                    </a>
+                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                        <a class="btn btn-info waves-effect waves-light" href="{{ route('produks.create') }}"
+                            id="btnTambahProduk">
+                            Tambah Produk
+                        </a>
+                        <br>
+                    @endif
 
-                    <br>
                     <br>
                     @if (session('status'))
                         <div class="alert alert-success alert-dismissible" role="alert">
@@ -79,8 +81,11 @@
                                 <th hidden>Tanggal Edit Terakhir</th>
                                 <th hidden>Deskripsi</th>
                                 <th>Detail</th>
-                                <th>Edit</th>
-                                <th>Hapus</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
+                                @endif
+
                             </tr>
                         </thead>
 
@@ -121,14 +126,17 @@
                                             updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
                                             class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
                                     </td>
-                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
-                                            namaProduk="{{ $p->nama }}"
-                                            routeUrl = "{{ route('produks.destroy', $p->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
-                                    </td>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
+                                                namaProduk="{{ $p->nama }}"
+                                                routeUrl = "{{ route('produks.destroy', $p->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
+                                        </td>
+                                    @endif
+
                                 </tr>
                             @endforeach
                             @foreach ($produksAktifLebihMinimumStok as $p)
@@ -165,14 +173,17 @@
                                             updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
                                             class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
                                     </td>
-                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
-                                            namaProduk="{{ $p->nama }}"
-                                            routeUrl = "{{ route('produks.destroy', $p->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
-                                    </td>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
+                                                namaProduk="{{ $p->nama }}"
+                                                routeUrl = "{{ route('produks.destroy', $p->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
+                                        </td>
+                                    @endif
+
                                 </tr>
                             @endforeach
 
@@ -216,8 +227,11 @@
                                 <th hidden>Tanggal Edit Terakhir</th>
                                 <th hidden>Deskripsi</th>
                                 <th>Detail</th>
-                                <th>Edit</th>
-                                <th>Hapus</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
+                                @endif
+
                             </tr>
                         </thead>
 
@@ -256,14 +270,17 @@
                                             updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
                                             class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
                                     </td>
-                                    <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeleteProduk" idProduk = "{{ $p->id }}"
-                                            namaProduk="{{ $p->nama }}"
-                                            routeUrl = "{{ route('produks.destroy', $p->id) }}"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
-                                    </td>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeleteProduk"
+                                                idProduk = "{{ $p->id }}" namaProduk="{{ $p->nama }}"
+                                                routeUrl = "{{ route('produks.destroy', $p->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
+                                        </td>
+                                    @endif
+
                                 </tr>
                             @endforeach
 
@@ -380,7 +397,8 @@
             var namaProduk = $(this).attr('namaProduk');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalNamaProdukDelete").text("Konfirmasi Penghapusan Produk " + namaProduk);
-            $("#modalBodyHapusProduk").html("<h6>Apakah Anda yakin untuk menghapus produk <span class='text-danger'>" + namaProduk +
+            $("#modalBodyHapusProduk").html(
+                "<h6>Apakah Anda yakin untuk menghapus produk <span class='text-danger'>" + namaProduk +
                 "</span>?</h6>")
             $("#formDeleteProduk").attr("action", routeUrl);
         });

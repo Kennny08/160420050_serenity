@@ -36,6 +36,7 @@ Route::get('/', function () {
         return redirect()->route('login');
     } else {
         if (Auth::user()->role === 'admin' || Auth::user()->role === 'karyawan') {
+            
             return redirect()->route('reservasis.index');
         }
         // else if (Auth::user()->role === 'pelanggan') {
@@ -54,14 +55,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/reservasi/admin/riwayatreservasiperawatan', [ReservasiController::class, "riwayatReservasiPerawatanAdmin"])->name("riwayatreservasis.index");
     Route::post('/reservasi/admin/getdetailriwayatreservasiperawatan', [ReservasiController::class, "getDetailRiwayatReservasiPerawatan"])->name("admin.getdetailriwayatreservasiperawatan");
 
-    Route::post('/reservasi/admin/selectstaf', [ReservasiController::class, "reservasiAdminPilihKaryawan"])->name("reservasi.admin.pilihkaryawan");
+    Route::post('/reservasi/admin/selectstaf', [ReservasiController::class, "reservasiAdminPilihKaryawanNew"])->name("reservasi.admin.pilihkaryawan");
 
     Route::post('/reservasi/admin/getslotjamaktif', [SlotJamController::class, "getSlotJamAktif"])->name("reservasi.admin.getslotjamaktif");
     Route::post('/reservasi/admin/getdetailperawatan', [PerawatanController::class, "getDetailPerawatan"])->name("reservasi.admin.getdetailperawatan");
     Route::post('/reservasi/admin/getdetailpaketreservasi', [PaketController::class, "getDetailPaketReservasi"])->name("reservasi.admin.getdetailpaketreservasi");
-    Route::post('/reservasi/admin/addpaketreservasitolist', [PaketController::class, "addpaketToListReservasi"])->name("reservasi.admin.addpaketreservasitolist");
+    Route::post('/reservasi/admin/addpaketreservasitolist', [PaketController::class, "addPaketToListReservasi"])->name("reservasi.admin.addpaketreservasitolist");
     Route::post('/reservasi/admin/updateperawatanafterdeletepaket', [PaketController::class, "updatePerawatanAfterDeletePaket"])->name("reservasi.admin.updatecbperawatanafterdeletepaket");
-
+    Route::post('/reservasi/admin/checkisipaketsama', [PaketController::class, "checkPaketIsiSama"])->name("reservasi.admin.checkpaketisisama");
+    
 
 
     Route::post('/reservasi/admin/store', [ReservasiController::class, "reservasiAdminStore"])->name("reservasi.admin.store");

@@ -56,6 +56,12 @@
                         @foreach ($arrPerawatan as $p)
                             <input type="hidden" name="arrayperawatanid[]" value="{{ $p }}">
                         @endforeach
+                        @foreach ($arrPaket as $pk)
+                            <input type="hidden" name="arraypaketid[]" value="{{ $pk }}">
+                        @endforeach
+                        @foreach ($arrKodeKeseluruhan as $k)
+                            <input type="hidden" name="arraykodekeseluruhan[]" value="{{ $k }}">
+                        @endforeach
                         <div class="mb-2">
                             <div class="d-inline-block">
                                 <h3 class="mt-0 header-title">Perawatan Sekuensial/Berurutan</h3>
@@ -81,29 +87,38 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($perawatanSlotJamNonKomplemen as $ps)
-                                    <tr class="text-center">
-                                        <td>{{ $ps['perawatan']->nama }}</td>
-                                        <td>{{ $ps['jammulai'] }}</td>
-                                        <td>{{ $ps['perawatan']->durasi }}</td>
-                                        <td>
-                                            <select required class="selectkaryawan form-control allkaryawan"
-                                                name="selectkaryawan[]">
-                                                @if (count($ps['karyawans']) == 0)
-                                                    <option selected value="-">Tidak Tersedia Karyawan</option>
-                                                @else
-                                                    <option disabled selected value="null">Pilih Karyawan</option>
-                                                    @foreach ($ps['karyawans'] as $k)
-                                                        <option
-                                                            value="{{ $k->id }},{{ $ps['perawatan']->id }},({{ $ps['idslotjam'] }})">
-                                                            {{ $k->nama }}</option>
-                                                    @endforeach
-                                                @endif
+                                @if (count($perawatanSlotJamNonKomplemen) > 0)
+                                    @foreach ($perawatanSlotJamNonKomplemen as $ps)
+                                        <tr class="text-center">
+                                            <td>{{ $ps['perawatan']->nama }}</td>
+                                            <td>{{ $ps['jammulai'] }}</td>
+                                            <td>{{ $ps['perawatan']->durasi }}</td>
+                                            <td>
+                                                <select required class="selectkaryawan form-control allkaryawan"
+                                                    name="selectkaryawan[]">
+                                                    @if (count($ps['karyawans']) == 0)
+                                                        <option selected value="-">Tidak Tersedia Karyawan</option>
+                                                    @else
+                                                        <option disabled selected value="null">Pilih Karyawan</option>
+                                                        @foreach ($ps['karyawans'] as $k)
+                                                            <option
+                                                                value="{{ $k->id }},{{ $ps['perawatan']->id }},({{ $ps['idslotjam'] }})">
+                                                                {{ $k->nama }}</option>
+                                                        @endforeach
+                                                    @endif
 
-                                            </select>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr class="text-center">
+                                        <td colspan="4">
+                                            Tidak terdapat perawatan yang termasuk perawatan sekuensial!
                                         </td>
                                     </tr>
-                                @endforeach
+                                @endif
+
                             </tbody>
                         </table>
                         <br>
@@ -131,61 +146,72 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @php
-                                    $counter = 1;
-                                @endphp
-                                @foreach ($arrKomplemen['array'] as $ps)
-                                    @if ($counter == 1)
-                                        <tr class="text-center">
-                                            <td>{{ $ps['perawatan']->nama }}</td>
-                                            <td class="text-center align-middle"
-                                                rowspan="{{ count($arrKomplemen['array']) }}">
-                                                {{ $arrKomplemen['jammulai'] }}</td>
-                                            <td class="text-center align-middle"
-                                                rowspan="{{ count($arrKomplemen['array']) }}">
-                                                {{ $arrKomplemen['durasiterlama'] }}
-                                            </td>
-                                            <td>
-                                                <select required class="selectkaryawankomplemen form-control allkaryawan"
-                                                    name="selectkaryawankomplemen[]">
-                                                    @if (count($ps['karyawans']) == 0)
-                                                        <option selected value="-">Tidak Tersedia Karyawan</option>
-                                                    @else
-                                                        <option disabled selected value="null">Pilih Karyawan</option>
-                                                        @foreach ($ps['karyawans'] as $k)
-                                                            <option
-                                                                value="{{ $k->id }},{{ $ps['perawatan']->id }},({{ $arrKomplemen['idslotjam'] }})">
-                                                                {{ $k->nama }}</option>
-                                                        @endforeach
-                                                    @endif
-
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    @else
-                                        <tr class="text-center">
-                                            <td>{{ $ps['perawatan']->nama }}</td>
-                                            <td>
-                                                <select required class="selectkaryawankomplemen form-control allkaryawan"
-                                                    name="selectkaryawankomplemen[]">
-                                                    @if (count($ps['karyawans']) == 0)
-                                                        <option selected value="-">Tidak Tersedia Karyawan</option>
-                                                    @else
-                                                        <option disabled selected value="null">Pilih Karyawan</option>
-                                                        @foreach ($ps['karyawans'] as $k)
-                                                            <option
-                                                                value="{{ $k->id }},{{ $ps['perawatan']->id }},({{ $arrKomplemen['idslotjam'] }})">
-                                                                {{ $k->nama }}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    @endif
+                                @if (count($arrKomplemen['array']) > 0)
                                     @php
-                                        $counter = $counter + 1;
+                                        $counter = 1;
                                     @endphp
-                                @endforeach
+                                    @foreach ($arrKomplemen['array'] as $ps)
+                                        @if ($counter == 1)
+                                            <tr class="text-center">
+                                                <td>{{ $ps['perawatan']->nama }}</td>
+                                                <td class="text-center align-middle"
+                                                    rowspan="{{ count($arrKomplemen['array']) }}">
+                                                    {{ $arrKomplemen['jammulai'] }}</td>
+                                                <td class="text-center align-middle"
+                                                    rowspan="{{ count($arrKomplemen['array']) }}">
+                                                    {{ $arrKomplemen['durasiterlama'] }}
+                                                </td>
+                                                <td>
+                                                    <select required
+                                                        class="selectkaryawankomplemen form-control allkaryawan"
+                                                        name="selectkaryawankomplemen[]">
+                                                        @if (count($ps['karyawans']) == 0)
+                                                            <option selected value="-">Tidak Tersedia Karyawan</option>
+                                                        @else
+                                                            <option disabled selected value="null">Pilih Karyawan</option>
+                                                            @foreach ($ps['karyawans'] as $k)
+                                                                <option
+                                                                    value="{{ $k->id }},{{ $ps['perawatan']->id }},({{ $arrKomplemen['idslotjam'] }})">
+                                                                    {{ $k->nama }}</option>
+                                                            @endforeach
+                                                        @endif
+
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        @else
+                                            <tr class="text-center">
+                                                <td>{{ $ps['perawatan']->nama }}</td>
+                                                <td>
+                                                    <select required
+                                                        class="selectkaryawankomplemen form-control allkaryawan"
+                                                        name="selectkaryawankomplemen[]">
+                                                        @if (count($ps['karyawans']) == 0)
+                                                            <option selected value="-">Tidak Tersedia Karyawan</option>
+                                                        @else
+                                                            <option disabled selected value="null">Pilih Karyawan</option>
+                                                            @foreach ($ps['karyawans'] as $k)
+                                                                <option
+                                                                    value="{{ $k->id }},{{ $ps['perawatan']->id }},({{ $arrKomplemen['idslotjam'] }})">
+                                                                    {{ $k->nama }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                        @php
+                                            $counter = $counter + 1;
+                                        @endphp
+                                    @endforeach
+                                @else
+                                    <tr class="text-center">
+                                        <td colspan="4">
+                                            Tidak terdapat perawatan yang termasuk perawatan bersamaan!
+                                        </td>
+                                    </tr>
+                                @endif
+
                             </tbody>
                         </table>
                         <div class="row">

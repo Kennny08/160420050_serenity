@@ -175,6 +175,7 @@ class DiskonController extends Controller
 
     public function daftarDiskonBerlaku()
     {
+        date_default_timezone_set("Asia/Jakarta");
         $tanggalHariIni = date("Y-m-d");
         $diskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->get();
 
@@ -183,6 +184,7 @@ class DiskonController extends Controller
 
     public function daftarDiskonSelesai()
     {
+        date_default_timezone_set("Asia/Jakarta");
         $tanggalHariIni = date("Y-m-d");
         $diskonAktifSudahSelesai = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_berakhir) < '" . $tanggalHariIni . "'")->get();
 
@@ -191,6 +193,7 @@ class DiskonController extends Controller
 
     public function pilihDiskon($idPenjualan)
     {
+        date_default_timezone_set("Asia/Jakarta");
         $penjualan = Penjualan::find($idPenjualan);
 
         $idDiskonUnikYangSudahPernahDipakai = Penjualan::select("diskon_id")->distinct()->where("pelanggan_id", $penjualan->pelanggan_id)->where("diskon_id", "!=", null)->get();

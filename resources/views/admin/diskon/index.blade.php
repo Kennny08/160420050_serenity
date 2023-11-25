@@ -15,12 +15,14 @@
                     <h3 class="mt-0 header-title" id="grupAktif">Daftar Diskon</h3>
                     <p class="sub-title">
                     </p>
-                    <a class="btn btn-info waves-effect waves-light" href="{{ route('diskons.create') }}"
-                        id="btnTambahDiskon">
-                        Tambah Data Diskon
-                    </a>
+                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                        <a class="btn btn-info waves-effect waves-light" href="{{ route('diskons.create') }}"
+                            id="btnTambahDiskon">
+                            Tambah Data Diskon
+                        </a>
+                        <br>
+                    @endif
 
-                    <br>
                     <br>
                     @if (session('status'))
                         <div class="alert alert-success alert-dismissible" role="alert">
@@ -74,7 +76,10 @@
                                 <th hidden class="align-middle">Tanggal Pembuatan</th>
                                 <th hidden class="align-middle">Tanggal Terakhir Diedit</th>
                                 <th class="align-middle">Detail</th>
-                                <th class="align-middle">Edit</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th class="align-middle">Edit</th>
+                                @endif
+
                             </tr>
                         </thead>
 
@@ -94,9 +99,12 @@
                                             idDiskon="{{ $d->id }}" namaDiskon ="{{ $d->nama }}"
                                             class=" btn btn-warning waves-effect waves-light btnDetailDiskon">Detail</button>
                                     </td>
-                                    <td class="text-center"><a href="{{ route('diskons.edit', $d->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('diskons.edit', $d->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                    @endif
+
+
                                 </tr>
                             @endforeach
 
@@ -138,7 +146,10 @@
                                 <th hidden class="align-middle">Tanggal Pembuatan</th>
                                 <th hidden class="align-middle">Tanggal Terakhir Diedit</th>
                                 <th class="align-middle">Detail</th>
-                                <th class="align-middle">Edit</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th class="align-middle">Edit</th>
+                                @endif
+
                             </tr>
                         </thead>
 
@@ -158,8 +169,11 @@
                                             idDiskon="{{ $d->id }}" namaDiskon ="{{ $d->nama }}"
                                             class=" btn btn-warning waves-effect waves-light btnDetailDiskon">Detail</button>
                                     </td>
-                                    <td class="text-center"><a href="{{ route('diskons.edit', $d->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('diskons.edit', $d->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                    @endif
+
                                 </tr>
                             @endforeach
 
@@ -174,7 +188,7 @@
 
     <div id="modalDetailDiskon" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" >
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content ">
                 <div class="modal-header">
                     <h5 class="modal-title mt-0" id="modalNamaDiskon">Detail Diskon</h5>
@@ -226,7 +240,7 @@
             $(".radioAktif").removeClass("btn-info");
         });
 
-        $('body').on('click', '.btnDetailDiskon' , function() {
+        $('body').on('click', '.btnDetailDiskon', function() {
 
             var idDiskon = $(this).attr("idDiskon");
             var nama = $(this).attr('namaDiskon');

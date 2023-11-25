@@ -171,13 +171,33 @@
                                                 @endforeach
                                             @endif
                                         @else
-                                            @foreach ($perawatans as $p)
-                                                <option value="{{ $p->id }}" durasi="{{ $p->durasi }}"
-                                                    harga="{{ $p->harga }}" deskripsi="{{ $p->deskripsi }}"
-                                                    kode = "{{ $p->kode_perawatan }}">
-                                                    {{ $p->nama }}
-                                                </option>
-                                            @endforeach
+                                            @if (session('arrPaketObject'))
+                                                @php
+                                                    $arrIdPerawatanDariPaketDanPerawatan = [];
+                                                    foreach (session('arrPaketObject') as $objPaket) {
+                                                        foreach ($objPaket->perawatans as $objPerawatan) {
+                                                            array_push($arrIdPerawatanDariPaketDanPerawatan, $objPerawatan->id);
+                                                        }
+                                                    }
+                                                @endphp
+                                                @foreach ($perawatans as $p)
+                                                    @if (!in_array($p->id, $arrIdPerawatanDariPaketDanPerawatan))
+                                                        <option value="{{ $p->id }}" durasi="{{ $p->durasi }}"
+                                                            harga="{{ $p->harga }}" deskripsi="{{ $p->deskripsi }}"
+                                                            kode = "{{ $p->kode_perawatan }}">
+                                                            {{ $p->nama }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                @foreach ($perawatans as $p)
+                                                    <option value="{{ $p->id }}" durasi="{{ $p->durasi }}"
+                                                        harga="{{ $p->harga }}" deskripsi="{{ $p->deskripsi }}"
+                                                        kode = "{{ $p->kode_perawatan }}">
+                                                        {{ $p->nama }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
                                         @endif
 
                                     </select>
@@ -649,48 +669,153 @@
                             }
                         });
 
-                        if (check > 0) {
-                            var pesan = "Paket ini memiliki perawatan <span class='text-danger'>" +
-                                arrPerawatanSudahAda.join(", ") +
-                                "</span> yang sudah pernah Anda tambahkan sebelumnya!";
-                            $("#bodyModalPemberitahuanPerawatan").html("<h6>" + pesan + "</h6>");
-                            $("#modalPemberitahuanPerawatan").modal("show");
+                        var arrKode = [];
+                        $(".classarraykodeid").each(function() {
+                            if ($(this).val().substr(0, 1) == "m") {
+                                arrKode.push($(this).val());
+                            }
+                        });
+
+                        var check2 = 0;
+                        var arrNamaPerawatanPaket = [];
+                        if (arrKode.length > 0) {
+                            $.ajax({
+                                type: 'POST',
+                                url: '{{ route('reservasi.admin.checkpaketisisama') }}',
+                                data: {
+                                    '_token': '<?php echo csrf_token(); ?>',
+                                    'idPaket': paketId,
+                                    'daftarPaketDiambil': arrKode.join(","),
+                                },
+                                success: function(data1) {
+                                    if (data1.arrPerawatanObjPaket.length > 0) {
+                                        data1.arrPerawatanObjPaket.forEach(function(
+                                            perawatan) {
+                                            arrNamaPerawatanPaket.push(perawatan
+                                                .nama);
+                                        });
+                                        check2 = check2 + 1;
+                                    }
+
+                                    if (check > 0 || check2 > 0) {
+                                        var pesan = "";
+                                        if (check > 0) {
+                                            pesan = pesan +
+                                                " * Paket ini memiliki perawatan <span class='text-danger'>" +
+                                                arrPerawatanSudahAda.join(", ") +
+                                                "</span> yang sudah pernah Anda tambahkan sebelumnya!<br>";
+                                        }
+
+                                        if (check2 > 0) {
+                                            pesan = pesan +
+                                                " * Paket ini memiliki perawatan <span class='text-danger'>" +
+                                                arrNamaPerawatanPaket.join(", ") +
+                                                "</span> yang sudah ada pada paket yang telah Anda tambahkan sebelumnya!<br>";
+                                        }
+
+                                        $("#bodyModalPemberitahuanPerawatan").html("<h6>" +
+                                            pesan + "</h6>");
+                                        $("#modalPemberitahuanPerawatan").modal("show");
+                                    } else {
+                                        $("#containerPaket").append("<input id='paket" +
+                                            paketId +
+                                            "' type='hidden' class='classarraypaketid' value='" +
+                                            paketId +
+                                            "' name='arraypaketid[]'>");
+                                        $("#containerKodeKeseluruhan").append(
+                                            "<input id='kode" + paketKode +
+                                            "' type='hidden' class='classarraykodeid' value='" +
+                                            paketKode +
+                                            "' name='arraykodekeseluruhan[]'>");
+                                        $('#trSilahkan').remove();
+
+                                        $("#bodyListPerawatan").append(data.msg);
+
+                                        $("#paketSelect option:selected").remove();
+                                        $("#paketSelect").val('null');
+                                        $('#cardDetailPerawatan').html(
+                                            "<div class='alert alert-info' role='alert'><h6><strong>Silahkan Pilih Perawatan atau Paket terlebih dahulu!</strong></h6></div>"
+                                        );
+                                        data.perawatans.forEach(function(perawatan) {
+                                            $("#perawatanSelect option[value='" +
+                                                    perawatan.id + "']")
+                                                .remove();
+                                        });
+
+                                        var select = $("#perawatanSelect");
+                                        $("#perawatanSelect option[value='null']").remove();
+                                        var options = select.find("option");
+                                        options.sort(function(a, b) {
+                                            return a.text.localeCompare(b.text);
+                                        });
+                                        select.empty();
+                                        select.append(
+                                            "<option value='null' selected disabled>Pilih Perawatan</option>"
+                                        )
+                                        select.append(options);
+                                        select.val("null");
+                                    }
+                                }
+                            })
                         } else {
-                            $("#containerPaket").append("<input id='paket" + paketId +
-                                "' type='hidden' class='classarraypaketid' value='" +
-                                paketId +
-                                "' name='arraypaketid[]'>");
-                            $("#containerKodeKeseluruhan").append("<input id='kode" + paketKode +
-                                "' type='hidden' class='classarraykodeid' value='" +
-                                paketKode +
-                                "' name='arraykodekeseluruhan[]'>");
-                            $('#trSilahkan').remove();
+                            if (check > 0 || check2 > 0) {
+                                var pesan = "";
+                                if (check > 0) {
+                                    pesan = pesan +
+                                        " * Paket ini memiliki perawatan <span class='text-danger'>" +
+                                        arrPerawatanSudahAda.join(", ") +
+                                        "</span> yang sudah pernah Anda tambahkan sebelumnya!<br>";
+                                }
 
-                            $("#bodyListPerawatan").append(data.msg);
+                                if (check2 > 0) {
+                                    pesan = pesan +
+                                        " * Paket ini memiliki perawatan <span class='text-danger'>" +
+                                        arrNamaPerawatanPaket.join(", ") +
+                                        "</span> yang sudah ada pada paket yang telah Anda tambahkan sebelumnya!<br>";
+                                }
 
-                            $("#paketSelect option:selected").remove();
-                            $("#paketSelect").val('null');
-                            $('#cardDetailPerawatan').html(
-                                "<div class='alert alert-info' role='alert'><h6><strong>Silahkan Pilih Perawatan atau Paket terlebih dahulu!</strong></h6></div>"
-                            );
-                            data.perawatans.forEach(function(perawatan) {
-                                $("#perawatanSelect option[value='" + perawatan.id + "']")
-                                    .remove();
-                            });
+                                $("#bodyModalPemberitahuanPerawatan").html("<h6>" + pesan + "</h6>");
+                                $("#modalPemberitahuanPerawatan").modal("show");
+                            } else {
+                                $("#containerPaket").append("<input id='paket" + paketId +
+                                    "' type='hidden' class='classarraypaketid' value='" +
+                                    paketId +
+                                    "' name='arraypaketid[]'>");
+                                $("#containerKodeKeseluruhan").append("<input id='kode" + paketKode +
+                                    "' type='hidden' class='classarraykodeid' value='" +
+                                    paketKode +
+                                    "' name='arraykodekeseluruhan[]'>");
+                                $('#trSilahkan').remove();
 
-                            var select = $("#perawatanSelect");
-                            $("#perawatanSelect option[value='null']").remove();
-                            var options = select.find("option");
-                            options.sort(function(a, b) {
-                                return a.text.localeCompare(b.text);
-                            });
-                            select.empty();
-                            select.append(
-                                "<option value='null' selected disabled>Pilih Perawatan</option>"
-                            )
-                            select.append(options);
-                            select.val("null");
+                                $("#bodyListPerawatan").append(data.msg);
+
+                                $("#paketSelect option:selected").remove();
+                                $("#paketSelect").val('null');
+                                $('#cardDetailPerawatan').html(
+                                    "<div class='alert alert-info' role='alert'><h6><strong>Silahkan Pilih Perawatan atau Paket terlebih dahulu!</strong></h6></div>"
+                                );
+                                data.perawatans.forEach(function(perawatan) {
+                                    $("#perawatanSelect option[value='" + perawatan.id + "']")
+                                        .remove();
+                                });
+
+                                var select = $("#perawatanSelect");
+                                $("#perawatanSelect option[value='null']").remove();
+                                var options = select.find("option");
+                                options.sort(function(a, b) {
+                                    return a.text.localeCompare(b.text);
+                                });
+                                select.empty();
+                                select.append(
+                                    "<option value='null' selected disabled>Pilih Perawatan</option>"
+                                )
+                                select.append(options);
+                                select.val("null");
+                            }
                         }
+
+
+
                     }
                 })
 

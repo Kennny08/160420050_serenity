@@ -15,9 +15,12 @@
                     <h3 class="mt-0 header-title">Daftar Keterangan Kondisi untuk Produk</h3>
                     <p class="sub-title">
                     </p>
-                    {{-- <a class="btn btn-primary" data-toggle="modal" href="{{ route('categories.create') }}">Add Category</a> --}}
-                    <a class="btn btn-info waves-effect waves-light" href={{ route('kondisis.create') }}>Tambah
-                        Keterangan Kondisi</a><br>
+                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                        <a class="btn btn-info waves-effect waves-light" href={{ route('kondisis.create') }}>Tambah
+                            Keterangan Kondisi</a>
+                            <br>
+                    @endif
+
                     <br>
                     @if (session('status'))
                         <div class="alert alert-success">
@@ -37,8 +40,11 @@
                                 <th>Tanggal Pembuatan</th>
                                 <th>Tanggal Edit Terakhir</th>
                                 <th>Daftar Produk</th>
-                                <th>Edit</th>
-                                <th>Hapus</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
+                                @endif
+
                             </tr>
                         </thead>
 
@@ -54,13 +60,16 @@
                                             data-target="#modalDaftarProdukKondisi"
                                             class=" btn btn-warning waves-effect waves-light btnDaftarProduk">Tampilkan</button>
                                     </td>
-                                    <td class="text-center"><a href="{{ route('kondisis.edit', $k->id) }}"
-                                            class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                    <td class="text-center"><button data-toggle="modal"
-                                            data-target="#modalKonfirmasiDeleteKondisi"
-                                            class=" btn btn-danger waves-effect waves-light btnHapusKondisi"
-                                            idKondisi = "{{ $k->id }}" keteranganKondisi="{{ $k->keterangan }}"
-                                            routeUrl = "{{ route('kondisis.destroy', $k->id) }}">Hapus</button></td>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('kondisis.edit', $k->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeleteKondisi"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusKondisi"
+                                                idKondisi = "{{ $k->id }}" keteranganKondisi="{{ $k->keterangan }}"
+                                                routeUrl = "{{ route('kondisis.destroy', $k->id) }}">Hapus</button></td>
+                                    @endif
+
                                 </tr>
                             @endforeach
                         </tbody>
@@ -173,7 +182,8 @@
             var keteranganKondisi = $(this).attr('keteranganKondisi');
             var routeUrl = $(this).attr('routeUrl');
             $("#modalKeteranganKondisi").text("Konfirmasi Penghapusan Kondisi " + keteranganKondisi);
-            $("#modalBodyHapusKondisi").html("<h6>Apakah Anda yakin untuk menghapus kondisi <span class='text-danger'>" + keteranganKondisi +
+            $("#modalBodyHapusKondisi").html(
+                "<h6>Apakah Anda yakin untuk menghapus kondisi <span class='text-danger'>" + keteranganKondisi +
                 "</span>?</h6>")
             $("#formDeleteKondisi").attr("action", routeUrl);
         });

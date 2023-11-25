@@ -416,7 +416,7 @@
 
                                         <div class="form-group col-md-12">
                                             <div class="row">
-                                                @if ($reservasi->penjualan->diskon == null)
+                                                @if ($reservasi->penjualan->diskon == null && $jumlahDiskonValid > 0)
                                                     <div class="col-6 mt-2 text-left">
                                                         <address>
                                                             @if ($reservasi->penjualan->status_selesai == 'belum')

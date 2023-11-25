@@ -72,11 +72,15 @@ class PaketController extends Controller
         $arrProdukId = $request->get("arrayprodukid");
         $arrProdukKuantitas = $request->get("arrayprodukkuantitas");
         $statusPaket = $request->get("radioStatusPaket");
+        $deskripsiPaket = $request->get("deskripsiPaket");
 
         $newPaket = new Paket();
         $newPaket->nama = $namaPaket;
         $newPaket->kode_paket = $kodePaket;
         $newPaket->harga = $hargaPaket;
+        if ($deskripsiPaket != null) {
+            $newPaket->deskripsi = $deskripsiPaket;
+        }
         $newPaket->status = $statusPaket;
         $newPaket->created_at = date("Y-m-d H:i:s");
         $newPaket->updated_at = date("Y-m-d H:i:s");
@@ -169,9 +173,13 @@ class PaketController extends Controller
         $arrProdukId = $request->get("arrayprodukid");
         $arrProdukKuantitas = $request->get("arrayprodukkuantitas");
         $statusPaket = $request->get("radioStatusPaket");
+        $deskripsiPaket = $request->get("deskripsiPaket");
 
         $paket->nama = $namaPaket;
         $paket->harga = $hargaPaket;
+        if ($deskripsiPaket != null) {
+            $paket->deskripsi = $deskripsiPaket;
+        }
         $paket->status = $statusPaket;
         $paket->updated_at = date("Y-m-d H:i:s");
         $paket->save();
@@ -249,7 +257,7 @@ class PaketController extends Controller
         return response()->json(array('msg' => view('admin.reservasi.detailpaket', compact('paket'))->render()), 200);
     }
 
-    public function addpaketToListReservasi()
+    public function addPaketToListReservasi()
     {
         $idPaket = $_POST['idPaket'];
         $paket = Paket::find($idPaket);
@@ -263,6 +271,34 @@ class PaketController extends Controller
         $paket = Paket::find($idPaket);
         $perawatans = $paket->perawatans;
         return response()->json(array("perawatans" => $perawatans), 200);
+    }
+
+    public function checkPaketIsiSama()
+    {
+        $idPaket = $_POST["idPaket"];
+        $daftarPaket = explode(",", $_POST["daftarPaketDiambil"]);
+
+
+
+        $arrIdPerawatanYangSudahAda = [];
+        $arrDaftarPaket = Paket::whereIn("kode_paket", $daftarPaket)->get();
+        foreach ($arrDaftarPaket as $paketTertambah) {
+            foreach ($paketTertambah->perawatans as $perawatanPaketTertambah) {
+                array_push($arrIdPerawatanYangSudahAda, $perawatanPaketTertambah->id);
+            }
+        }
+
+        $objPaket = Paket::find($idPaket);
+        $arrPerawatanObjPaket = [];
+
+        foreach ($objPaket->perawatans as $perawatan) {
+            if (in_array($perawatan->id, $arrIdPerawatanYangSudahAda)) {
+                array_push($arrPerawatanObjPaket, $perawatan);
+            }
+        }
+
+        return response()->json(array("arrPerawatanObjPaket" => $arrPerawatanObjPaket), 200);
+
     }
 
 }

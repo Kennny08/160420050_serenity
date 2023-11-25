@@ -56,7 +56,7 @@
                                 <input type="number" class="form-control" name="hargaPaket" id="numHargaPaket"
                                     min="1" aria-describedby="emailHelp"
                                     placeholder="Silahkan masukkan harga layanan paket" required
-                                    value="{{ old('hargaPaket') }}">
+                                    value="{{ old('hargaPaket', 0) }}" disabled readonly>
                                 <small id="emailHelp" class="form-text text-muted">Masukkan harga paket
                                     disini!</small>
                             </div>
@@ -446,6 +446,8 @@
                 style: 'currency',
                 currency: 'IDR'
             }).toString());
+            $("#numHargaPaket").val(parseInt($("#tabelTotalHargaPerawatan").attr("total")) + parseInt($(
+                "#tabelTotalHargaProduk").attr("total")));
         }
     });
 
@@ -486,6 +488,9 @@
             $('#bodyListPerawatan').html(
                 "<tr id='trSilahkanPerawatan'><td colspan='5'>Silahkan Pilih Perawatan</td></tr>");
         }
+
+        $("#numHargaPaket").val(parseInt($("#tabelTotalHargaPerawatan").attr("total")) + parseInt($(
+            "#tabelTotalHargaProduk").attr("total")));
     });
 
     $('body').on('click', '#btnTambahProduk', function() {
@@ -535,6 +540,9 @@
                 style: 'currency',
                 currency: 'IDR'
             }).toString());
+
+            $("#numHargaPaket").val(parseInt($("#tabelTotalHargaPerawatan").attr("total")) + parseInt($(
+                "#tabelTotalHargaProduk").attr("total")));
         }
     });
 
@@ -575,6 +583,9 @@
             $('#bodyListProduk').html(
                 "<tr id='trSilahkan'><td colspan='5'>Silahkan Pilih Produk</td></tr>");
         }
+
+        $("#numHargaPaket").val(parseInt($("#tabelTotalHargaPerawatan").attr("total")) + parseInt($(
+            "#tabelTotalHargaProduk").attr("total")));
     });
 </script>
 @endsection
