@@ -57,7 +57,7 @@
                                 <input type="number" class="form-control" name="hargaPaket" id="numHargaPaket"
                                     min="1" aria-describedby="emailHelp"
                                     placeholder="Silahkan masukkan harga layanan paket" required value="{{ $paket->harga }}"
-                                    disabled readonly>
+                                    readonly>
                                 <small id="emailHelp" class="form-text text-muted">Masukkan harga paket
                                     disini!</small>
                             </div>

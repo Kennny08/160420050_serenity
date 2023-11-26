@@ -49,7 +49,7 @@
                             <div class="col-md-6">
                                 <label for="exampleInputEmail1"><strong>Kode Diskon</strong></label>
                                 <input type="text" class="form-control" name="kode_diskon" id="txtKodeDiskon"
-                                    aria-describedby="emailHelp" placeholder="Silahkan masukkan kode diskon" disabled
+                                    aria-describedby="emailHelp" placeholder="Silahkan masukkan kode diskon" readonly
                                     required value="{{ $diskon->kode_diskon }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan kode diskon disini!</small>
                             </div>
@@ -57,7 +57,7 @@
                                 <label for="exampleInputEmail1"><strong>Jumlah Potongan Diskon (%)</strong></label>
                                 <input type="number" class="form-control" name="jumlahPotongan" id="numJumlahPotongan"
                                     min="1" max="100" aria-describedby="emailHelp"
-                                    placeholder="Silahkan masukkan jumlah potongan diskon" required disabled
+                                    placeholder="Silahkan masukkan jumlah potongan diskon" required readonly
                                     value="{{ $diskon->jumlah_potongan }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan jumlah potongan diskon
                                     disini!</small>
@@ -69,7 +69,7 @@
                                 <label for="exampleInputEmail1"><strong>Minimal Transaksi (Rp)</strong></label>
                                 <input type="number" class="form-control" name="minimalTransaksi" id="numMinimalTransaksi"
                                     min="1" aria-describedby="emailHelp"
-                                    placeholder="Silahkan masukkan minimal transaksi" required disabled
+                                    placeholder="Silahkan masukkan minimal transaksi" required readonly
                                     value="{{ $diskon->minimal_transaksi }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan jumlah potongan diskon
                                     disini!</small>
@@ -78,7 +78,7 @@
                                 <label for="exampleInputEmail1"><strong>Maksimum Potongan (Rp)</strong></label>
                                 <input type="number" class="form-control" name="maksimumPotongan" id="numMaksimumPotongan"
                                     min="1" aria-describedby="emailHelp"
-                                    placeholder="Silahkan masukkan maksimum potongan diskon" required disabled
+                                    placeholder="Silahkan masukkan maksimum potongan diskon" required readonly
                                     value="{{ $diskon->maksimum_potongan }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan maksimum potongan diskon
                                     disini!</small>
@@ -120,7 +120,7 @@
                                 <label for="exampleInputEmail1"><strong>Tanggal Mulai</strong></label>
                                 <input type="date" class="form-control" name="tanggalMulai" id="tanggalMulai"
                                     aria-describedby="emailHelp" placeholder="Silahkan Pilih Tanggal Mulai"
-                                    value="{{ date('Y-m-d', strtotime($diskon->tanggal_mulai)) }}" required disabled
+                                    value="{{ date('Y-m-d', strtotime($diskon->tanggal_mulai)) }}" required readonly
                                     min="{{ date('Y-m-d', strtotime($diskon->tanggal_mulai)) }}">
                                 <small id="emailHelp" class="form-text text-muted">Pilih tanggal mulai berlakunya diskon
                                     disini!</small>

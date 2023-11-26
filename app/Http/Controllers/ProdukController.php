@@ -31,6 +31,7 @@ class ProdukController extends Controller
      */
     public function create()
     {
+        // $this->authorize('admin', 1);
         $mereks = Merek::orderBy('nama')->get();
         $kategoris = Kategori::orderBy('nama')->get();
         $kondisis = Kondisi::orderBy('keterangan')->get();
@@ -45,6 +46,7 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
+        
         date_default_timezone_set("Asia/Jakarta");
         $validatedData = $request->validate(
             [
@@ -128,8 +130,9 @@ class ProdukController extends Controller
      * @param  \App\Models\Produk  $produk
      * @return \Illuminate\Http\Response
      */
-    public function edit(Produk $produk)
+    public function edit($id)
     {
+        $produk = Produk::find($id);
         $mereks = Merek::orderBy('nama')->get();
         $kategoris = Kategori::orderBy('nama')->get();
         $kondisis = Kondisi::orderBy('keterangan')->get();
@@ -143,7 +146,7 @@ class ProdukController extends Controller
      * @param  \App\Models\Produk  $produk
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Produk $produk)
+    public function update(Request $request, $id)
     {
         date_default_timezone_set("Asia/Jakarta");
         $validatedData = $request->validate(
@@ -175,6 +178,8 @@ class ProdukController extends Controller
                 'minimumStok.min' => 'Minimum Stok produk adalah 1!',
             ]
         );
+
+        $produk = Produk::find($id);
 
         $namaProduk = $request->get("namaProduk");
         $kodeProduk = $request->get("kode_produk");
@@ -228,9 +233,9 @@ class ProdukController extends Controller
      * @param  \App\Models\Produk  $produk
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Produk $produk)
+    public function destroy($id)
     {
-        $objProduk = $produk;
+        $objProduk = Produk::find($id);
         try {
             $objProduk->delete();
             return redirect()->route('produks.index')->with('status', 'Produk ' . $objProduk->nama . ' telah berhasil dihapus');

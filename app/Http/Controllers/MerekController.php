@@ -63,9 +63,9 @@ class MerekController extends Controller
      * @param  \App\Models\Merek  $merek
      * @return \Illuminate\Http\Response
      */
-    public function edit(Merek $merek)
+    public function edit($idMerek)
     {
-        $objMerek = $merek;
+        $objMerek = Merek::find($idMerek);
         return view('admin.produk.merekproduk.editmerek', compact('objMerek'));
     }
 
@@ -76,11 +76,11 @@ class MerekController extends Controller
      * @param  \App\Models\Merek  $merek
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Merek $merek)
+    public function update(Request $request, $idMerek)
     {
         date_default_timezone_set('Asia/Jakarta');
+        $merek = Merek::find($idMerek);
         $merek->nama = $request->get('namaMerek');
-        ;
         $merek->updated_at = date('Y-m-d H:i:s');
         $merek->save();
         return redirect()->route('mereks.index')->with('status', 'Merek ' . $merek->nama . ' telah berhasil diedit');
@@ -92,9 +92,9 @@ class MerekController extends Controller
      * @param  \App\Models\Merek  $merek
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Merek $merek)
+    public function destroy($idMerek)
     {
-        $objMerek = $merek;
+        $objMerek = Merek::find($idMerek);
         try {
             $objMerek->delete();
             return redirect()->route('mereks.index')->with('status', 'Merek ' . $objMerek->nama . ' telah berhasil dihapus');

@@ -119,8 +119,9 @@ class DiskonController extends Controller
      * @param  \App\Models\Diskon  $diskon
      * @return \Illuminate\Http\Response
      */
-    public function edit(Diskon $diskon)
+    public function edit($idDiskon)
     {
+        $diskon = Diskon::find($idDiskon);
         return view("admin.diskon.editdiskon", compact("diskon"));
     }
 
@@ -131,9 +132,11 @@ class DiskonController extends Controller
      * @param  \App\Models\Diskon  $diskon
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Diskon $diskon)
+    public function update(Request $request, $idDiskon)
     {
         date_default_timezone_set("Asia/Jakarta");
+
+        $diskon = Diskon::find($idDiskon);
 
         $validatedData = $request->validate(
             [
@@ -246,8 +249,8 @@ class DiskonController extends Controller
             $penjualanSementara["penjualan"] = $penjualan;
 
             $totalHargaPenjualanPerawatan = $penjualan->penjualanperawatans->sum("harga");
-        
-            
+
+
             $totalHargaPenjualanProduk = $penjualan->produks->sum(function ($penjualanProduk) {
                 return ($penjualanProduk->pivot->harga * $penjualanProduk->pivot->kuantitas);
             });

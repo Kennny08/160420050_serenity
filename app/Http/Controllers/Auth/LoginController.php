@@ -31,8 +31,12 @@ class LoginController extends Controller
     public function redirectTo()
     {
         $role = Auth::user()->role;
-        if ($role == 'admin' || $role == 'karyawan') {
-            return '/salon';
+        if (Auth::user()->role == 'admin' || Auth::user()->role == 'karyawan') {
+            if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin') {
+                return '/salon';
+            }else{
+                //Arahin ke halaman daftar reservasi untuk karyawan salon tertentu saja
+            }
         } else if ($role == 'pelanggan') {
             return '/pelanggan';
         } 

@@ -85,7 +85,7 @@
                                 <label for="exampleInputEmail1"><strong>Stok Produk</strong></label>
                                 <input type="number" class="form-control" name="stokProduk" id="numStok" min="1"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan jumlah stok produk" required
-                                    value="{{ $produk->stok}}" disabled>
+                                    value="{{ $produk->stok}}" readonly>
                                 <small id="emailHelp" class="form-text text-muted">Masukkan jumlah stok produk
                                     disini!</small>
                             </div>

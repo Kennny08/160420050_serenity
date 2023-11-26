@@ -39,7 +39,7 @@ class PerawatanController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         date_default_timezone_set("Asia/Jakarta");
         $validatedData = $request->validate(
             [
@@ -116,8 +116,9 @@ class PerawatanController extends Controller
      * @param  \App\Models\Perawatan  $perawatan
      * @return \Illuminate\Http\Response
      */
-    public function edit(Perawatan $perawatan)
+    public function edit($idPerawatan)
     {
+        $perawatan = Perawatan::find($idPerawatan);
         $produksDigunakan = Produk::where('status', 'aktif')->where('status_jual', 'tidak')->orderBy('nama')->get();
         return view('admin.perawatan.editperawatan', compact('produksDigunakan', 'perawatan'));
     }
@@ -129,9 +130,12 @@ class PerawatanController extends Controller
      * @param  \App\Models\Perawatan  $perawatan
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Perawatan $perawatan)
+    public function update(Request $request, $idPerawatan)
     {
         date_default_timezone_set("Asia/Jakarta");
+
+        $perawatan = Perawatan::find($idPerawatan);
+
         $namaPerawatan = $request->get('namaPerawatan');
         $kodePerawatan = $request->get('kode_perawatan');
         $hargaPerawatan = $request->get('hargaPerawatan');
@@ -252,9 +256,9 @@ class PerawatanController extends Controller
      * @param  \App\Models\Perawatan  $perawatan
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Perawatan $perawatan)
+    public function destroy($idPerawatan)
     {
-        $objPerawatan = $perawatan;
+        $objPerawatan = Perawatan::find($idPerawatan);
         try {
             $objPerawatan->delete();
             return redirect()->route('perawatans.index')->with('status', 'Perawatan ' . $objPerawatan->nama . ' telah berhasil dihapus');

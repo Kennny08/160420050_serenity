@@ -63,9 +63,9 @@ class KondisiController extends Controller
      * @param  \App\Models\Kondisi  $kondisi
      * @return \Illuminate\Http\Response
      */
-    public function edit(Kondisi $kondisi)
+    public function edit($idKondisi)
     {
-        $objKondisi = $kondisi;
+        $objKondisi = Kondisi::find($idKondisi);
         return view('admin.produk.kondisiproduk.editkondisi', compact('objKondisi'));
     }
 
@@ -76,10 +76,11 @@ class KondisiController extends Controller
      * @param  \App\Models\Kondisi  $kondisi
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Kondisi $kondisi)
+    public function update(Request $request, $idKondisi)
     {
         date_default_timezone_set('Asia/Jakarta');
-        $kondisi->keterangan = $request->get('keteranganKondisi');;
+        $kondisi = Kondisi::find($idKondisi);
+        $kondisi->keterangan = $request->get('keteranganKondisi');
         $kondisi->updated_at = date('Y-m-d H:i:s');
         $kondisi->save();
         return redirect()->route('kondisis.index')->with('status', 'Kondisi ' . $kondisi->keterangan . ' telah berhasil diedit');
@@ -92,9 +93,9 @@ class KondisiController extends Controller
      * @param  \App\Models\Kondisi  $kondisi
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Kondisi $kondisi)
+    public function destroy($idKondisi)
     {
-        $objKondisi = $kondisi;
+        $objKondisi = Kondisi::find($idKondisi);
         try {
             $objKondisi->delete();
             return redirect()->route('kondisis.index')->with('status', 'Kondisi ' . $objKondisi->keterangan . ' telah berhasil dihapus');

@@ -64,9 +64,9 @@ class KategoriController extends Controller
      * @param  \App\Models\Kategori  $kategori
      * @return \Illuminate\Http\Response
      */
-    public function edit(Kategori $kategori)
+    public function edit($idKategori)
     {
-        $objKategori = $kategori;
+        $objKategori = Kategori::find($idKategori);
         return view('admin.produk.kategoriproduk.editkategori', compact('objKategori'));
     }
 
@@ -77,9 +77,10 @@ class KategoriController extends Controller
      * @param  \App\Models\Kategori  $kategori
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Kategori $kategori)
+    public function update(Request $request, $idKategori)
     {
         date_default_timezone_set('Asia/Jakarta');
+        $kategori = Kategori::find($idKategori);
         $namaKategori = $request->get('namaKategori');
         $kategori->nama = $namaKategori;
         $kategori->updated_at = date('Y-m-d H:i:s');
@@ -93,9 +94,9 @@ class KategoriController extends Controller
      * @param  \App\Models\Kategori  $kategori
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Kategori $kategori)
+    public function destroy($idKategori)
     {
-        $objCategory = $kategori;
+        $objCategory = Kategori::find($idKategori);
         try {
             $objCategory->delete();
             return redirect()->route('kategoris.index')->with('status', 'Kategori ' . $objCategory->nama . ' telah berhasil dihapus');

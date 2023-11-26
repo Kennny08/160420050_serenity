@@ -120,8 +120,9 @@ class PaketController extends Controller
      * @param  \App\Models\Paket  $paket
      * @return \Illuminate\Http\Response
      */
-    public function edit(Paket $paket)
+    public function edit($idPaket)
     {
+        $paket = Paket::find($idPaket);
         $perawatanAktif = Perawatan::where("status", "aktif")->orderBy("nama")->get();
         $produkAktif = Produk::where("status", "aktif")->where("status_jual", "aktif")->orderBy("nama")->get();
 
@@ -147,9 +148,10 @@ class PaketController extends Controller
      * @param  \App\Models\Paket  $paket
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Paket $paket)
+    public function update(Request $request, $idPaket)
     {
         date_default_timezone_set('Asia/Jakarta');
+        $paket = Paket::find($idPaket);
         $validatedData = $request->validate(
             [
                 'namaPaket' => 'required|max:255',
@@ -214,9 +216,9 @@ class PaketController extends Controller
      * @param  \App\Models\Paket  $paket
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Paket $paket)
+    public function destroy($idPaket)
     {
-        $objPaket = $paket;
+        $objPaket = Paket::find($idPaket);
         try {
             $objPaket->delete();
             return redirect()->route('pakets.index')->with('status', 'Paket ' . $objPaket->nama . ' telah berhasil dihapus');

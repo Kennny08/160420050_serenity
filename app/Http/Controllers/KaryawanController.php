@@ -125,8 +125,9 @@ class KaryawanController extends Controller
      * @param  \App\Models\Karyawan  $karyawan
      * @return \Illuminate\Http\Response
      */
-    public function edit(Karyawan $karyawan)
+    public function edit($idKaryawan)
     {
+        $karyawan = Karyawan::find($idKaryawan);
         $perawatans = Perawatan::where('status', 'aktif')->orderBy('nama')->get();
         return view('admin.karyawan.editkaryawan', compact('perawatans', 'karyawan'));
     }
@@ -138,9 +139,12 @@ class KaryawanController extends Controller
      * @param  \App\Models\Karyawan  $karyawan
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Karyawan $karyawan)
+    public function update(Request $request, $idKaryawan)
     {
         date_default_timezone_set("Asia/Jakarta");
+
+        $karyawan = Karyawan::find($idKaryawan);
+
         $namaKaryawan = $request->get("namaKaryawan");
         $emailKaryawan = $request->get('emailKaryawan');
         $gajiKaryawan = $request->get('gajiKaryawan');
@@ -377,9 +381,10 @@ class KaryawanController extends Controller
      * @param  \App\Models\Karyawan  $karyawan
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Karyawan $karyawan)
+    public function destroy($idKaryawan)
     {
 
+        $karyawan = Karyawan::find($idKaryawan);
         $objKaryawan = $karyawan;
         try {
             $objKaryawan->delete();
