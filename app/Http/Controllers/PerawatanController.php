@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Paket;
 use App\Models\Perawatan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
@@ -173,7 +174,38 @@ class PerawatanController extends Controller
             );
             $perawatan->nama = $namaPerawatan;
             $perawatan->kode_perawatan = $kodePerawatan;
-            $perawatan->harga = $hargaPerawatan;
+
+
+            if ($hargaPerawatan > $perawatan->harga) {
+                $selisihPenambahan = $hargaPerawatan - $perawatan->harga;
+                $daftarPaket = Paket::join("paket_perawatan", "paket_perawatan.paket_id", "=", "pakets.id")->where("paket_perawatan.perawatan_id", $perawatan->id)->get();
+                if (count($daftarPaket) > 0) {
+                    foreach ($daftarPaket as $paket) {
+
+                        $paketTerpilih = Paket::find($paket->id);
+                        $paketTerpilih->harga = $paketTerpilih->harga + $selisihPenambahan;
+                        $paketTerpilih->updated_at = date("Y-m-d H:i:s");
+                        $paketTerpilih->save();
+                    }
+                }
+                $perawatan->harga = $hargaPerawatan;
+
+            } else if ($hargaPerawatan < $perawatan->harga) {
+                $selisihPengurangan = $perawatan->harga - $hargaPerawatan;
+                $daftarPaket = Paket::join("paket_perawatan", "paket_perawatan.paket_id", "=", "pakets.id")->where("paket_perawatan.perawatan_id", $perawatan->id)->get();
+                if (count($daftarPaket) > 0) {
+                    foreach ($daftarPaket as $paket) {
+                        $paketTerpilih = Paket::find($paket->id);
+                        $paketTerpilih->harga = $paketTerpilih->harga - $selisihPengurangan;
+                        $paketTerpilih->updated_at = date("Y-m-d H:i:s");
+                        $paketTerpilih->save();
+                    }
+                }
+                $perawatan->harga = $hargaPerawatan;
+            } else {
+                $perawatan->harga = $hargaPerawatan;
+            }
+
             $perawatan->durasi = $durasiPerawatan;
             $perawatan->deskripsi = $deskripsiPerawatan;
             $perawatan->status = $statusKeaktifan;
@@ -222,7 +254,37 @@ class PerawatanController extends Controller
             );
 
             $perawatan->nama = $namaPerawatan;
-            $perawatan->harga = $hargaPerawatan;
+            
+            if ($hargaPerawatan > $perawatan->harga) {
+                $selisihPenambahan = $hargaPerawatan - $perawatan->harga;
+                $daftarPaket = Paket::join("paket_perawatan", "paket_perawatan.paket_id", "=", "pakets.id")->where("paket_perawatan.perawatan_id", $perawatan->id)->get();
+                if (count($daftarPaket) > 0) {
+                    foreach ($daftarPaket as $paket) {
+
+                        $paketTerpilih = Paket::find($paket->id);
+                        $paketTerpilih->harga = $paketTerpilih->harga + $selisihPenambahan;
+                        $paketTerpilih->updated_at = date("Y-m-d H:i:s");
+                        $paketTerpilih->save();
+                    }
+                }
+                $perawatan->harga = $hargaPerawatan;
+
+            } else if ($hargaPerawatan < $perawatan->harga) {
+                $selisihPengurangan = $perawatan->harga - $hargaPerawatan;
+                $daftarPaket = Paket::join("paket_perawatan", "paket_perawatan.paket_id", "=", "pakets.id")->where("paket_perawatan.perawatan_id", $perawatan->id)->get();
+                if (count($daftarPaket) > 0) {
+                    foreach ($daftarPaket as $paket) {
+                        $paketTerpilih = Paket::find($paket->id);
+                        $paketTerpilih->harga = $paketTerpilih->harga - $selisihPengurangan;
+                        $paketTerpilih->updated_at = date("Y-m-d H:i:s");
+                        $paketTerpilih->save();
+                    }
+                }
+                $perawatan->harga = $hargaPerawatan;
+            } else {
+                $perawatan->harga = $hargaPerawatan;
+            }
+
             $perawatan->durasi = $durasiPerawatan;
             $perawatan->deskripsi = $deskripsiPerawatan;
             $perawatan->status = $statusKeaktifan;

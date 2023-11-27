@@ -32,6 +32,7 @@
                                 <th>Jumlah Reservasi</th>
                                 <th>Total Penjualan Perawatan(Rp)</th>
                                 <th>Total Penjualan Produk(Rp)</th>
+                                <th>Total Potongan Diskon(Rp)</th>
                                 <th>Total Penjualan(Rp)</th>
                                 <th>Detail</th>
                             </tr>
@@ -45,6 +46,9 @@
                                     <td>{{ number_format($r['totalpenjualanperawatan'], 2, ',', '.') }}</td>
                                     <td>
                                         {{ number_format($r['totalpenjualanproduk'], 2, ',', '.') }}
+                                    </td>
+                                    <td>
+                                        {{ number_format($r['totalpotongandiskon'], 2, ',', '.') }}
                                     </td>
                                     <td>{{ number_format($r['totalpembayaran'], 2, ',', '.') }}</td>
                                     <td class="text-center"><button data-toggle="modal" data-target="#modalDetailRiwayat"

@@ -41,7 +41,7 @@ Route::get('/', function () {
                 return redirect()->route('reservasis.index');
             } else {
                 //Route untuk ke halaman reservasi untuk karyawan salon tersebut saja
-                // return redirect()->route('reservasis.index');
+                return redirect()->route('reservasis.karyawan.daftarreservasi');
             }
 
         }
@@ -91,7 +91,9 @@ Route::middleware(['auth', 'salon'])->group(function () {
     Route::middleware(['karyawansalon'])->group(function () {
 
         //Reservasi hari ini dan riwayatnya
-
+        Route::get('/salon/karyawan/daftarreservasi', [ReservasiController::class, "daftarReservasiKaryawan"])->name("reservasis.karyawan.daftarreservasi");
+        Route::post('/salon/karyawan/detaildaftarreservasipertanggal', [ReservasiController::class, "detailDaftarReservasiKaryawan"])->name("reservasis.karyawan.detailreservasiperhari");
+        
         //Absen
 
         //Komisi Karyawan Tersebut

@@ -105,7 +105,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row" id="containerLayananPerawatan">
+                        {{-- <div class="form-group row" id="containerLayananPerawatan">
                             <div class="col-md-12">
                                 <label for="exampleInputEmail1"><strong>Layanan Perawatan</strong></label>
                             </div>
@@ -139,9 +139,12 @@
                                         name="arrayperawatanid[]">
                                 @endforeach
                             @endif
-                        </div>
+                        </div> --}}
 
                         <div class="form-group row text-center">
+                            <div class="col-md-12 text-left">
+                                <h5>Daftar Perawatan</h5>
+                            </div>
                             <div class="form-group col-md-12 table-responsive">
                                 <div>
                                     <table class="table table-bordered table-striped dt-responsive wrap">
@@ -151,7 +154,7 @@
                                                 <th class="text-center">Durasi (Menit)</th>
                                                 <th class="text-center">Harga (Rp)</th>
                                                 <th class="text-center">Deskripsi</th>
-                                                <th class="text-center">Hapus</th>
+                                                {{-- <th class="text-center">Hapus</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody id="bodyListPerawatan">
@@ -165,14 +168,14 @@
                                                     <td>{{ $aro->durasi }} </td>
                                                     <td>{{ number_format($aro->harga, 2, ',', '.') }} </td>
                                                     <td>{{ $aro->deskripsi }}</td>
-                                                    <td><button type='button'
+                                                    {{-- <td><button type='button'
                                                             class='deletePerawatan btn btn-danger waves-effect waves-light'
                                                             idPerawatan="{{ $aro->id }}"
                                                             namaPerawatan="{{ $aro->nama }}"
                                                             durasiPerawatan="{{ $aro->durasi }}"
                                                             hargaPerawatan="{{ $aro->harga }}"
                                                             deskripsiPerawatan="{{ $aro->deskripsi }}">Hapus</button>
-                                                    </td>
+                                                    </td> --}}
                                                 </tr>
                                             @endforeach
 
@@ -205,7 +208,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row" id="containerProduk">
+                        {{-- <div class="form-group row" id="containerProduk">
                             <div class="col-md-12">
                                 <label for="exampleInputEmail1"><strong>Daftar Produk dan Kuantitas dalam
                                         Paket</strong></label>
@@ -253,82 +256,92 @@
                                 @endforeach
 
                             @endif
-                        </div>
-
-                        <div class="form-group text-center">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">Nama Produk</th>
-                                        <th class="text-center">Harga Produk(Rp)</th>
-                                        <th class="text-center">Kuantitas</th>
-                                        <th class="text-center">Subtotal(Rp)</th>
-                                        <th class="text-center">Hapus</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="bodyListProduk">
-                                    @if (count($paket->produks) == 0)
-                                        <tr id="trSilahkan">
-                                            <td colspan="5">
-                                                Silahkan pilih Produk!
-                                            </td>
-                                        </tr>
-                                    @else
-                                        @foreach ($paket->produks as $p)
+                        </div> --}}
+                        
+                        <div class="form-group row text-center">
+                            <div class="col-md-12 text-left">
+                                <h5>Daftar Produk</h5>
+                            </div>
+                            <div class="form-group col-md-12 table-responsive">
+                                <div>
+                                    <table class="table table-bordered table-striped dt-responsive wrap">
+                                        <thead>
                                             <tr>
-                                                <td>
-                                                    {{ $p->nama }}
-                                                </td>
-                                                <td>
-                                                    {{ number_format($p->harga_jual, 2, ',', '.') }}
-                                                </td>
-                                                <td>{{ $p->pivot->jumlah }}</td>
-                                                <td>
-                                                    @php
-                                                        $subtotal = $p->harga_jual * $p->pivot->jumlah;
-                                                    @endphp
-                                                    {{ number_format($subtotal, 2, ',', '.') }}
-                                                </td>
-                                                <td>
+                                                <th class="text-center">Nama Produk</th>
+                                                <th class="text-center">Harga Produk(Rp)</th>
+                                                <th class="text-center">Kuantitas</th>
+                                                <th class="text-center">Subtotal(Rp)</th>
+                                                {{-- <th class="text-center">Hapus</th> --}}
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bodyListProduk">
+                                            @if (count($paket->produks) == 0)
+                                                <tr id="trSilahkan">
+                                                    <td colspan="4">
+                                                        Silahkan pilih Produk!
+                                                    </td>
+                                                </tr>
+                                            @else
+                                                @foreach ($paket->produks as $p)
+                                                    <tr>
+                                                        <td>
+                                                            {{ $p->nama }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($p->harga_jual, 2, ',', '.') }}
+                                                        </td>
+                                                        <td>{{ $p->pivot->jumlah }}</td>
+                                                        <td>
+                                                            @php
+                                                                $subtotal = $p->harga_jual * $p->pivot->jumlah;
+                                                            @endphp
+                                                            {{ number_format($subtotal, 2, ',', '.') }}
+                                                        </td>
+                                                        {{-- <td>
                                                     <button type='button'
                                                         class='deleteProduk btn btn-danger waves-effect waves-light'
                                                         idProduk="{{ $p->id }}" nama="{{ $p->nama }}"
                                                         hargajual="{{ $p->harga_jual }}"
                                                         subtotal="{{ $subtotal }}">Hapus</button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    @endif
-                                </tbody>
-                                <tfoot>
-                                    @php
-                                        $totalProdukSementara = 0;
-                                    @endphp
-                                    @if (count($paket->produks) != 0)
-                                        @foreach ($paket->produks as $produk)
+                                                </td> --}}
+                                                    </tr>
+                                                @endforeach
+                                            @endif
+                                        </tbody>
+                                        <tfoot>
                                             @php
-                                                $totalProdukSementara += $produk->harga_jual * $produk->pivot->jumlah;
+                                                $totalProdukSementara = 0;
                                             @endphp
-                                        @endforeach
-                                        <tr>
-                                            <td id="tabelTotalHargaProduk" colspan="5" class="font-weight-bold"
-                                                total="{{ $totalProdukSementara }}">Total Harga
-                                                :
-                                                Rp. {{ number_format($totalProdukSementara, 2, ',', '.') }}
-                                            </td>
-                                        </tr>
-                                    @else
-                                        <tr>
-                                            <td id="tabelTotalHargaProduk" colspan="5" class="font-weight-bold"
-                                                total="0">Total Harga
-                                                :
-                                                Rp. 0,00
-                                            </td>
-                                        </tr>
-                                    @endif
-                                </tfoot>
-                            </table>
+                                            @if (count($paket->produks) != 0)
+                                                @foreach ($paket->produks as $produk)
+                                                    @php
+                                                        $totalProdukSementara += $produk->harga_jual * $produk->pivot->jumlah;
+                                                    @endphp
+                                                @endforeach
+                                                <tr>
+                                                    <td id="tabelTotalHargaProduk" colspan="5"
+                                                        class="font-weight-bold" total="{{ $totalProdukSementara }}">
+                                                        Total Harga
+                                                        :
+                                                        Rp. {{ number_format($totalProdukSementara, 2, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                            @else
+                                                <tr>
+                                                    <td id="tabelTotalHargaProduk" colspan="5"
+                                                        class="font-weight-bold" total="0">Total Harga
+                                                        :
+                                                        Rp. 0,00
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                            </div>
                         </div>
+
 
                         <div class="form-group row text-right">
                             <div class="col-md-12">
@@ -409,140 +422,140 @@
             }
         });
 
-        $('body').on('click', '.deletePerawatan', function() {
-            var perawatanid = $(this).attr('idPerawatan');
-            var namaPerawatan = $(this).attr('namaPerawatan');
-            var durasiperawatan = $(this).attr('durasiPerawatan');
-            var hargaperawatan = parseInt($(this).attr('hargaPerawatan'));
-            var deskripsiperawatan = $(this).attr('deskripsiPerawatan');
-            var tanggalReservasi = $("#tanggalReservasi").val();
-            var totalHargaPerawatanSaatIni = parseInt($("#tabelTotalHargaPerawatan").attr("total"));
+        // $('body').on('click', '.deletePerawatan', function() {
+        //     var perawatanid = $(this).attr('idPerawatan');
+        //     var namaPerawatan = $(this).attr('namaPerawatan');
+        //     var durasiperawatan = $(this).attr('durasiPerawatan');
+        //     var hargaperawatan = parseInt($(this).attr('hargaPerawatan'));
+        //     var deskripsiperawatan = $(this).attr('deskripsiPerawatan');
+        //     var tanggalReservasi = $("#tanggalReservasi").val();
+        //     var totalHargaPerawatanSaatIni = parseInt($("#tabelTotalHargaPerawatan").attr("total"));
 
-            var totalHargaBaru = totalHargaPerawatanSaatIni - hargaperawatan;
-            $("#tabelTotalHargaPerawatan").attr("total", totalHargaBaru);
-            $("#tabelTotalHargaPerawatan").text("Total Harga : " + totalHargaBaru.toLocaleString('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-            }).toString());
+        //     var totalHargaBaru = totalHargaPerawatanSaatIni - hargaperawatan;
+        //     $("#tabelTotalHargaPerawatan").attr("total", totalHargaBaru);
+        //     $("#tabelTotalHargaPerawatan").text("Total Harga : " + totalHargaBaru.toLocaleString('id-ID', {
+        //         style: 'currency',
+        //         currency: 'IDR'
+        //     }).toString());
 
-            $("#perawatanSelect").append("<option value='" + perawatanid + "' durasi='" + durasiperawatan +
-                "' harga='" + hargaperawatan + "' deskripsi='" + deskripsiperawatan + "'>" + namaPerawatan +
-                "</option>");
-            $(this).parent().parent().remove();
-            $("#perawatan" + perawatanid).remove();
+        //     $("#perawatanSelect").append("<option value='" + perawatanid + "' durasi='" + durasiperawatan +
+        //         "' harga='" + hargaperawatan + "' deskripsi='" + deskripsiperawatan + "'>" + namaPerawatan +
+        //         "</option>");
+        //     $(this).parent().parent().remove();
+        //     $("#perawatan" + perawatanid).remove();
 
-            var select = $("#perawatanSelect");
-            $("#perawatanSelect option[value='null']").remove();
-            var options = select.find("option");
-            options.sort(function(a, b) {
-                return a.text.localeCompare(b.text);
-            });
-            select.empty();
-            select.append("<option value='null' selected disabled>Pilih Perawatan</option>")
-            select.append(options);
-            select.val("null");
+        //     var select = $("#perawatanSelect");
+        //     $("#perawatanSelect option[value='null']").remove();
+        //     var options = select.find("option");
+        //     options.sort(function(a, b) {
+        //         return a.text.localeCompare(b.text);
+        //     });
+        //     select.empty();
+        //     select.append("<option value='null' selected disabled>Pilih Perawatan</option>")
+        //     select.append(options);
+        //     select.val("null");
 
-            if ($('#bodyListPerawatan').find("tr").length == 0) {
-                $('#bodyListPerawatan').html(
-                    "<tr id='trSilahkanPerawatan'><td colspan='5'>Silahkan Pilih Perawatan</td></tr>");
-            }
+        //     if ($('#bodyListPerawatan').find("tr").length == 0) {
+        //         $('#bodyListPerawatan').html(
+        //             "<tr id='trSilahkanPerawatan'><td colspan='5'>Silahkan Pilih Perawatan</td></tr>");
+        //     }
 
-            $("#numHargaPaket").val(parseInt($("#tabelTotalHargaPerawatan").attr("total")) + parseInt($(
-                "#tabelTotalHargaProduk").attr("total")));
-        });
+        //     $("#numHargaPaket").val(parseInt($("#tabelTotalHargaPerawatan").attr("total")) + parseInt($(
+        //         "#tabelTotalHargaProduk").attr("total")));
+        // });
 
-        $('body').on('click', '#btnTambahProduk', function() {
-            var idProduk = $("#selectProduk").val();
-            var namaProduk = unescape($("#selectProduk option:selected").attr("nama"));
-            var hargaproduk = parseInt($("#selectProduk option:selected").attr('hargajual'));
-            var kuantitasProduk = parseInt($("#numKuantitasProduk").val());
-            var totalHargaProdukSaatIni = parseInt($("#tabelTotalHargaProduk").attr("total"));
+        // $('body').on('click', '#btnTambahProduk', function() {
+        //     var idProduk = $("#selectProduk").val();
+        //     var namaProduk = unescape($("#selectProduk option:selected").attr("nama"));
+        //     var hargaproduk = parseInt($("#selectProduk option:selected").attr('hargajual'));
+        //     var kuantitasProduk = parseInt($("#numKuantitasProduk").val());
+        //     var totalHargaProdukSaatIni = parseInt($("#tabelTotalHargaProduk").attr("total"));
 
-            if (kuantitasProduk <= 0 || (isNaN(kuantitasProduk))) {
-                kuantitasProduk = 1;
-            }
+        //     if (kuantitasProduk <= 0 || (isNaN(kuantitasProduk))) {
+        //         kuantitasProduk = 1;
+        //     }
 
-            if (idProduk != null) {
-                $("#containerProduk").append("<input id='produk" + idProduk +
-                    "' type='hidden' class='classarrayprodukid' value='" +
-                    idProduk +
-                    "' name='arrayprodukid[]'>");
-                $("#containerProduk").append("<input id='kuantitasproduk" + idProduk +
-                    "' type='hidden' class='classarrayprodukkuantitas' value='" +
-                    kuantitasProduk +
-                    "' name='arrayprodukkuantitas[]'>");
-                $('#trSilahkan').remove();
-                $("#bodyListProduk").append(
-                    "<tr><td>" + namaProduk + "</td>" +
-                    "<td>" + hargaproduk.toLocaleString('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR'
-                    }).toString().replace("Rp", "") + "</td>" +
-                    "<td>" + kuantitasProduk + "</td>" +
-                    "<td>" + (hargaproduk * kuantitasProduk).toLocaleString('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR'
-                    }).toString().replace("Rp", "") + "</td>" +
-                    "<td>" +
-                    "<button type='button' class='deleteProduk btn btn-danger waves-effect waves-light' idProduk='" +
-                    idProduk + "' nama='" + escape(namaProduk) + "' hargajual='" + hargaproduk +
-                    "' subtotal= '" + hargaproduk * kuantitasProduk + "'>Hapus</button>" +
-                    "</td>" +
-                    "</tr>");
-                $("#selectProduk option:selected").remove();
-                $("#selectProduk").val('null');
-                $("#numKuantitasProduk").val("1");
-                var totalHargaBaru = totalHargaProdukSaatIni + (hargaproduk * kuantitasProduk);
-                $("#tabelTotalHargaProduk").attr("total", totalHargaBaru);
-                $("#tabelTotalHargaProduk").text("Total Harga : " + totalHargaBaru.toLocaleString('id-ID', {
-                    style: 'currency',
-                    currency: 'IDR'
-                }).toString());
+        //     if (idProduk != null) {
+        //         $("#containerProduk").append("<input id='produk" + idProduk +
+        //             "' type='hidden' class='classarrayprodukid' value='" +
+        //             idProduk +
+        //             "' name='arrayprodukid[]'>");
+        //         $("#containerProduk").append("<input id='kuantitasproduk" + idProduk +
+        //             "' type='hidden' class='classarrayprodukkuantitas' value='" +
+        //             kuantitasProduk +
+        //             "' name='arrayprodukkuantitas[]'>");
+        //         $('#trSilahkan').remove();
+        //         $("#bodyListProduk").append(
+        //             "<tr><td>" + namaProduk + "</td>" +
+        //             "<td>" + hargaproduk.toLocaleString('id-ID', {
+        //                 style: 'currency',
+        //                 currency: 'IDR'
+        //             }).toString().replace("Rp", "") + "</td>" +
+        //             "<td>" + kuantitasProduk + "</td>" +
+        //             "<td>" + (hargaproduk * kuantitasProduk).toLocaleString('id-ID', {
+        //                 style: 'currency',
+        //                 currency: 'IDR'
+        //             }).toString().replace("Rp", "") + "</td>" +
+        //             "<td>" +
+        //             "<button type='button' class='deleteProduk btn btn-danger waves-effect waves-light' idProduk='" +
+        //             idProduk + "' nama='" + escape(namaProduk) + "' hargajual='" + hargaproduk +
+        //             "' subtotal= '" + hargaproduk * kuantitasProduk + "'>Hapus</button>" +
+        //             "</td>" +
+        //             "</tr>");
+        //         $("#selectProduk option:selected").remove();
+        //         $("#selectProduk").val('null');
+        //         $("#numKuantitasProduk").val("1");
+        //         var totalHargaBaru = totalHargaProdukSaatIni + (hargaproduk * kuantitasProduk);
+        //         $("#tabelTotalHargaProduk").attr("total", totalHargaBaru);
+        //         $("#tabelTotalHargaProduk").text("Total Harga : " + totalHargaBaru.toLocaleString('id-ID', {
+        //             style: 'currency',
+        //             currency: 'IDR'
+        //         }).toString());
 
-                $("#numHargaPaket").val(parseInt($("#tabelTotalHargaPerawatan").attr("total")) + parseInt($(
-                    "#tabelTotalHargaProduk").attr("total")));
-            }
-        });
+        //         $("#numHargaPaket").val(parseInt($("#tabelTotalHargaPerawatan").attr("total")) + parseInt($(
+        //             "#tabelTotalHargaProduk").attr("total")));
+        //     }
+        // });
 
-        $('body').on('click', '.deleteProduk', function() {
-            var idProduk = $(this).attr('idProduk');
-            var namaProduk = unescape($(this).attr('nama'));
-            var hargaProduk = $(this).attr('hargajual');
-            var subTotalProduk = parseInt($(this).attr('subtotal'));
-            var totalHargaProdukSaatIni = parseInt($("#tabelTotalHargaProduk").attr("total"));
+        // $('body').on('click', '.deleteProduk', function() {
+        //     var idProduk = $(this).attr('idProduk');
+        //     var namaProduk = unescape($(this).attr('nama'));
+        //     var hargaProduk = $(this).attr('hargajual');
+        //     var subTotalProduk = parseInt($(this).attr('subtotal'));
+        //     var totalHargaProdukSaatIni = parseInt($("#tabelTotalHargaProduk").attr("total"));
 
-            var totalHargaBaru = totalHargaProdukSaatIni - subTotalProduk;
-            $("#tabelTotalHargaProduk").attr("total", totalHargaBaru);
-            $("#tabelTotalHargaProduk").text("Total Harga : " + totalHargaBaru.toLocaleString('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-            }).toString());
+        //     var totalHargaBaru = totalHargaProdukSaatIni - subTotalProduk;
+        //     $("#tabelTotalHargaProduk").attr("total", totalHargaBaru);
+        //     $("#tabelTotalHargaProduk").text("Total Harga : " + totalHargaBaru.toLocaleString('id-ID', {
+        //         style: 'currency',
+        //         currency: 'IDR'
+        //     }).toString());
 
 
-            $("#selectProduk").append("<option value='" + idProduk + "' nama='" + escape(namaProduk) +
-                "' hargajual='" +
-                hargaProduk + "'>" + namaProduk + "</option>");
-            $(this).parent().parent().remove();
-            $("#produk" + idProduk).remove();
-            $("#kuantitasproduk" + idProduk).remove();
+        //     $("#selectProduk").append("<option value='" + idProduk + "' nama='" + escape(namaProduk) +
+        //         "' hargajual='" +
+        //         hargaProduk + "'>" + namaProduk + "</option>");
+        //     $(this).parent().parent().remove();
+        //     $("#produk" + idProduk).remove();
+        //     $("#kuantitasproduk" + idProduk).remove();
 
-            var select = $("#selectProduk");
-            $("#selectProduk option[value='null']").remove();
-            var options = select.find("option");
-            options.sort(function(a, b) {
-                return a.text.localeCompare(b.text);
-            });
-            select.empty();
-            select.append("<option value='null' selected disabled>Pilih Produk</option>")
-            select.append(options);
-            select.val("null");
+        //     var select = $("#selectProduk");
+        //     $("#selectProduk option[value='null']").remove();
+        //     var options = select.find("option");
+        //     options.sort(function(a, b) {
+        //         return a.text.localeCompare(b.text);
+        //     });
+        //     select.empty();
+        //     select.append("<option value='null' selected disabled>Pilih Produk</option>")
+        //     select.append(options);
+        //     select.val("null");
 
-            if ($('#bodyListProduk').find("tr").length == 0) {
-                $('#bodyListProduk').html(
-                    "<tr id='trSilahkan'><td colspan='5'>Silahkan Pilih Produk</td></tr>");
-            }
-            $("#numHargaPaket").val(parseInt($("#tabelTotalHargaPerawatan").attr("total")) + parseInt($(
-                "#tabelTotalHargaProduk").attr("total")));
-        });
+        //     if ($('#bodyListProduk').find("tr").length == 0) {
+        //         $('#bodyListProduk').html(
+        //             "<tr id='trSilahkan'><td colspan='5'>Silahkan Pilih Produk</td></tr>");
+        //     }
+        //     $("#numHargaPaket").val(parseInt($("#tabelTotalHargaPerawatan").attr("total")) + parseInt($(
+        //         "#tabelTotalHargaProduk").attr("total")));
+        // });
     </script>
 @endsection

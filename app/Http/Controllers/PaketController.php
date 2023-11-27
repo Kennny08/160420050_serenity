@@ -156,7 +156,7 @@ class PaketController extends Controller
             [
                 'namaPaket' => 'required|max:255',
                 'hargaPaket' => 'required|numeric|min:1',
-                'arrayperawatanid' => 'required|array|min:2',
+                // 'arrayperawatanid' => 'required|array|min:2',
             ],
             [
                 'namaPaket.required' => 'Nama paket tidak boleh kosong!',
@@ -164,16 +164,16 @@ class PaketController extends Controller
                 'hargaPaket.numeric' => 'Harga Paket harus berupa angka!',
 
                 'hargaPaket.min' => 'Harga Paket Paket minimal Rp. 1!',
-                'arrayperawatanid.required' => 'Perawatan Paket tidak boleh kosong!',
-                'arrayperawatanid.min' => 'Minimal terdapat 2 perawatan dalam satu Paket!'
+                // 'arrayperawatanid.required' => 'Perawatan Paket tidak boleh kosong!',
+                // 'arrayperawatanid.min' => 'Minimal terdapat 2 perawatan dalam satu Paket!'
             ]
         );
 
         $namaPaket = $request->get("namaPaket");
         $hargaPaket = $request->get("hargaPaket");
-        $arrPerawatanId = $request->get("arrayperawatanid");
-        $arrProdukId = $request->get("arrayprodukid");
-        $arrProdukKuantitas = $request->get("arrayprodukkuantitas");
+        // $arrPerawatanId = $request->get("arrayperawatanid");
+        // $arrProdukId = $request->get("arrayprodukid");
+        // $arrProdukKuantitas = $request->get("arrayprodukkuantitas");
         $statusPaket = $request->get("radioStatusPaket");
         $deskripsiPaket = $request->get("deskripsiPaket");
 
@@ -186,26 +186,26 @@ class PaketController extends Controller
         $paket->updated_at = date("Y-m-d H:i:s");
         $paket->save();
 
-        foreach ($paket->perawatans as $perawatan) {
-            $paket->perawatans()->detach($perawatan);
-        }
-        foreach ($arrPerawatanId as $idPerawatan) {
-            $paket->perawatans()->attach($idPerawatan);
-        }
+        // foreach ($paket->perawatans as $perawatan) {
+        //     $paket->perawatans()->detach($perawatan);
+        // }
+        // foreach ($arrPerawatanId as $idPerawatan) {
+        //     $paket->perawatans()->attach($idPerawatan);
+        // }
 
-        if ($arrProdukId != null) {
-            foreach ($paket->produks as $produk) {
-                $paket->produks()->detach($produk);
-            }
+        // if ($arrProdukId != null) {
+        //     foreach ($paket->produks as $produk) {
+        //         $paket->produks()->detach($produk);
+        //     }
 
-            for ($i = 0; $i < count($arrProdukId); $i++) {
-                $paket->produks()->attach($arrProdukId[$i], ['jumlah' => $arrProdukKuantitas[$i]]);
-            }
-        } else {
-            foreach ($paket->produks as $produk) {
-                $paket->produks()->detach($produk);
-            }
-        }
+        //     for ($i = 0; $i < count($arrProdukId); $i++) {
+        //         $paket->produks()->attach($arrProdukId[$i], ['jumlah' => $arrProdukKuantitas[$i]]);
+        //     }
+        // } else {
+        //     foreach ($paket->produks as $produk) {
+        //         $paket->produks()->detach($produk);
+        //     }
+        // }
 
         return redirect()->route("pakets.index")->with("status", "Berhasil mengedit data paket " . $paket->nama . "!");
     }

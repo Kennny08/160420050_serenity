@@ -352,7 +352,7 @@
     <script>
         $(document).ready(function() {
             $('#tabelDaftarProdukAktif').DataTable({
-                ordering: false,
+                
                 language: {
                     emptyTable: "Tidak terdapat data produk aktif!",
                     infoEmpty: "Tidak terdapat data produk aktif!",

@@ -36,6 +36,7 @@ class LoginController extends Controller
                 return '/salon';
             }else{
                 //Arahin ke halaman daftar reservasi untuk karyawan salon tertentu saja
+                return '/salon/karyawan/daftarreservasi'; 
             }
         } else if ($role == 'pelanggan') {
             return '/pelanggan';

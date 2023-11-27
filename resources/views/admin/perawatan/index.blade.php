@@ -87,7 +87,7 @@
                                 <tr id="tr_{{ $pa->id }}">
                                     <td>{{ $pa->kode_perawatan }}</td>
                                     <td>{{ $pa->nama }}</td>
-                                    <td>{{ number_format($pa->harga, 0, ',', '.') }}</td>
+                                    <td>{{ number_format($pa->harga, 2, ',', '.') }}</td>
                                     <td>{{ $pa->durasi }}</td>
                                     <td>{{ $pa->komisi }}</td>
                                     <td>{{ $pa->status_komplemen }}</td>
@@ -161,7 +161,7 @@
                                 <tr id="tr_{{ $pn->id }}">
                                     <td>{{ $pn->kode_perawatan }}</td>
                                     <td>{{ $pn->nama }}</td>
-                                    <td>{{ number_format($pn->harga, 0, ',', '.') }}</td>
+                                    <td>{{ number_format($pn->harga, 2, ',', '.') }}</td>
                                     <td>{{ $pn->durasi }}</td>
                                     <td>{{ $pn->komisi }}</td>
                                     <td>{{ $pn->status_komplemen }}</td>

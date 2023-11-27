@@ -12,6 +12,7 @@ use App\Models\Perawatan;
 use App\Models\Produk;
 use App\Models\Reservasi;
 use App\Models\SlotJam;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -122,6 +123,12 @@ class ReservasiController extends Controller
     }
 
 
+    //PENGECEKAN UNTUK RESERVASI
+    // 1. lewat jam tutup
+    // 2. mengandung slot jam yang tutup
+    // 3. tidak tersedia karyawan
+    // 4. didahului pelanggan lain
+    // 5. stok produk dalam paket tidak cukup
     public function reservasiAdminPilihKaryawanNew(Request $request)
     {
         date_default_timezone_set('Asia/Jakarta');
@@ -1113,797 +1120,794 @@ class ReservasiController extends Controller
         }
     }
 
-
-
-
-    public function reservasiAdminPilihKaryawan(Request $request)
-    {
-        $tanggalReservasi = $request->get("tanggalReservasi");
-        $idSlotJam = $request->get("slotJam");
-        $arrPerawatan = $request->get("arrayperawatanid");
-        $idPelanggan = $request->get("idPelanggan");
-        $arrKodeKeseluruhan = $request->get("arraykodekeseluruhan");
-        $arrPaket = $request->get("arraypaketid");
-        $keteranganPilihKaryawan = $request->get("keteranganPilihKaryawan");
-
-        $pesanError = [];
-        if ($idSlotJam == null || ($arrPerawatan == null && $arrPaket == null) || $idPelanggan == null) {
-            if ($idSlotJam == null) {
-                array_push($pesanError, "Slot Jam tidak boleh kosong!");
-            }
-            if ($arrPerawatan == null && $arrPaket == null) {
-                array_push($pesanError, "Harap memilih setidaknya satu perawatan atau satu paket!");
-            }
-            if ($idPelanggan == null) {
-                array_push($pesanError, "Nama Pelanggan tidak boleh kosong!");
-            }
-            return redirect()->back()->withErrors($pesanError);
-        }
-
-        $arrPerawatanSend = [];
-        if ($arrPerawatan != null) {
-            foreach ($arrPerawatan as $ap) {
-                $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
-                array_push($arrPerawatanSend, $p);
-            }
-        }
-
-        $arrPaketSend = [];
-        if ($arrPaket != null) {
-            foreach ($arrPaket as $idPaket) {
-                $paketvar = Paket::where('status', 'aktif')->where('id', $idPaket)->first();
-                array_push($arrPaketSend, $paketvar);
-            }
-        }
-
-        $daftarPelanggans = Pelanggan::all();
-        $varSlotJam = SlotJam::find($idSlotJam);
-        if ($tanggalReservasi == date("Y-m-d")) {
-            $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
-        } else {
-            $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
-        }
-        return redirect()->route('reservasi.admin.create')->with([
-            'idPelanggan' => $idPelanggan,
-            'daftarPelanggans' => $daftarPelanggans,
-            'idSlotJam' => $idSlotJam,
-            'daftarSlotJam' => $daftarSlotJam,
-            'tanggalReservasi' => $tanggalReservasi,
-            'arrPerawatan' => $arrPerawatan,
-            'arrPerawatanObject' => $arrPerawatanSend,
-            'arrPaket' => $arrPaket,
-            'arrPaketObject' => $arrPaketSend,
-            'arrKodeKeseluruhan' => $arrKodeKeseluruhan,
-
-        ])->withErrors('Perawatan yang dipilih telah melewati batas jam buka pada hari tersebut!');
-
-        dd($request->all());
-        //ambil data dari form buatreservasiadmin
-        date_default_timezone_set('Asia/Jakarta');
-        $tanggalReservasi = $request->get("tanggalReservasi");
-        $idSlotJam = $request->get("slotJam");
-        $arrPerawatan = $request->get("arrayperawatanid");
-        $idPelanggan = $request->get("idPelanggan");
-        $keteranganPilihKaryawan = $request->get("keteranganPilihKaryawan");
-
-        $pesanError = [];
-        if ($idSlotJam == null || $arrPerawatan == null || $idPelanggan == null) {
-            if ($idSlotJam == null) {
-                array_push($pesanError, "Slot Jam tidak boleh kosong!");
-            }
-            if ($arrPerawatan == null || $arrPaket == null) {
-                array_push($pesanError, "Harap memilih setidaknya satu perawatan atau satu paket!");
-            }
-            if ($idPelanggan == null) {
-                array_push($pesanError, "Nama Pelanggan tidak boleh kosong!");
-            }
-            return redirect()->back()->withErrors($pesanError);
-        }
-
-        //buat array kosongan untuk simpan perawatan slot jam perawatan komplemen dan nonkomplemen
-        $perawatanSlotJamNonKomplemen = [];
-        $perawatanSlotJamKomplemen = [];
-
-        //select perawatan komplemen dan non yang id nya sesuai dengan id perawtan yang dipilih dari form buatreservasiadmin
-        $perawatanNonKomplemen = [];
-        $perawatanKomplemen = [];
-        //$arrNonKomplemenSementara = Perawatan::select('id')->where('status_komplemen', 'tidak')->whereIn('id', $arrPerawatan)->get();
-        //$arrKomplemenSementara = Perawatan::select('id')->where('status_komplemen', 'ya')->whereIn('id', $arrPerawatan)->get();
-        foreach ($arrPerawatan as $p) {
-            $produkSementara = Perawatan::find($p);
-            if ($produkSementara->status_komplemen == "tidak") {
-                array_push($perawatanNonKomplemen, $produkSementara);
-            } else {
-                array_push($perawatanKomplemen, $produkSementara);
-            }
-
-        }
-
-        //Pengecekan perawatan yang dipilih tidak boleh melebihi jam tutup
-        $penghitungJam = SlotJam::find($idSlotJam);
-        $jamPengubah = strtotime($penghitungJam->jam);
-        $jamTutup = SlotJam::where('hari', $penghitungJam->hari)->where('status', 'aktif')->max('jam');
-        $jamTutup = strtotime("+30 minutes", strtotime($jamTutup));
-
-        foreach ($perawatanNonKomplemen as $perawatan) {
-            $jumlahSlotTerpakai = ceil($perawatan->durasi / 30);
-            $jamPengubah = strtotime("+" . ($jumlahSlotTerpakai * 30) . " minutes", $jamPengubah);
-        }
-
-        $maxDurasiPerawatanKomplemen = Perawatan::where('status_komplemen', 'ya')->whereIn('id', $arrPerawatan)->max('durasi');
-        $jumlahSlotTerpakaiMax = ceil($maxDurasiPerawatanKomplemen / 30);
-        $jamPengubah = strtotime("+" . ($jumlahSlotTerpakaiMax * 30) . " minutes", $jamPengubah);
-        // $jamJamSekarang = date('H.i', $jamPengubah);
-        // $jamJamTutup = date('H.i', $jamTutup);
-
-        // dd($jamJamSekarang, $jamJamTutup);
-        if ($jamPengubah > $jamTutup) {
-            $arrPerawatanSend = [];
-            foreach ($arrPerawatan as $ap) {
-                $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
-                array_push($arrPerawatanSend, $p);
-            }
-            $daftarPelanggans = Pelanggan::all();
-            $varSlotJam = SlotJam::find($idSlotJam);
-            if ($tanggalReservasi == date("Y-m-d")) {
-                $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
-            } else {
-                $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
-            }
-            return redirect()->route('reservasi.admin.create')->with([
-                'idPelanggan' => $idPelanggan,
-                'daftarPelanggans' => $daftarPelanggans,
-                'idSlotJam' => $idSlotJam,
-                'daftarSlotJam' => $daftarSlotJam,
-                'tanggalReservasi' => $tanggalReservasi,
-                'arrPerawatan' => $arrPerawatan,
-                'arrPerawatanObject' => $arrPerawatanSend,
-            ])->withErrors('Perawatan yang dipilih telah melewati batas jam buka pada hari tersebut!');
-
-        } else {
-            if ($keteranganPilihKaryawan == "ya") {
-                //cari slot jam mulai dari form buatreservasiadmin
-                $slotJamBerubah = SlotJam::find($idSlotJam);
-
-                //BAGIAN PERAWATAN NON KOMPLEMEN-------------------------------------------------------------------------
-                //foreach $perawatanNonKomplemen untuk mencari karyawan tersedia untuk setiap perawatan
-                foreach ($perawatanNonKomplemen as $perawatan) {
-                    $perawatanPerSlot = [];
-                    $perawatanPerSlot["perawatan"] = $perawatan;
-                    $perawatanPerSlot["jammulai"] = $slotJamBerubah->jam;
-
-                    $jumlahSlotTerpakai = ceil($perawatan->durasi / 30);
-                    $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) - 30 . " minutes", strtotime($slotJamBerubah->jam));
-                    $jamTerakhir = date('H.i', $intJamTerakhir);
-                    $arrIdSlotJamTerpakai = SlotJam::select('id')->where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
-                    $arrObjectSlotJamTerpakai = SlotJam::where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
-                    // dd($jumlahSlotTerpakai, count($arrIdSlotJamTerpakai), $arrIdSlotJamTerpakai);
-
-                    //mengecek apakah perawatan yang dipilih pelanggan memuat slot jam yang sedang ditutup atau tidak aktif
-                    $slotJamTutup = [];
-                    foreach ($arrObjectSlotJamTerpakai as $slotJam) {
-                        if ($slotJam->status == 'nonaktif') {
-                            array_push($slotJamTutup, $slotJam->jam);
-                        }
-                    }
-                    if (count($slotJamTutup) > 0) {
-                        $stringArrJamTutup = implode(', ', $slotJamTutup);
-                        $arrPerawatanSend = [];
-                        foreach ($arrPerawatan as $ap) {
-                            $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
-                            array_push($arrPerawatanSend, $p);
-                        }
-                        $daftarPelanggans = Pelanggan::all();
-                        $varSlotJam = SlotJam::find($idSlotJam);
-                        if ($tanggalReservasi == date("Y-m-d")) {
-                            $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
-                        } else {
-                            $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
-                        }
-                        return redirect()->route('reservasi.admin.create')->with([
-                            'idPelanggan' => $idPelanggan,
-                            'daftarPelanggans' => $daftarPelanggans,
-                            'idSlotJam' => $idSlotJam,
-                            'daftarSlotJam' => $daftarSlotJam,
-                            'tanggalReservasi' => $tanggalReservasi,
-                            'arrPerawatan' => $arrPerawatan,
-                            'arrPerawatanObject' => $arrPerawatanSend,
-                        ])->withErrors('Perawatan yang dipilih memuat jam waktu tutup salon yaitu pada jam ' . $stringArrJamTutup);
-                    }
-
-                    $daftarSlotJam = [];
-                    foreach ($arrIdSlotJamTerpakai as $sj) {
-                        array_push($daftarSlotJam, $sj->id);
-                    }
-                    $stringDaftarSlotJam = implode(".", $daftarSlotJam);
-                    $perawatanPerSlot['idslotjam'] = $stringDaftarSlotJam;
-
-                    $arrIdKaryawanTerpakaiSlotJam = Karyawan::select('karyawans.id')->distinct()
-                        ->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
-                        ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
-                        ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
-                        ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
-                        ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
-                        ->whereIn('slot_jams.id', $arrIdSlotJamTerpakai)
-                        ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
-                        ->where('penjualans.status_selesai', 'belum')
-                        ->get();
-
-                    $arrIdKaryawanIzinSakit = Karyawan::select('karyawans.id')->distinct()
-                        ->join('presensi_kehadiran', 'presensi_kehadiran.karyawan_id', '=', 'karyawans.id')
-                        ->where(function ($query) {
-                            $query->where('presensi_kehadiran.keterangan', 'izin')->orWhere('presensi_kehadiran.keterangan', 'sakit');
-                        })->whereRaw("DATE(presensi_kehadiran.tanggal_presensi) = '" . $tanggalReservasi . "'")->where("presensi_kehadiran.status", "konfirmasi")->get();
-
-                    // $idKaryawan
-                    $karyawanTersedia = Karyawan::select('karyawans.*')->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
-                        ->join('perawatans', 'perawatans.id', '=', 'karyawan_perawatan.perawatan_id')
-                        ->whereNotIn('karyawans.id', $arrIdKaryawanTerpakaiSlotJam)->whereNotIn('karyawans.id', $arrIdKaryawanIzinSakit)->where('perawatans.id', $perawatan->id)->get();
-
-
-                    $perawatanPerSlot["karyawans"] = $karyawanTersedia;
-                    array_push($perawatanSlotJamNonKomplemen, $perawatanPerSlot);
-
-                    //update slotJamBerubah ke slot selanjutnya
-                    $intJamTerakhir = strtotime("+30 minutes", strtotime($jamTerakhir));
-                    $jamTerakhir = date('H.i', $intJamTerakhir);
-                    $slotJamBerubah = SlotJam::where('jam', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->first();
-                }
-
-                //BAGIAN PERAWATAN KOMPLEMEN-------------------------------------------------------------------------
-                $arrKomplemen = [];
-                $arrKomplemen['jammulai'] = $slotJamBerubah->jam;
-
-                $durasiTerlamaPerawatanKomplemen = Perawatan::where('status_komplemen', 'ya')->whereIn('id', $arrPerawatan)->max('durasi');
-                $arrKomplemen['durasiterlama'] = $durasiTerlamaPerawatanKomplemen;
-                $jumlahSlotTerpakai = ceil($durasiTerlamaPerawatanKomplemen / 30);
-                $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) - 30 . " minutes", strtotime($slotJamBerubah->jam));
-                $jamTerakhir = date('H.i', $intJamTerakhir);
-
-                $arrIdSlotJamTerpakai = SlotJam::select('id')->where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
-                $arrObjectSlotJamTerpakai = SlotJam::where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
-                //mengecek apakah perawatan yang dipilih pelanggan memuat slot jam yan sedang ditutup atau tidak aktif
-                $slotJamTutup = [];
-                foreach ($arrObjectSlotJamTerpakai as $slotJam) {
-                    if ($slotJam->status == 'nonaktif') {
-                        array_push($slotJamTutup, $slotJam->jam);
-                    }
-                }
-                if (count($slotJamTutup) > 0) {
-                    $stringArrJamTutup = implode(', ', $slotJamTutup);
-                    $arrPerawatanSend = [];
-                    foreach ($arrPerawatan as $ap) {
-                        $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
-                        array_push($arrPerawatanSend, $p);
-                    }
-                    $daftarPelanggans = Pelanggan::all();
-                    $varSlotJam = SlotJam::find($idSlotJam);
-                    if ($tanggalReservasi == date("Y-m-d")) {
-                        $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
-                    } else {
-                        $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
-                    }
-                    return redirect()->route('reservasi.admin.create')->with([
-                        'idPelanggan' => $idPelanggan,
-                        'daftarPelanggans' => $daftarPelanggans,
-                        'idSlotJam' => $idSlotJam,
-                        'daftarSlotJam' => $daftarSlotJam,
-                        'tanggalReservasi' => $tanggalReservasi,
-                        'arrPerawatan' => $arrPerawatan,
-                        'arrPerawatanObject' => $arrPerawatanSend,
-                    ])->withErrors('Perawatan yang dipilih memuat jam waktu tutup salon yaitu pada jam ' . $stringArrJamTutup);
-                }
-
-                $daftarSlotJam = [];
-                foreach ($arrIdSlotJamTerpakai as $sj) {
-                    array_push($daftarSlotJam, $sj->id);
-                }
-                $stringDaftarSlotJam = implode(".", $daftarSlotJam);
-                $arrKomplemen['idslotjam'] = $stringDaftarSlotJam;
-
-                $arrIdKaryawanTerpakaiSlotJam = Karyawan::select('karyawans.id')->distinct()
-                    ->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
-                    ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
-                    ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
-                    ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
-                    ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
-                    ->whereIn('slot_jams.id', $arrIdSlotJamTerpakai)
-                    ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
-                    ->where('penjualans.status_selesai', 'belum')
-                    ->get();
-
-                $arrIdKaryawanIzinSakit = Karyawan::select('karyawans.id')->distinct()
-                    ->join('presensi_kehadiran', 'presensi_kehadiran.karyawan_id', '=', 'karyawans.id')
-                    ->where(function ($query) {
-                        $query->where('presensi_kehadiran.keterangan', 'izin')->orWhere('presensi_kehadiran.keterangan', 'sakit');
-                    })->whereRaw("DATE(presensi_kehadiran.tanggal_presensi) = '" . $tanggalReservasi . "'")->where("presensi_kehadiran.status", "konfirmasi")->get();
-
-
-                foreach ($perawatanKomplemen as $perawatanK) {
-                    $perawatanPerSlot = [];
-                    $perawatanPerSlot["perawatan"] = $perawatanK;
-                    $karyawanTersedia = Karyawan::select('karyawans.*')->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
-                        ->join('perawatans', 'perawatans.id', '=', 'karyawan_perawatan.perawatan_id')
-                        ->whereNotIn('karyawans.id', $arrIdKaryawanTerpakaiSlotJam)->whereNotIn('karyawans.id', $arrIdKaryawanIzinSakit)->where('perawatans.id', $perawatanK->id)->get();
-
-
-                    $perawatanPerSlot["karyawans"] = $karyawanTersedia;
-                    array_push($perawatanSlotJamKomplemen, $perawatanPerSlot);
-                }
-                $arrKomplemen['array'] = $perawatanSlotJamKomplemen;
-
-                $keteranganNull = 0;
-
-                foreach ($perawatanSlotJamNonKomplemen as $ps) {
-                    if (count($ps['karyawans']) == 0) {
-                        $keteranganNull += 1;
-                    }
-                }
-                foreach ($arrKomplemen['array'] as $ps) {
-                    if (count($ps['karyawans']) == 0) {
-                        $keteranganNull += 1;
-                    }
-                }
-                if ($keteranganNull > 0) {
-                    $pesanError = "Terdapat perawatan yang memiliki karyawan yang tidak tersedia pada jam tersebut, silahkan mengatur ulang jam mulai, urutan perawatan Anda, atau hari reservasi lainnya!";
-                    return view('admin.reservasi.pilihkaryawan', compact('perawatanSlotJamNonKomplemen', 'arrKomplemen', 'tanggalReservasi', 'idSlotJam', 'arrPerawatan', 'idPelanggan', 'pesanError'));
-                } else {
-                    return view('admin.reservasi.pilihkaryawan', compact('perawatanSlotJamNonKomplemen', 'arrKomplemen', 'tanggalReservasi', 'idSlotJam', 'arrPerawatan', 'idPelanggan'));
-                }
-
-            } else {
-                //cari slot jam mulai dari form buatreservasiadmin
-                $slotJamBerubah = SlotJam::find($idSlotJam);
-
-                //BAGIAN PERAWATAN NON KOMPLEMEN-------------------------------------------------------------------------
-                //foreach $perawatanNonKomplemen untuk mencari karyawan tersedia untuk setiap perawatan
-                foreach ($perawatanNonKomplemen as $perawatan) {
-                    $perawatanPerSlot = [];
-                    $perawatanPerSlot["perawatan"] = $perawatan;
-                    $perawatanPerSlot["jammulai"] = $slotJamBerubah->jam;
-
-                    $jumlahSlotTerpakai = ceil($perawatan->durasi / 30);
-                    $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) - 30 . " minutes", strtotime($slotJamBerubah->jam));
-                    $jamTerakhir = date('H.i', $intJamTerakhir);
-                    $arrIdSlotJamTerpakai = SlotJam::select('id')->where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
-                    $arrObjectSlotJamTerpakai = SlotJam::where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
-                    // dd($jumlahSlotTerpakai, count($arrIdSlotJamTerpakai), $arrIdSlotJamTerpakai);
-
-                    //mengecek apakah perawatan yang dipilih pelanggan memuat slot jam yang sedang ditutup atau tidak aktif
-                    $slotJamTutup = [];
-                    foreach ($arrObjectSlotJamTerpakai as $slotJam) {
-                        if ($slotJam->status == 'nonaktif') {
-                            array_push($slotJamTutup, $slotJam->jam);
-                        }
-                    }
-                    if (count($slotJamTutup) > 0) {
-                        $stringArrJamTutup = implode(', ', $slotJamTutup);
-                        $arrPerawatanSend = [];
-                        foreach ($arrPerawatan as $ap) {
-                            $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
-                            array_push($arrPerawatanSend, $p);
-                        }
-                        $daftarPelanggans = Pelanggan::all();
-                        $varSlotJam = SlotJam::find($idSlotJam);
-                        if ($tanggalReservasi == date("Y-m-d")) {
-                            $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
-                        } else {
-                            $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
-                        }
-                        return redirect()->route('reservasi.admin.create')->with([
-                            'idPelanggan' => $idPelanggan,
-                            'daftarPelanggans' => $daftarPelanggans,
-                            'idSlotJam' => $idSlotJam,
-                            'daftarSlotJam' => $daftarSlotJam,
-                            'tanggalReservasi' => $tanggalReservasi,
-                            'arrPerawatan' => $arrPerawatan,
-                            'arrPerawatanObject' => $arrPerawatanSend,
-                        ])->withErrors('Perawatan yang dipilih memuat jam waktu tutup salon yaitu pada jam ' . $stringArrJamTutup);
-                    }
-
-                    $daftarSlotJam = [];
-                    foreach ($arrIdSlotJamTerpakai as $sj) {
-                        array_push($daftarSlotJam, $sj->id);
-                    }
-                    $stringDaftarSlotJam = implode(".", $daftarSlotJam);
-                    $perawatanPerSlot['idslotjam'] = $stringDaftarSlotJam;
-
-                    $arrIdKaryawanTerpakaiSlotJam = Karyawan::select('karyawans.id')->distinct()
-                        ->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
-                        ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
-                        ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
-                        ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
-                        ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
-                        ->whereIn('slot_jams.id', $arrIdSlotJamTerpakai)
-                        ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
-                        ->where('penjualans.status_selesai', 'belum')
-                        ->get();
-
-                    $arrIdKaryawanIzinSakit = Karyawan::select('karyawans.id')->distinct()
-                        ->join('presensi_kehadiran', 'presensi_kehadiran.karyawan_id', '=', 'karyawans.id')
-                        ->where(function ($query) {
-                            $query->where('presensi_kehadiran.keterangan', 'izin')->orWhere('presensi_kehadiran.keterangan', 'sakit');
-                        })->whereRaw("DATE(presensi_kehadiran.tanggal_presensi) = '" . $tanggalReservasi . "'")->where("presensi_kehadiran.status", "konfirmasi")->get();
-
-                    // $idKaryawan
-                    $arrKaryawanTersedia = [];
-                    $karyawanTersedia = Karyawan::select('karyawans.*')->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
-                        ->join('perawatans', 'perawatans.id', '=', 'karyawan_perawatan.perawatan_id')
-                        ->whereNotIn('karyawans.id', $arrIdKaryawanTerpakaiSlotJam)->whereNotIn('karyawans.id', $arrIdKaryawanIzinSakit)->where('perawatans.id', $perawatan->id)->first();
-
-                    if ($karyawanTersedia != null) {
-                        array_push($arrKaryawanTersedia, $karyawanTersedia);
-                    }
-
-
-                    $perawatanPerSlot["karyawans"] = $arrKaryawanTersedia;
-                    array_push($perawatanSlotJamNonKomplemen, $perawatanPerSlot);
-
-                    //update slotJamBerubah ke slot selanjutnya
-                    $intJamTerakhir = strtotime("+30 minutes", strtotime($jamTerakhir));
-                    $jamTerakhir = date('H.i', $intJamTerakhir);
-                    $slotJamBerubah = SlotJam::where('jam', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->first();
-                }
-
-                //BAGIAN PERAWATAN KOMPLEMEN-------------------------------------------------------------------------
-                $arrKomplemen = [];
-                $arrKomplemen['jammulai'] = $slotJamBerubah->jam;
-
-                $durasiTerlamaPerawatanKomplemen = Perawatan::where('status_komplemen', 'ya')->whereIn('id', $arrPerawatan)->max('durasi');
-                $arrKomplemen['durasiterlama'] = $durasiTerlamaPerawatanKomplemen;
-                $jumlahSlotTerpakai = ceil($durasiTerlamaPerawatanKomplemen / 30);
-                $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) - 30 . " minutes", strtotime($slotJamBerubah->jam));
-                $jamTerakhir = date('H.i', $intJamTerakhir);
-
-                $arrIdSlotJamTerpakai = SlotJam::select('id')->where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
-                $arrObjectSlotJamTerpakai = SlotJam::where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
-                //mengecek apakah perawatan yang dipilih pelanggan memuat slot jam yan sedang ditutup atau tidak aktif
-                $slotJamTutup = [];
-                foreach ($arrObjectSlotJamTerpakai as $slotJam) {
-                    if ($slotJam->status == 'nonaktif') {
-                        array_push($slotJamTutup, $slotJam->jam);
-                    }
-                }
-                if (count($slotJamTutup) > 0) {
-                    $stringArrJamTutup = implode(', ', $slotJamTutup);
-                    $arrPerawatanSend = [];
-                    foreach ($arrPerawatan as $ap) {
-                        $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
-                        array_push($arrPerawatanSend, $p);
-                    }
-                    $daftarPelanggans = Pelanggan::all();
-                    $varSlotJam = SlotJam::find($idSlotJam);
-                    if ($tanggalReservasi == date("Y-m-d")) {
-                        $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
-                    } else {
-                        $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
-                    }
-                    return redirect()->route('reservasi.admin.create')->with([
-                        'idPelanggan' => $idPelanggan,
-                        'daftarPelanggans' => $daftarPelanggans,
-                        'idSlotJam' => $idSlotJam,
-                        'daftarSlotJam' => $daftarSlotJam,
-                        'tanggalReservasi' => $tanggalReservasi,
-                        'arrPerawatan' => $arrPerawatan,
-                        'arrPerawatanObject' => $arrPerawatanSend,
-                    ])->withErrors('Perawatan yang dipilih memuat jam waktu tutup salon yaitu pada jam ' . $stringArrJamTutup);
-                }
-
-                $daftarSlotJam = [];
-                foreach ($arrIdSlotJamTerpakai as $sj) {
-                    array_push($daftarSlotJam, $sj->id);
-                }
-                $stringDaftarSlotJam = implode(".", $daftarSlotJam);
-                $arrKomplemen['idslotjam'] = $stringDaftarSlotJam;
-
-                $arrIdKaryawanTerpakaiSlotJam = Karyawan::select('karyawans.id')->distinct()
-                    ->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
-                    ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
-                    ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
-                    ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
-                    ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
-                    ->whereIn('slot_jams.id', $arrIdSlotJamTerpakai)
-                    ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
-                    ->where('penjualans.status_selesai', 'belum')
-                    ->get();
-
-                $arrIdKaryawanIzinSakit = Karyawan::select('karyawans.id')->distinct()
-                    ->join('presensi_kehadiran', 'presensi_kehadiran.karyawan_id', '=', 'karyawans.id')
-                    ->where(function ($query) {
-                        $query->where('presensi_kehadiran.keterangan', 'izin')->orWhere('presensi_kehadiran.keterangan', 'sakit');
-                    })->whereRaw("DATE(presensi_kehadiran.tanggal_presensi) = '" . $tanggalReservasi . "'")->where("presensi_kehadiran.status", "konfirmasi")->get();
-
-
-                foreach ($perawatanKomplemen as $perawatanK) {
-                    $perawatanPerSlot = [];
-                    $perawatanPerSlot["perawatan"] = $perawatanK;
-
-                    $arrKaryawanTersedia = [];
-                    $karyawanTersedia = Karyawan::select('karyawans.*')->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
-                        ->join('perawatans', 'perawatans.id', '=', 'karyawan_perawatan.perawatan_id')
-                        ->whereNotIn('karyawans.id', $arrIdKaryawanTerpakaiSlotJam)->whereNotIn('karyawans.id', $arrIdKaryawanIzinSakit)->where('perawatans.id', $perawatanK->id)->first();
-
-                    if ($karyawanTersedia != null) {
-                        array_push($arrKaryawanTersedia, $karyawanTersedia);
-                    }
-
-                    $perawatanPerSlot["karyawans"] = $arrKaryawanTersedia;
-                    array_push($perawatanSlotJamKomplemen, $perawatanPerSlot);
-                }
-                $arrKomplemen['array'] = $perawatanSlotJamKomplemen;
-
-                $keteranganNull = 0;
-                $arrPerawatanTidakAdaKaryawan = [];
-                foreach ($perawatanSlotJamNonKomplemen as $ps) {
-                    if (count($ps['karyawans']) == 0) {
-                        $keteranganNull += 1;
-                        array_push($arrPerawatanTidakAdaKaryawan, $ps["perawatan"]->nama);
-                    }
-                }
-                foreach ($arrKomplemen['array'] as $ps) {
-                    if (count($ps['karyawans']) == 0) {
-                        $keteranganNull += 1;
-                        array_push($arrPerawatanTidakAdaKaryawan, $ps["perawatan"]->nama);
-                    }
-                }
-                if ($keteranganNull > 0) {
-                    $stringPerawatanTidakAdaKaryawan = implode(",", $arrPerawatanTidakAdaKaryawan);
-                    $pesanError = "Terdapat perawatan seperti " . $stringPerawatanTidakAdaKaryawan . " yang memiliki karyawan yang tidak tersedia pada jam kerja, silahkan mengatur ulang jam mulai, urutan perawatan Anda, atau hari reservasi lainnya!";
-                    $arrPerawatanSend = [];
-                    foreach ($arrPerawatan as $ap) {
-                        $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
-                        array_push($arrPerawatanSend, $p);
-                    }
-                    $daftarPelanggans = Pelanggan::all();
-                    $varSlotJam = SlotJam::find($idSlotJam);
-                    if ($tanggalReservasi == date("Y-m-d")) {
-                        $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
-                    } else {
-                        $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
-                    }
-                    return redirect()->route('reservasi.admin.create')->with([
-                        'idPelanggan' => $idPelanggan,
-                        'daftarPelanggans' => $daftarPelanggans,
-                        'idSlotJam' => $idSlotJam,
-                        'daftarSlotJam' => $daftarSlotJam,
-                        'tanggalReservasi' => $tanggalReservasi,
-                        'arrPerawatan' => $arrPerawatan,
-                        'arrPerawatanObject' => $arrPerawatanSend,
-                    ])->withErrors($pesanError);
-
-                } else {
-                    // return view('admin.reservasi.pilihkaryawan', compact('perawatanSlotJamNonKomplemen', 'arrKomplemen', 'tanggalReservasi', 'idSlotJam', 'arrPerawatan', 'idPelanggan'));
-                    $daftarKaryawanPerawatan = [];
-                    $daftarKaryawanPerawatanKomplemen = [];
-
-                    foreach ($perawatanSlotJamNonKomplemen as $ps) {
-                        $stringSlot = "";
-                        foreach ($ps['karyawans'] as $k) {
-                            $stringSlot .= $k->id . "," . $ps['perawatan']->id . ",(" . $ps['idslotjam'] . ")";
-                        }
-                        array_push($daftarKaryawanPerawatan, $stringSlot);
-                    }
-
-                    foreach ($arrKomplemen['array'] as $ps) {
-                        $stringSlot = "";
-                        foreach ($ps['karyawans'] as $k) {
-                            $stringSlot .= $k->id . "," . $ps['perawatan']->id . ",(" . $arrKomplemen['idslotjam'] . ")";
-                        }
-                        array_push($daftarKaryawanPerawatanKomplemen, $stringSlot);
-                    }
-
-                    $slotJamKaryawanTerpakai = [];
-                    foreach ($daftarKaryawanPerawatan as $karyawanPerawatan) {
-                        $idKaryawan = explode(",", $karyawanPerawatan)[0];
-                        $idPerawatan = explode(",", $karyawanPerawatan)[1];
-
-
-                        $arrayStringSlotjam = str_replace(["(", ")"], "", explode(",", $karyawanPerawatan)[2]);
-                        $arraySlotJam = explode(".", $arrayStringSlotjam);
-
-                        $karyawan = Karyawan::select('karyawans.id')->distinct()
-                            ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
-                            ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
-                            ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
-                            ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
-                            ->whereIn('slot_jams.id', $arraySlotJam)
-                            ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
-                            ->where('karyawans.id', $idKaryawan)
-                            ->get();
-
-                        if (count($karyawan) > 0) {
-                            $karyawanTerpakai = [];
-                            $karyawanTerpakai['karyawan'] = Karyawan::find($idKaryawan);
-                            $karyawanTerpakai['perawatan'] = Perawatan::find($idPerawatan);
-                            $slotJam = SlotJam::whereIn('id', $arraySlotJam)->get();
-                            $array = [];
-                            foreach ($slotJam as $sj) {
-                                array_push($array, $sj->jam);
-                            }
-                            $karyawanTerpakai['slotjam'] = implode(',', $array);
-                            array_push($slotJamKaryawanTerpakai, $karyawanTerpakai);
-                        }
-                    }
-                    foreach ($daftarKaryawanPerawatanKomplemen as $karyawanPerawatanKomplemen) {
-                        $idKaryawan = explode(",", $karyawanPerawatanKomplemen)[0];
-                        $idPerawatan = explode(",", $karyawanPerawatanKomplemen)[1];
-                        $perawatan = Perawatan::find($idPerawatan);
-                        $arrayStringSlotjam = str_replace(["(", ")"], "", explode(",", $karyawanPerawatanKomplemen)[2]);
-
-                        $arraySlotJam = explode(".", $arrayStringSlotjam);
-
-                        $durasiPerawatan = $perawatan->durasi;
-
-                        $slotTerpakai = ceil($durasiPerawatan / 30);
-                        $daftarSlotjamFinal = [];
-                        for ($i = 0; $i < $slotTerpakai; $i++) {
-                            array_push($daftarSlotjamFinal, $arraySlotJam[$i]);
-                        }
-
-                        $karyawan = Karyawan::select('karyawans.id')->distinct()
-                            ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
-                            ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
-                            ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
-                            ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
-                            ->whereIn('slot_jams.id', $daftarSlotjamFinal)
-                            ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
-                            ->where('karyawans.id', $idKaryawan)
-                            ->get();
-                        if (count($karyawan) > 0) {
-                            $karyawanTerpakai = [];
-                            $karyawanTerpakai['karyawan'] = Karyawan::find($idKaryawan);
-                            $karyawanTerpakai['perawatan'] = Perawatan::find($idPerawatan);
-
-                            $slotJam = SlotJam::whereIn('id', $daftarSlotjamFinal)->get();
-                            $array = [];
-                            foreach ($slotJam as $sj) {
-                                array_push($array, $sj->jam);
-                            }
-                            $karyawanTerpakai['slotjam'] = implode(',', $array);
-                            array_push($slotJamKaryawanTerpakai, $karyawanTerpakai);
-                        }
-                    }
-                    if (count($slotJamKaryawanTerpakai) > 0) {
-                        $pesanError = [];
-                        foreach ($slotJamKaryawanTerpakai as $sjkt) {
-                            $pesan = "Perawatan " . $sjkt['perawatan']->nama . " dengan karyawan " . $sjkt['karyawan']->nama . " pada slot waktu " . $sjkt['slotjam'] . " telah terpakai.";
-                            array_push($pesanError, $pesan);
-                        }
-                        $arrPerawatanSend = [];
-                        foreach ($arrPerawatan as $ap) {
-                            $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
-                            array_push($arrPerawatanSend, $p);
-                        }
-                        $daftarPelanggans = Pelanggan::all();
-                        $varSlotJam = SlotJam::find($idSlotJam);
-                        if ($tanggalReservasi == date("Y-m-d")) {
-                            $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
-                        } else {
-                            $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
-                        }
-                        return redirect()->route('reservasi.admin.create')->with([
-                            'idPelanggan' => $idPelanggan,
-                            'daftarPelanggans' => $daftarPelanggans,
-                            'idSlotJam' => $idSlotJam,
-                            'daftarSlotJam' => $daftarSlotJam,
-                            'tanggalReservasi' => $tanggalReservasi,
-                            'arrPerawatan' => $arrPerawatan,
-                            'arrPerawatanObject' => $arrPerawatanSend,
-                        ])->withErrors($pesanError);
-                    }
-
-                    //-----------------------------------------------------------
-
-                    //Mulai Insert Data Reservasi jika ada slot kosong tersedia
-
-                    $newPenjualan = new Penjualan();
-                    $newPenjualan->nomor_nota = $idPelanggan . "/" . (count($daftarKaryawanPerawatan) + count($daftarKaryawanPerawatanKomplemen)) . "/" . date('d') . date('m') . date('Y');
-
-                    $totalHarga = 0;
-                    foreach ($daftarKaryawanPerawatan as $karyawanPerawatan) {
-                        $perawatan = Perawatan::find(explode(",", $karyawanPerawatan)[1]);
-                        $totalHarga += $perawatan->harga;
-                    }
-                    foreach ($daftarKaryawanPerawatanKomplemen as $karyawanPerawatan) {
-                        $perawatan = Perawatan::find(explode(",", $karyawanPerawatan)[1]);
-                        $totalHarga += $perawatan->harga;
-                    }
-                    $newPenjualan->total_pembayaran = $totalHarga;
-                    $newPenjualan->tanggal_penjualan = $tanggalReservasi;
-                    $newPenjualan->status_selesai = "belum";
-                    $newPenjualan->pelanggan_id = $idPelanggan;
-                    $newPenjualan->created_at = date('Y-m-d H:i:s');
-                    $newPenjualan->updated_at = date('Y-m-d H:i:s');
-                    $newPenjualan->save();
-
-
-                    foreach ($daftarKaryawanPerawatan as $kp) {
-                        //melakukan pemisahan isi dari value yang diperoleh dari form Format: idKaryawan,(arraySlotJamTerpakai)
-                        //explode untuk mendapatkan idKaryawan
-                        $idKaryawan = explode(",", $kp)[0];
-
-                        //explode untuk mendapatkan idPerawatan
-                        $idPerawatan = explode(",", $kp)[1];
-
-                        //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk string, lalu menghapus karakter "(" dan ")"
-                        $arrayStringSlotjam = str_replace(["(", ")"], "", explode(",", $kp)[2]);
-
-
-                        $newPenjualanPerawatan = new PenjualanPerawatan();
-                        $selectedPerawatan = Perawatan::find($idPerawatan);
-                        $newPenjualanPerawatan->harga = $selectedPerawatan->harga;
-                        $newPenjualanPerawatan->karyawan_id = $idKaryawan;
-                        $newPenjualanPerawatan->perawatan_id = $idPerawatan;
-                        $newPenjualanPerawatan->penjualan_id = $newPenjualan->id;
-                        $newPenjualanPerawatan->created_at = date("Y-m-d H:i:s");
-                        $newPenjualanPerawatan->updated_at = date("Y-m-d H:i:s");
-                        $newPenjualanPerawatan->save();
-
-                        //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk array
-                        $arraySlotJam = explode(".", $arrayStringSlotjam);
-
-                        foreach ($arraySlotJam as $sj) {
-                            $newPenjualanPerawatan->slotjams()->attach($sj);
-                        }
-                    }
-
-                    foreach ($daftarKaryawanPerawatanKomplemen as $kpk) {
-
-                        //melakukan pemisahan isi dari value yang diperoleh dari form Format: idKaryawan,idPerawatan,(arraySlotJamTerpakai)
-                        //explode untuk mendapatkan idKaryawan
-                        $idKaryawan = explode(",", $kpk)[0];
-
-                        //explode untuk mendapatkan idPerawatan
-                        $idPerawatan = explode(",", $kpk)[1];
-                        $perawatan = Perawatan::find($idPerawatan);
-
-
-                        //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk string, lalu menghapus karakter "(" dan ")"
-                        $arrayStringSlotjam = str_replace(["(", ")"], "", explode(",", $kpk)[2]);
-
-
-                        $newPenjualanPerawatan = new PenjualanPerawatan();
-                        $newPenjualanPerawatan->harga = $perawatan->harga;
-                        $newPenjualanPerawatan->karyawan_id = $idKaryawan;
-                        $newPenjualanPerawatan->perawatan_id = $idPerawatan;
-                        $newPenjualanPerawatan->penjualan_id = $newPenjualan->id;
-                        $newPenjualanPerawatan->created_at = date("Y-m-d H:i:s");
-                        $newPenjualanPerawatan->updated_at = date("Y-m-d H:i:s");
-                        $newPenjualanPerawatan->save();
-
-                        //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk array
-                        $arraySlotJam = explode(".", $arrayStringSlotjam);
-
-                        $durasiPerawatan = $perawatan->durasi;
-
-                        $slotTerpakai = ceil($durasiPerawatan / 30);
-
-                        for ($i = 0; $i < $slotTerpakai; $i++) {
-                            $newPenjualanPerawatan->slotjams()->attach($arraySlotJam[$i]);
-                        }
-                    }
-
-                    $newreservasi = new Reservasi();
-                    $newreservasi->tanggal_reservasi = $tanggalReservasi;
-                    $newreservasi->tanggal_pembuatan_reservasi = date('Y-m-d H:i:s');
-                    $newreservasi->status = 'baru';
-                    $newreservasi->penjualan_id = $newPenjualan->id;
-                    $newreservasi->created_at = date('Y-m-d H:i:s');
-                    $newreservasi->updated_at = date('Y-m-d H:i:s');
-                    $newreservasi->save();
-
-                    //Masuk ke halaman pilih produk
-
-                    $dataIdPenjualan = $newPenjualan->id; //nanti diganti dengan $dataIDPenjualan, ini sementara saja
-
-                    return redirect()->route('reservasi.admin.reservasitambahproduk', $dataIdPenjualan);
-
-
-                }
-            }
-
-        }
-    }
+    // public function reservasiAdminPilihKaryawan(Request $request)
+    // {
+    //     $tanggalReservasi = $request->get("tanggalReservasi");
+    //     $idSlotJam = $request->get("slotJam");
+    //     $arrPerawatan = $request->get("arrayperawatanid");
+    //     $idPelanggan = $request->get("idPelanggan");
+    //     $arrKodeKeseluruhan = $request->get("arraykodekeseluruhan");
+    //     $arrPaket = $request->get("arraypaketid");
+    //     $keteranganPilihKaryawan = $request->get("keteranganPilihKaryawan");
+
+    //     $pesanError = [];
+    //     if ($idSlotJam == null || ($arrPerawatan == null && $arrPaket == null) || $idPelanggan == null) {
+    //         if ($idSlotJam == null) {
+    //             array_push($pesanError, "Slot Jam tidak boleh kosong!");
+    //         }
+    //         if ($arrPerawatan == null && $arrPaket == null) {
+    //             array_push($pesanError, "Harap memilih setidaknya satu perawatan atau satu paket!");
+    //         }
+    //         if ($idPelanggan == null) {
+    //             array_push($pesanError, "Nama Pelanggan tidak boleh kosong!");
+    //         }
+    //         return redirect()->back()->withErrors($pesanError);
+    //     }
+
+    //     $arrPerawatanSend = [];
+    //     if ($arrPerawatan != null) {
+    //         foreach ($arrPerawatan as $ap) {
+    //             $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
+    //             array_push($arrPerawatanSend, $p);
+    //         }
+    //     }
+
+    //     $arrPaketSend = [];
+    //     if ($arrPaket != null) {
+    //         foreach ($arrPaket as $idPaket) {
+    //             $paketvar = Paket::where('status', 'aktif')->where('id', $idPaket)->first();
+    //             array_push($arrPaketSend, $paketvar);
+    //         }
+    //     }
+
+    //     $daftarPelanggans = Pelanggan::all();
+    //     $varSlotJam = SlotJam::find($idSlotJam);
+    //     if ($tanggalReservasi == date("Y-m-d")) {
+    //         $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
+    //     } else {
+    //         $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
+    //     }
+    //     return redirect()->route('reservasi.admin.create')->with([
+    //         'idPelanggan' => $idPelanggan,
+    //         'daftarPelanggans' => $daftarPelanggans,
+    //         'idSlotJam' => $idSlotJam,
+    //         'daftarSlotJam' => $daftarSlotJam,
+    //         'tanggalReservasi' => $tanggalReservasi,
+    //         'arrPerawatan' => $arrPerawatan,
+    //         'arrPerawatanObject' => $arrPerawatanSend,
+    //         'arrPaket' => $arrPaket,
+    //         'arrPaketObject' => $arrPaketSend,
+    //         'arrKodeKeseluruhan' => $arrKodeKeseluruhan,
+
+    //     ])->withErrors('Perawatan yang dipilih telah melewati batas jam buka pada hari tersebut!');
+
+    //     dd($request->all());
+    //     //ambil data dari form buatreservasiadmin
+    //     date_default_timezone_set('Asia/Jakarta');
+    //     $tanggalReservasi = $request->get("tanggalReservasi");
+    //     $idSlotJam = $request->get("slotJam");
+    //     $arrPerawatan = $request->get("arrayperawatanid");
+    //     $idPelanggan = $request->get("idPelanggan");
+    //     $keteranganPilihKaryawan = $request->get("keteranganPilihKaryawan");
+
+    //     $pesanError = [];
+    //     if ($idSlotJam == null || $arrPerawatan == null || $idPelanggan == null) {
+    //         if ($idSlotJam == null) {
+    //             array_push($pesanError, "Slot Jam tidak boleh kosong!");
+    //         }
+    //         if ($arrPerawatan == null || $arrPaket == null) {
+    //             array_push($pesanError, "Harap memilih setidaknya satu perawatan atau satu paket!");
+    //         }
+    //         if ($idPelanggan == null) {
+    //             array_push($pesanError, "Nama Pelanggan tidak boleh kosong!");
+    //         }
+    //         return redirect()->back()->withErrors($pesanError);
+    //     }
+
+    //     //buat array kosongan untuk simpan perawatan slot jam perawatan komplemen dan nonkomplemen
+    //     $perawatanSlotJamNonKomplemen = [];
+    //     $perawatanSlotJamKomplemen = [];
+
+    //     //select perawatan komplemen dan non yang id nya sesuai dengan id perawtan yang dipilih dari form buatreservasiadmin
+    //     $perawatanNonKomplemen = [];
+    //     $perawatanKomplemen = [];
+    //     //$arrNonKomplemenSementara = Perawatan::select('id')->where('status_komplemen', 'tidak')->whereIn('id', $arrPerawatan)->get();
+    //     //$arrKomplemenSementara = Perawatan::select('id')->where('status_komplemen', 'ya')->whereIn('id', $arrPerawatan)->get();
+    //     foreach ($arrPerawatan as $p) {
+    //         $produkSementara = Perawatan::find($p);
+    //         if ($produkSementara->status_komplemen == "tidak") {
+    //             array_push($perawatanNonKomplemen, $produkSementara);
+    //         } else {
+    //             array_push($perawatanKomplemen, $produkSementara);
+    //         }
+
+    //     }
+
+    //     //Pengecekan perawatan yang dipilih tidak boleh melebihi jam tutup
+    //     $penghitungJam = SlotJam::find($idSlotJam);
+    //     $jamPengubah = strtotime($penghitungJam->jam);
+    //     $jamTutup = SlotJam::where('hari', $penghitungJam->hari)->where('status', 'aktif')->max('jam');
+    //     $jamTutup = strtotime("+30 minutes", strtotime($jamTutup));
+
+    //     foreach ($perawatanNonKomplemen as $perawatan) {
+    //         $jumlahSlotTerpakai = ceil($perawatan->durasi / 30);
+    //         $jamPengubah = strtotime("+" . ($jumlahSlotTerpakai * 30) . " minutes", $jamPengubah);
+    //     }
+
+    //     $maxDurasiPerawatanKomplemen = Perawatan::where('status_komplemen', 'ya')->whereIn('id', $arrPerawatan)->max('durasi');
+    //     $jumlahSlotTerpakaiMax = ceil($maxDurasiPerawatanKomplemen / 30);
+    //     $jamPengubah = strtotime("+" . ($jumlahSlotTerpakaiMax * 30) . " minutes", $jamPengubah);
+    //     // $jamJamSekarang = date('H.i', $jamPengubah);
+    //     // $jamJamTutup = date('H.i', $jamTutup);
+
+    //     // dd($jamJamSekarang, $jamJamTutup);
+    //     if ($jamPengubah > $jamTutup) {
+    //         $arrPerawatanSend = [];
+    //         foreach ($arrPerawatan as $ap) {
+    //             $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
+    //             array_push($arrPerawatanSend, $p);
+    //         }
+    //         $daftarPelanggans = Pelanggan::all();
+    //         $varSlotJam = SlotJam::find($idSlotJam);
+    //         if ($tanggalReservasi == date("Y-m-d")) {
+    //             $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
+    //         } else {
+    //             $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
+    //         }
+    //         return redirect()->route('reservasi.admin.create')->with([
+    //             'idPelanggan' => $idPelanggan,
+    //             'daftarPelanggans' => $daftarPelanggans,
+    //             'idSlotJam' => $idSlotJam,
+    //             'daftarSlotJam' => $daftarSlotJam,
+    //             'tanggalReservasi' => $tanggalReservasi,
+    //             'arrPerawatan' => $arrPerawatan,
+    //             'arrPerawatanObject' => $arrPerawatanSend,
+    //         ])->withErrors('Perawatan yang dipilih telah melewati batas jam buka pada hari tersebut!');
+
+    //     } else {
+    //         if ($keteranganPilihKaryawan == "ya") {
+    //             //cari slot jam mulai dari form buatreservasiadmin
+    //             $slotJamBerubah = SlotJam::find($idSlotJam);
+
+    //             //BAGIAN PERAWATAN NON KOMPLEMEN-------------------------------------------------------------------------
+    //             //foreach $perawatanNonKomplemen untuk mencari karyawan tersedia untuk setiap perawatan
+    //             foreach ($perawatanNonKomplemen as $perawatan) {
+    //                 $perawatanPerSlot = [];
+    //                 $perawatanPerSlot["perawatan"] = $perawatan;
+    //                 $perawatanPerSlot["jammulai"] = $slotJamBerubah->jam;
+
+    //                 $jumlahSlotTerpakai = ceil($perawatan->durasi / 30);
+    //                 $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) - 30 . " minutes", strtotime($slotJamBerubah->jam));
+    //                 $jamTerakhir = date('H.i', $intJamTerakhir);
+    //                 $arrIdSlotJamTerpakai = SlotJam::select('id')->where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
+    //                 $arrObjectSlotJamTerpakai = SlotJam::where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
+    //                 // dd($jumlahSlotTerpakai, count($arrIdSlotJamTerpakai), $arrIdSlotJamTerpakai);
+
+    //                 //mengecek apakah perawatan yang dipilih pelanggan memuat slot jam yang sedang ditutup atau tidak aktif
+    //                 $slotJamTutup = [];
+    //                 foreach ($arrObjectSlotJamTerpakai as $slotJam) {
+    //                     if ($slotJam->status == 'nonaktif') {
+    //                         array_push($slotJamTutup, $slotJam->jam);
+    //                     }
+    //                 }
+    //                 if (count($slotJamTutup) > 0) {
+    //                     $stringArrJamTutup = implode(', ', $slotJamTutup);
+    //                     $arrPerawatanSend = [];
+    //                     foreach ($arrPerawatan as $ap) {
+    //                         $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
+    //                         array_push($arrPerawatanSend, $p);
+    //                     }
+    //                     $daftarPelanggans = Pelanggan::all();
+    //                     $varSlotJam = SlotJam::find($idSlotJam);
+    //                     if ($tanggalReservasi == date("Y-m-d")) {
+    //                         $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
+    //                     } else {
+    //                         $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
+    //                     }
+    //                     return redirect()->route('reservasi.admin.create')->with([
+    //                         'idPelanggan' => $idPelanggan,
+    //                         'daftarPelanggans' => $daftarPelanggans,
+    //                         'idSlotJam' => $idSlotJam,
+    //                         'daftarSlotJam' => $daftarSlotJam,
+    //                         'tanggalReservasi' => $tanggalReservasi,
+    //                         'arrPerawatan' => $arrPerawatan,
+    //                         'arrPerawatanObject' => $arrPerawatanSend,
+    //                     ])->withErrors('Perawatan yang dipilih memuat jam waktu tutup salon yaitu pada jam ' . $stringArrJamTutup);
+    //                 }
+
+    //                 $daftarSlotJam = [];
+    //                 foreach ($arrIdSlotJamTerpakai as $sj) {
+    //                     array_push($daftarSlotJam, $sj->id);
+    //                 }
+    //                 $stringDaftarSlotJam = implode(".", $daftarSlotJam);
+    //                 $perawatanPerSlot['idslotjam'] = $stringDaftarSlotJam;
+
+    //                 $arrIdKaryawanTerpakaiSlotJam = Karyawan::select('karyawans.id')->distinct()
+    //                     ->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                     ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                     ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
+    //                     ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
+    //                     ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
+    //                     ->whereIn('slot_jams.id', $arrIdSlotJamTerpakai)
+    //                     ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
+    //                     ->where('penjualans.status_selesai', 'belum')
+    //                     ->get();
+
+    //                 $arrIdKaryawanIzinSakit = Karyawan::select('karyawans.id')->distinct()
+    //                     ->join('presensi_kehadiran', 'presensi_kehadiran.karyawan_id', '=', 'karyawans.id')
+    //                     ->where(function ($query) {
+    //                         $query->where('presensi_kehadiran.keterangan', 'izin')->orWhere('presensi_kehadiran.keterangan', 'sakit');
+    //                     })->whereRaw("DATE(presensi_kehadiran.tanggal_presensi) = '" . $tanggalReservasi . "'")->where("presensi_kehadiran.status", "konfirmasi")->get();
+
+    //                 // $idKaryawan
+    //                 $karyawanTersedia = Karyawan::select('karyawans.*')->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                     ->join('perawatans', 'perawatans.id', '=', 'karyawan_perawatan.perawatan_id')
+    //                     ->whereNotIn('karyawans.id', $arrIdKaryawanTerpakaiSlotJam)->whereNotIn('karyawans.id', $arrIdKaryawanIzinSakit)->where('perawatans.id', $perawatan->id)->get();
+
+
+    //                 $perawatanPerSlot["karyawans"] = $karyawanTersedia;
+    //                 array_push($perawatanSlotJamNonKomplemen, $perawatanPerSlot);
+
+    //                 //update slotJamBerubah ke slot selanjutnya
+    //                 $intJamTerakhir = strtotime("+30 minutes", strtotime($jamTerakhir));
+    //                 $jamTerakhir = date('H.i', $intJamTerakhir);
+    //                 $slotJamBerubah = SlotJam::where('jam', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->first();
+    //             }
+
+    //             //BAGIAN PERAWATAN KOMPLEMEN-------------------------------------------------------------------------
+    //             $arrKomplemen = [];
+    //             $arrKomplemen['jammulai'] = $slotJamBerubah->jam;
+
+    //             $durasiTerlamaPerawatanKomplemen = Perawatan::where('status_komplemen', 'ya')->whereIn('id', $arrPerawatan)->max('durasi');
+    //             $arrKomplemen['durasiterlama'] = $durasiTerlamaPerawatanKomplemen;
+    //             $jumlahSlotTerpakai = ceil($durasiTerlamaPerawatanKomplemen / 30);
+    //             $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) - 30 . " minutes", strtotime($slotJamBerubah->jam));
+    //             $jamTerakhir = date('H.i', $intJamTerakhir);
+
+    //             $arrIdSlotJamTerpakai = SlotJam::select('id')->where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
+    //             $arrObjectSlotJamTerpakai = SlotJam::where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
+    //             //mengecek apakah perawatan yang dipilih pelanggan memuat slot jam yan sedang ditutup atau tidak aktif
+    //             $slotJamTutup = [];
+    //             foreach ($arrObjectSlotJamTerpakai as $slotJam) {
+    //                 if ($slotJam->status == 'nonaktif') {
+    //                     array_push($slotJamTutup, $slotJam->jam);
+    //                 }
+    //             }
+    //             if (count($slotJamTutup) > 0) {
+    //                 $stringArrJamTutup = implode(', ', $slotJamTutup);
+    //                 $arrPerawatanSend = [];
+    //                 foreach ($arrPerawatan as $ap) {
+    //                     $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
+    //                     array_push($arrPerawatanSend, $p);
+    //                 }
+    //                 $daftarPelanggans = Pelanggan::all();
+    //                 $varSlotJam = SlotJam::find($idSlotJam);
+    //                 if ($tanggalReservasi == date("Y-m-d")) {
+    //                     $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
+    //                 } else {
+    //                     $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
+    //                 }
+    //                 return redirect()->route('reservasi.admin.create')->with([
+    //                     'idPelanggan' => $idPelanggan,
+    //                     'daftarPelanggans' => $daftarPelanggans,
+    //                     'idSlotJam' => $idSlotJam,
+    //                     'daftarSlotJam' => $daftarSlotJam,
+    //                     'tanggalReservasi' => $tanggalReservasi,
+    //                     'arrPerawatan' => $arrPerawatan,
+    //                     'arrPerawatanObject' => $arrPerawatanSend,
+    //                 ])->withErrors('Perawatan yang dipilih memuat jam waktu tutup salon yaitu pada jam ' . $stringArrJamTutup);
+    //             }
+
+    //             $daftarSlotJam = [];
+    //             foreach ($arrIdSlotJamTerpakai as $sj) {
+    //                 array_push($daftarSlotJam, $sj->id);
+    //             }
+    //             $stringDaftarSlotJam = implode(".", $daftarSlotJam);
+    //             $arrKomplemen['idslotjam'] = $stringDaftarSlotJam;
+
+    //             $arrIdKaryawanTerpakaiSlotJam = Karyawan::select('karyawans.id')->distinct()
+    //                 ->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                 ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                 ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
+    //                 ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
+    //                 ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
+    //                 ->whereIn('slot_jams.id', $arrIdSlotJamTerpakai)
+    //                 ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
+    //                 ->where('penjualans.status_selesai', 'belum')
+    //                 ->get();
+
+    //             $arrIdKaryawanIzinSakit = Karyawan::select('karyawans.id')->distinct()
+    //                 ->join('presensi_kehadiran', 'presensi_kehadiran.karyawan_id', '=', 'karyawans.id')
+    //                 ->where(function ($query) {
+    //                     $query->where('presensi_kehadiran.keterangan', 'izin')->orWhere('presensi_kehadiran.keterangan', 'sakit');
+    //                 })->whereRaw("DATE(presensi_kehadiran.tanggal_presensi) = '" . $tanggalReservasi . "'")->where("presensi_kehadiran.status", "konfirmasi")->get();
+
+
+    //             foreach ($perawatanKomplemen as $perawatanK) {
+    //                 $perawatanPerSlot = [];
+    //                 $perawatanPerSlot["perawatan"] = $perawatanK;
+    //                 $karyawanTersedia = Karyawan::select('karyawans.*')->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                     ->join('perawatans', 'perawatans.id', '=', 'karyawan_perawatan.perawatan_id')
+    //                     ->whereNotIn('karyawans.id', $arrIdKaryawanTerpakaiSlotJam)->whereNotIn('karyawans.id', $arrIdKaryawanIzinSakit)->where('perawatans.id', $perawatanK->id)->get();
+
+
+    //                 $perawatanPerSlot["karyawans"] = $karyawanTersedia;
+    //                 array_push($perawatanSlotJamKomplemen, $perawatanPerSlot);
+    //             }
+    //             $arrKomplemen['array'] = $perawatanSlotJamKomplemen;
+
+    //             $keteranganNull = 0;
+
+    //             foreach ($perawatanSlotJamNonKomplemen as $ps) {
+    //                 if (count($ps['karyawans']) == 0) {
+    //                     $keteranganNull += 1;
+    //                 }
+    //             }
+    //             foreach ($arrKomplemen['array'] as $ps) {
+    //                 if (count($ps['karyawans']) == 0) {
+    //                     $keteranganNull += 1;
+    //                 }
+    //             }
+    //             if ($keteranganNull > 0) {
+    //                 $pesanError = "Terdapat perawatan yang memiliki karyawan yang tidak tersedia pada jam tersebut, silahkan mengatur ulang jam mulai, urutan perawatan Anda, atau hari reservasi lainnya!";
+    //                 return view('admin.reservasi.pilihkaryawan', compact('perawatanSlotJamNonKomplemen', 'arrKomplemen', 'tanggalReservasi', 'idSlotJam', 'arrPerawatan', 'idPelanggan', 'pesanError'));
+    //             } else {
+    //                 return view('admin.reservasi.pilihkaryawan', compact('perawatanSlotJamNonKomplemen', 'arrKomplemen', 'tanggalReservasi', 'idSlotJam', 'arrPerawatan', 'idPelanggan'));
+    //             }
+
+    //         } else {
+    //             //cari slot jam mulai dari form buatreservasiadmin
+    //             $slotJamBerubah = SlotJam::find($idSlotJam);
+
+    //             //BAGIAN PERAWATAN NON KOMPLEMEN-------------------------------------------------------------------------
+    //             //foreach $perawatanNonKomplemen untuk mencari karyawan tersedia untuk setiap perawatan
+    //             foreach ($perawatanNonKomplemen as $perawatan) {
+    //                 $perawatanPerSlot = [];
+    //                 $perawatanPerSlot["perawatan"] = $perawatan;
+    //                 $perawatanPerSlot["jammulai"] = $slotJamBerubah->jam;
+
+    //                 $jumlahSlotTerpakai = ceil($perawatan->durasi / 30);
+    //                 $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) - 30 . " minutes", strtotime($slotJamBerubah->jam));
+    //                 $jamTerakhir = date('H.i', $intJamTerakhir);
+    //                 $arrIdSlotJamTerpakai = SlotJam::select('id')->where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
+    //                 $arrObjectSlotJamTerpakai = SlotJam::where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
+    //                 // dd($jumlahSlotTerpakai, count($arrIdSlotJamTerpakai), $arrIdSlotJamTerpakai);
+
+    //                 //mengecek apakah perawatan yang dipilih pelanggan memuat slot jam yang sedang ditutup atau tidak aktif
+    //                 $slotJamTutup = [];
+    //                 foreach ($arrObjectSlotJamTerpakai as $slotJam) {
+    //                     if ($slotJam->status == 'nonaktif') {
+    //                         array_push($slotJamTutup, $slotJam->jam);
+    //                     }
+    //                 }
+    //                 if (count($slotJamTutup) > 0) {
+    //                     $stringArrJamTutup = implode(', ', $slotJamTutup);
+    //                     $arrPerawatanSend = [];
+    //                     foreach ($arrPerawatan as $ap) {
+    //                         $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
+    //                         array_push($arrPerawatanSend, $p);
+    //                     }
+    //                     $daftarPelanggans = Pelanggan::all();
+    //                     $varSlotJam = SlotJam::find($idSlotJam);
+    //                     if ($tanggalReservasi == date("Y-m-d")) {
+    //                         $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
+    //                     } else {
+    //                         $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
+    //                     }
+    //                     return redirect()->route('reservasi.admin.create')->with([
+    //                         'idPelanggan' => $idPelanggan,
+    //                         'daftarPelanggans' => $daftarPelanggans,
+    //                         'idSlotJam' => $idSlotJam,
+    //                         'daftarSlotJam' => $daftarSlotJam,
+    //                         'tanggalReservasi' => $tanggalReservasi,
+    //                         'arrPerawatan' => $arrPerawatan,
+    //                         'arrPerawatanObject' => $arrPerawatanSend,
+    //                     ])->withErrors('Perawatan yang dipilih memuat jam waktu tutup salon yaitu pada jam ' . $stringArrJamTutup);
+    //                 }
+
+    //                 $daftarSlotJam = [];
+    //                 foreach ($arrIdSlotJamTerpakai as $sj) {
+    //                     array_push($daftarSlotJam, $sj->id);
+    //                 }
+    //                 $stringDaftarSlotJam = implode(".", $daftarSlotJam);
+    //                 $perawatanPerSlot['idslotjam'] = $stringDaftarSlotJam;
+
+    //                 $arrIdKaryawanTerpakaiSlotJam = Karyawan::select('karyawans.id')->distinct()
+    //                     ->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                     ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                     ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
+    //                     ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
+    //                     ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
+    //                     ->whereIn('slot_jams.id', $arrIdSlotJamTerpakai)
+    //                     ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
+    //                     ->where('penjualans.status_selesai', 'belum')
+    //                     ->get();
+
+    //                 $arrIdKaryawanIzinSakit = Karyawan::select('karyawans.id')->distinct()
+    //                     ->join('presensi_kehadiran', 'presensi_kehadiran.karyawan_id', '=', 'karyawans.id')
+    //                     ->where(function ($query) {
+    //                         $query->where('presensi_kehadiran.keterangan', 'izin')->orWhere('presensi_kehadiran.keterangan', 'sakit');
+    //                     })->whereRaw("DATE(presensi_kehadiran.tanggal_presensi) = '" . $tanggalReservasi . "'")->where("presensi_kehadiran.status", "konfirmasi")->get();
+
+    //                 // $idKaryawan
+    //                 $arrKaryawanTersedia = [];
+    //                 $karyawanTersedia = Karyawan::select('karyawans.*')->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                     ->join('perawatans', 'perawatans.id', '=', 'karyawan_perawatan.perawatan_id')
+    //                     ->whereNotIn('karyawans.id', $arrIdKaryawanTerpakaiSlotJam)->whereNotIn('karyawans.id', $arrIdKaryawanIzinSakit)->where('perawatans.id', $perawatan->id)->first();
+
+    //                 if ($karyawanTersedia != null) {
+    //                     array_push($arrKaryawanTersedia, $karyawanTersedia);
+    //                 }
+
+
+    //                 $perawatanPerSlot["karyawans"] = $arrKaryawanTersedia;
+    //                 array_push($perawatanSlotJamNonKomplemen, $perawatanPerSlot);
+
+    //                 //update slotJamBerubah ke slot selanjutnya
+    //                 $intJamTerakhir = strtotime("+30 minutes", strtotime($jamTerakhir));
+    //                 $jamTerakhir = date('H.i', $intJamTerakhir);
+    //                 $slotJamBerubah = SlotJam::where('jam', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->first();
+    //             }
+
+    //             //BAGIAN PERAWATAN KOMPLEMEN-------------------------------------------------------------------------
+    //             $arrKomplemen = [];
+    //             $arrKomplemen['jammulai'] = $slotJamBerubah->jam;
+
+    //             $durasiTerlamaPerawatanKomplemen = Perawatan::where('status_komplemen', 'ya')->whereIn('id', $arrPerawatan)->max('durasi');
+    //             $arrKomplemen['durasiterlama'] = $durasiTerlamaPerawatanKomplemen;
+    //             $jumlahSlotTerpakai = ceil($durasiTerlamaPerawatanKomplemen / 30);
+    //             $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) - 30 . " minutes", strtotime($slotJamBerubah->jam));
+    //             $jamTerakhir = date('H.i', $intJamTerakhir);
+
+    //             $arrIdSlotJamTerpakai = SlotJam::select('id')->where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
+    //             $arrObjectSlotJamTerpakai = SlotJam::where('jam', '>=', $slotJamBerubah->jam)->where('jam', '<=', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->get();
+    //             //mengecek apakah perawatan yang dipilih pelanggan memuat slot jam yan sedang ditutup atau tidak aktif
+    //             $slotJamTutup = [];
+    //             foreach ($arrObjectSlotJamTerpakai as $slotJam) {
+    //                 if ($slotJam->status == 'nonaktif') {
+    //                     array_push($slotJamTutup, $slotJam->jam);
+    //                 }
+    //             }
+    //             if (count($slotJamTutup) > 0) {
+    //                 $stringArrJamTutup = implode(', ', $slotJamTutup);
+    //                 $arrPerawatanSend = [];
+    //                 foreach ($arrPerawatan as $ap) {
+    //                     $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
+    //                     array_push($arrPerawatanSend, $p);
+    //                 }
+    //                 $daftarPelanggans = Pelanggan::all();
+    //                 $varSlotJam = SlotJam::find($idSlotJam);
+    //                 if ($tanggalReservasi == date("Y-m-d")) {
+    //                     $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
+    //                 } else {
+    //                     $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
+    //                 }
+    //                 return redirect()->route('reservasi.admin.create')->with([
+    //                     'idPelanggan' => $idPelanggan,
+    //                     'daftarPelanggans' => $daftarPelanggans,
+    //                     'idSlotJam' => $idSlotJam,
+    //                     'daftarSlotJam' => $daftarSlotJam,
+    //                     'tanggalReservasi' => $tanggalReservasi,
+    //                     'arrPerawatan' => $arrPerawatan,
+    //                     'arrPerawatanObject' => $arrPerawatanSend,
+    //                 ])->withErrors('Perawatan yang dipilih memuat jam waktu tutup salon yaitu pada jam ' . $stringArrJamTutup);
+    //             }
+
+    //             $daftarSlotJam = [];
+    //             foreach ($arrIdSlotJamTerpakai as $sj) {
+    //                 array_push($daftarSlotJam, $sj->id);
+    //             }
+    //             $stringDaftarSlotJam = implode(".", $daftarSlotJam);
+    //             $arrKomplemen['idslotjam'] = $stringDaftarSlotJam;
+
+    //             $arrIdKaryawanTerpakaiSlotJam = Karyawan::select('karyawans.id')->distinct()
+    //                 ->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                 ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                 ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
+    //                 ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
+    //                 ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
+    //                 ->whereIn('slot_jams.id', $arrIdSlotJamTerpakai)
+    //                 ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
+    //                 ->where('penjualans.status_selesai', 'belum')
+    //                 ->get();
+
+    //             $arrIdKaryawanIzinSakit = Karyawan::select('karyawans.id')->distinct()
+    //                 ->join('presensi_kehadiran', 'presensi_kehadiran.karyawan_id', '=', 'karyawans.id')
+    //                 ->where(function ($query) {
+    //                     $query->where('presensi_kehadiran.keterangan', 'izin')->orWhere('presensi_kehadiran.keterangan', 'sakit');
+    //                 })->whereRaw("DATE(presensi_kehadiran.tanggal_presensi) = '" . $tanggalReservasi . "'")->where("presensi_kehadiran.status", "konfirmasi")->get();
+
+
+    //             foreach ($perawatanKomplemen as $perawatanK) {
+    //                 $perawatanPerSlot = [];
+    //                 $perawatanPerSlot["perawatan"] = $perawatanK;
+
+    //                 $arrKaryawanTersedia = [];
+    //                 $karyawanTersedia = Karyawan::select('karyawans.*')->join('karyawan_perawatan', 'karyawan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                     ->join('perawatans', 'perawatans.id', '=', 'karyawan_perawatan.perawatan_id')
+    //                     ->whereNotIn('karyawans.id', $arrIdKaryawanTerpakaiSlotJam)->whereNotIn('karyawans.id', $arrIdKaryawanIzinSakit)->where('perawatans.id', $perawatanK->id)->first();
+
+    //                 if ($karyawanTersedia != null) {
+    //                     array_push($arrKaryawanTersedia, $karyawanTersedia);
+    //                 }
+
+    //                 $perawatanPerSlot["karyawans"] = $arrKaryawanTersedia;
+    //                 array_push($perawatanSlotJamKomplemen, $perawatanPerSlot);
+    //             }
+    //             $arrKomplemen['array'] = $perawatanSlotJamKomplemen;
+
+    //             $keteranganNull = 0;
+    //             $arrPerawatanTidakAdaKaryawan = [];
+    //             foreach ($perawatanSlotJamNonKomplemen as $ps) {
+    //                 if (count($ps['karyawans']) == 0) {
+    //                     $keteranganNull += 1;
+    //                     array_push($arrPerawatanTidakAdaKaryawan, $ps["perawatan"]->nama);
+    //                 }
+    //             }
+    //             foreach ($arrKomplemen['array'] as $ps) {
+    //                 if (count($ps['karyawans']) == 0) {
+    //                     $keteranganNull += 1;
+    //                     array_push($arrPerawatanTidakAdaKaryawan, $ps["perawatan"]->nama);
+    //                 }
+    //             }
+    //             if ($keteranganNull > 0) {
+    //                 $stringPerawatanTidakAdaKaryawan = implode(",", $arrPerawatanTidakAdaKaryawan);
+    //                 $pesanError = "Terdapat perawatan seperti " . $stringPerawatanTidakAdaKaryawan . " yang memiliki karyawan yang tidak tersedia pada jam kerja, silahkan mengatur ulang jam mulai, urutan perawatan Anda, atau hari reservasi lainnya!";
+    //                 $arrPerawatanSend = [];
+    //                 foreach ($arrPerawatan as $ap) {
+    //                     $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
+    //                     array_push($arrPerawatanSend, $p);
+    //                 }
+    //                 $daftarPelanggans = Pelanggan::all();
+    //                 $varSlotJam = SlotJam::find($idSlotJam);
+    //                 if ($tanggalReservasi == date("Y-m-d")) {
+    //                     $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
+    //                 } else {
+    //                     $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
+    //                 }
+    //                 return redirect()->route('reservasi.admin.create')->with([
+    //                     'idPelanggan' => $idPelanggan,
+    //                     'daftarPelanggans' => $daftarPelanggans,
+    //                     'idSlotJam' => $idSlotJam,
+    //                     'daftarSlotJam' => $daftarSlotJam,
+    //                     'tanggalReservasi' => $tanggalReservasi,
+    //                     'arrPerawatan' => $arrPerawatan,
+    //                     'arrPerawatanObject' => $arrPerawatanSend,
+    //                 ])->withErrors($pesanError);
+
+    //             } else {
+    //                 // return view('admin.reservasi.pilihkaryawan', compact('perawatanSlotJamNonKomplemen', 'arrKomplemen', 'tanggalReservasi', 'idSlotJam', 'arrPerawatan', 'idPelanggan'));
+    //                 $daftarKaryawanPerawatan = [];
+    //                 $daftarKaryawanPerawatanKomplemen = [];
+
+    //                 foreach ($perawatanSlotJamNonKomplemen as $ps) {
+    //                     $stringSlot = "";
+    //                     foreach ($ps['karyawans'] as $k) {
+    //                         $stringSlot .= $k->id . "," . $ps['perawatan']->id . ",(" . $ps['idslotjam'] . ")";
+    //                     }
+    //                     array_push($daftarKaryawanPerawatan, $stringSlot);
+    //                 }
+
+    //                 foreach ($arrKomplemen['array'] as $ps) {
+    //                     $stringSlot = "";
+    //                     foreach ($ps['karyawans'] as $k) {
+    //                         $stringSlot .= $k->id . "," . $ps['perawatan']->id . ",(" . $arrKomplemen['idslotjam'] . ")";
+    //                     }
+    //                     array_push($daftarKaryawanPerawatanKomplemen, $stringSlot);
+    //                 }
+
+    //                 $slotJamKaryawanTerpakai = [];
+    //                 foreach ($daftarKaryawanPerawatan as $karyawanPerawatan) {
+    //                     $idKaryawan = explode(",", $karyawanPerawatan)[0];
+    //                     $idPerawatan = explode(",", $karyawanPerawatan)[1];
+
+
+    //                     $arrayStringSlotjam = str_replace(["(", ")"], "", explode(",", $karyawanPerawatan)[2]);
+    //                     $arraySlotJam = explode(".", $arrayStringSlotjam);
+
+    //                     $karyawan = Karyawan::select('karyawans.id')->distinct()
+    //                         ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                         ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
+    //                         ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
+    //                         ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
+    //                         ->whereIn('slot_jams.id', $arraySlotJam)
+    //                         ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
+    //                         ->where('karyawans.id', $idKaryawan)
+    //                         ->get();
+
+    //                     if (count($karyawan) > 0) {
+    //                         $karyawanTerpakai = [];
+    //                         $karyawanTerpakai['karyawan'] = Karyawan::find($idKaryawan);
+    //                         $karyawanTerpakai['perawatan'] = Perawatan::find($idPerawatan);
+    //                         $slotJam = SlotJam::whereIn('id', $arraySlotJam)->get();
+    //                         $array = [];
+    //                         foreach ($slotJam as $sj) {
+    //                             array_push($array, $sj->jam);
+    //                         }
+    //                         $karyawanTerpakai['slotjam'] = implode(',', $array);
+    //                         array_push($slotJamKaryawanTerpakai, $karyawanTerpakai);
+    //                     }
+    //                 }
+    //                 foreach ($daftarKaryawanPerawatanKomplemen as $karyawanPerawatanKomplemen) {
+    //                     $idKaryawan = explode(",", $karyawanPerawatanKomplemen)[0];
+    //                     $idPerawatan = explode(",", $karyawanPerawatanKomplemen)[1];
+    //                     $perawatan = Perawatan::find($idPerawatan);
+    //                     $arrayStringSlotjam = str_replace(["(", ")"], "", explode(",", $karyawanPerawatanKomplemen)[2]);
+
+    //                     $arraySlotJam = explode(".", $arrayStringSlotjam);
+
+    //                     $durasiPerawatan = $perawatan->durasi;
+
+    //                     $slotTerpakai = ceil($durasiPerawatan / 30);
+    //                     $daftarSlotjamFinal = [];
+    //                     for ($i = 0; $i < $slotTerpakai; $i++) {
+    //                         array_push($daftarSlotjamFinal, $arraySlotJam[$i]);
+    //                     }
+
+    //                     $karyawan = Karyawan::select('karyawans.id')->distinct()
+    //                         ->join('penjualan_perawatan', 'penjualan_perawatan.karyawan_id', '=', 'karyawans.id')
+    //                         ->join('penjualans', 'penjualans.id', '=', 'penjualan_perawatan.penjualan_id')
+    //                         ->join('slot_jam_penjualan_perawatan', 'slot_jam_penjualan_perawatan.penjualan_perawatan_id', '=', 'penjualan_perawatan.id')
+    //                         ->join('slot_jams', 'slot_jams.id', '=', 'slot_jam_penjualan_perawatan.slot_jam_id')
+    //                         ->whereIn('slot_jams.id', $daftarSlotjamFinal)
+    //                         ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
+    //                         ->where('karyawans.id', $idKaryawan)
+    //                         ->get();
+    //                     if (count($karyawan) > 0) {
+    //                         $karyawanTerpakai = [];
+    //                         $karyawanTerpakai['karyawan'] = Karyawan::find($idKaryawan);
+    //                         $karyawanTerpakai['perawatan'] = Perawatan::find($idPerawatan);
+
+    //                         $slotJam = SlotJam::whereIn('id', $daftarSlotjamFinal)->get();
+    //                         $array = [];
+    //                         foreach ($slotJam as $sj) {
+    //                             array_push($array, $sj->jam);
+    //                         }
+    //                         $karyawanTerpakai['slotjam'] = implode(',', $array);
+    //                         array_push($slotJamKaryawanTerpakai, $karyawanTerpakai);
+    //                     }
+    //                 }
+    //                 if (count($slotJamKaryawanTerpakai) > 0) {
+    //                     $pesanError = [];
+    //                     foreach ($slotJamKaryawanTerpakai as $sjkt) {
+    //                         $pesan = "Perawatan " . $sjkt['perawatan']->nama . " dengan karyawan " . $sjkt['karyawan']->nama . " pada slot waktu " . $sjkt['slotjam'] . " telah terpakai.";
+    //                         array_push($pesanError, $pesan);
+    //                     }
+    //                     $arrPerawatanSend = [];
+    //                     foreach ($arrPerawatan as $ap) {
+    //                         $p = Perawatan::select('id', 'kode_perawatan', 'nama', 'harga', 'deskripsi', 'durasi')->where('status', 'aktif')->where('id', $ap)->first();
+    //                         array_push($arrPerawatanSend, $p);
+    //                     }
+    //                     $daftarPelanggans = Pelanggan::all();
+    //                     $varSlotJam = SlotJam::find($idSlotJam);
+    //                     if ($tanggalReservasi == date("Y-m-d")) {
+    //                         $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->where('jam', ">=", date("H.i"))->orderBy('id')->get();
+    //                     } else {
+    //                         $daftarSlotJam = SlotJam::where('hari', $varSlotJam->hari)->orderBy('id')->get();
+    //                     }
+    //                     return redirect()->route('reservasi.admin.create')->with([
+    //                         'idPelanggan' => $idPelanggan,
+    //                         'daftarPelanggans' => $daftarPelanggans,
+    //                         'idSlotJam' => $idSlotJam,
+    //                         'daftarSlotJam' => $daftarSlotJam,
+    //                         'tanggalReservasi' => $tanggalReservasi,
+    //                         'arrPerawatan' => $arrPerawatan,
+    //                         'arrPerawatanObject' => $arrPerawatanSend,
+    //                     ])->withErrors($pesanError);
+    //                 }
+
+    //                 //-----------------------------------------------------------
+
+    //                 //Mulai Insert Data Reservasi jika ada slot kosong tersedia
+
+    //                 $newPenjualan = new Penjualan();
+    //                 $newPenjualan->nomor_nota = $idPelanggan . "/" . (count($daftarKaryawanPerawatan) + count($daftarKaryawanPerawatanKomplemen)) . "/" . date('d') . date('m') . date('Y');
+
+    //                 $totalHarga = 0;
+    //                 foreach ($daftarKaryawanPerawatan as $karyawanPerawatan) {
+    //                     $perawatan = Perawatan::find(explode(",", $karyawanPerawatan)[1]);
+    //                     $totalHarga += $perawatan->harga;
+    //                 }
+    //                 foreach ($daftarKaryawanPerawatanKomplemen as $karyawanPerawatan) {
+    //                     $perawatan = Perawatan::find(explode(",", $karyawanPerawatan)[1]);
+    //                     $totalHarga += $perawatan->harga;
+    //                 }
+    //                 $newPenjualan->total_pembayaran = $totalHarga;
+    //                 $newPenjualan->tanggal_penjualan = $tanggalReservasi;
+    //                 $newPenjualan->status_selesai = "belum";
+    //                 $newPenjualan->pelanggan_id = $idPelanggan;
+    //                 $newPenjualan->created_at = date('Y-m-d H:i:s');
+    //                 $newPenjualan->updated_at = date('Y-m-d H:i:s');
+    //                 $newPenjualan->save();
+
+
+    //                 foreach ($daftarKaryawanPerawatan as $kp) {
+    //                     //melakukan pemisahan isi dari value yang diperoleh dari form Format: idKaryawan,(arraySlotJamTerpakai)
+    //                     //explode untuk mendapatkan idKaryawan
+    //                     $idKaryawan = explode(",", $kp)[0];
+
+    //                     //explode untuk mendapatkan idPerawatan
+    //                     $idPerawatan = explode(",", $kp)[1];
+
+    //                     //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk string, lalu menghapus karakter "(" dan ")"
+    //                     $arrayStringSlotjam = str_replace(["(", ")"], "", explode(",", $kp)[2]);
+
+
+    //                     $newPenjualanPerawatan = new PenjualanPerawatan();
+    //                     $selectedPerawatan = Perawatan::find($idPerawatan);
+    //                     $newPenjualanPerawatan->harga = $selectedPerawatan->harga;
+    //                     $newPenjualanPerawatan->karyawan_id = $idKaryawan;
+    //                     $newPenjualanPerawatan->perawatan_id = $idPerawatan;
+    //                     $newPenjualanPerawatan->penjualan_id = $newPenjualan->id;
+    //                     $newPenjualanPerawatan->created_at = date("Y-m-d H:i:s");
+    //                     $newPenjualanPerawatan->updated_at = date("Y-m-d H:i:s");
+    //                     $newPenjualanPerawatan->save();
+
+    //                     //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk array
+    //                     $arraySlotJam = explode(".", $arrayStringSlotjam);
+
+    //                     foreach ($arraySlotJam as $sj) {
+    //                         $newPenjualanPerawatan->slotjams()->attach($sj);
+    //                     }
+    //                 }
+
+    //                 foreach ($daftarKaryawanPerawatanKomplemen as $kpk) {
+
+    //                     //melakukan pemisahan isi dari value yang diperoleh dari form Format: idKaryawan,idPerawatan,(arraySlotJamTerpakai)
+    //                     //explode untuk mendapatkan idKaryawan
+    //                     $idKaryawan = explode(",", $kpk)[0];
+
+    //                     //explode untuk mendapatkan idPerawatan
+    //                     $idPerawatan = explode(",", $kpk)[1];
+    //                     $perawatan = Perawatan::find($idPerawatan);
+
+
+    //                     //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk string, lalu menghapus karakter "(" dan ")"
+    //                     $arrayStringSlotjam = str_replace(["(", ")"], "", explode(",", $kpk)[2]);
+
+
+    //                     $newPenjualanPerawatan = new PenjualanPerawatan();
+    //                     $newPenjualanPerawatan->harga = $perawatan->harga;
+    //                     $newPenjualanPerawatan->karyawan_id = $idKaryawan;
+    //                     $newPenjualanPerawatan->perawatan_id = $idPerawatan;
+    //                     $newPenjualanPerawatan->penjualan_id = $newPenjualan->id;
+    //                     $newPenjualanPerawatan->created_at = date("Y-m-d H:i:s");
+    //                     $newPenjualanPerawatan->updated_at = date("Y-m-d H:i:s");
+    //                     $newPenjualanPerawatan->save();
+
+    //                     //explode untuk mendapatkan arraySlotJamTerpakai dalam bentuk array
+    //                     $arraySlotJam = explode(".", $arrayStringSlotjam);
+
+    //                     $durasiPerawatan = $perawatan->durasi;
+
+    //                     $slotTerpakai = ceil($durasiPerawatan / 30);
+
+    //                     for ($i = 0; $i < $slotTerpakai; $i++) {
+    //                         $newPenjualanPerawatan->slotjams()->attach($arraySlotJam[$i]);
+    //                     }
+    //                 }
+
+    //                 $newreservasi = new Reservasi();
+    //                 $newreservasi->tanggal_reservasi = $tanggalReservasi;
+    //                 $newreservasi->tanggal_pembuatan_reservasi = date('Y-m-d H:i:s');
+    //                 $newreservasi->status = 'baru';
+    //                 $newreservasi->penjualan_id = $newPenjualan->id;
+    //                 $newreservasi->created_at = date('Y-m-d H:i:s');
+    //                 $newreservasi->updated_at = date('Y-m-d H:i:s');
+    //                 $newreservasi->save();
+
+    //                 //Masuk ke halaman pilih produk
+
+    //                 $dataIdPenjualan = $newPenjualan->id; //nanti diganti dengan $dataIDPenjualan, ini sementara saja
+
+    //                 return redirect()->route('reservasi.admin.reservasitambahproduk', $dataIdPenjualan);
+
+
+    //             }
+    //         }
+
+    //     }
+    // }
 
     public function reservasiAdminKonfirmasi(Request $request)
     {
@@ -2284,49 +2288,83 @@ class ReservasiController extends Controller
 
         $perawatanSlotJamNonKomplemen = [];
 
-
         $perawatanNonKomplemen = [];
         $perawatanKomplemen = [];
         foreach ($penjualanPerawatan as $pp) {
             if ($pp->perawatan->status_komplemen == "tidak") {
-                array_push($perawatanNonKomplemen, $pp->perawatan);
+                array_push($perawatanNonKomplemen, $pp);
             } else {
-                array_push($perawatanKomplemen, $pp->perawatan);
+                array_push($perawatanKomplemen, $pp);
             }
         }
 
-        foreach ($perawatanNonKomplemen as $perawatan) {
+        $daftarPaket = [];
+        if (count($reservasi->penjualan->pakets) > 0) {
+            foreach ($reservasi->penjualan->pakets as $paket) {
+                array_push($daftarPaket, $paket);
+            }
+        }
+
+        foreach ($perawatanNonKomplemen as $penjualanPerawatanNonKomplemen) {
             $perawatanPerSlot = [];
-            $perawatanPerSlot["perawatan"] = $perawatan;
+            $perawatanPerSlot["penjualanperawatannonkomplemen"] = $penjualanPerawatanNonKomplemen;
+
+            $perawatanPerSlot["namapaket"] = "null";
+            foreach ($daftarPaket as $paket) {
+                if ($paket->perawatans->firstWhere('id', $penjualanPerawatanNonKomplemen->perawatan_id) != null) {
+                    $perawatanPerSlot["namapaket"] = $paket->nama;
+                    break;
+                }
+            }
+
             $perawatanPerSlot["jammulai"] = $slotJamBerubah->jam;
 
-            $perawatanPerSlot["karyawan"] = $reservasi->penjualan->penjualanperawatans->where('perawatan_id', $perawatan->id)->first()->karyawan;
+            $perawatanPerSlot["karyawan"] = $penjualanPerawatanNonKomplemen->karyawan;
 
-            $jumlahSlotTerpakai = ceil($perawatan->durasi / 30);
-            $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) - 30 . " minutes", strtotime($slotJamBerubah->jam));
-            $jamTerakhir = date('H.i', $intJamTerakhir);
+            $jumlahSlotTerpakai = $penjualanPerawatanNonKomplemen->slotjams->count();
+            // $jumlahSlotTerpakai = ceil($perawatan->durasi / 30);
+            $perawatanPerSlot["durasi"] = $jumlahSlotTerpakai * 30;
+            $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) . " minutes", strtotime($slotJamBerubah->jam));
+
+            // $jamTerakhir = date('H.i', $intJamTerakhir);
+            // dd($jamTerakhir);
 
             array_push($perawatanSlotJamNonKomplemen, $perawatanPerSlot);
 
             //update slotJamBerubah ke slot selanjutnya
-            $intJamTerakhir = strtotime("+30 minutes", strtotime($jamTerakhir));
+            // $intJamTerakhir = strtotime("+30 minutes", strtotime($jamTerakhir));
             $jamTerakhir = date('H.i', $intJamTerakhir);
             $slotJamBerubah = SlotJam::where('jam', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->first();
         }
 
         $arrKomplemen = [];
-        $idPerawatanKomplemen = [];
+        // $idPerawatanKomplemen = [];
         $arrayPerawatanKomplemen = [];
-        foreach ($perawatanKomplemen as $pk) {
-            array_push($idPerawatanKomplemen, $pk->id);
+        $totalSlotPerPerawatanKomplemen = [];
+        foreach ($perawatanKomplemen as $penjualanPerawatanKomplemen) {
+            // array_push($idPerawatanKomplemen, $pk->id);
             $array = [];
-            $array['perawatan'] = $pk;
-            $array["karyawan"] = $reservasi->penjualan->penjualanperawatans->where('perawatan_id', $pk->id)->first()->karyawan;
+            $array["namapaket"] = "null";
+            foreach ($daftarPaket as $paket) {
+                if ($paket->perawatans->firstWhere('id', $penjualanPerawatanKomplemen->perawatan_id) != null) {
+                    $array["namapaket"] = $paket->nama;
+                    break;
+                }
+            }
+            $array['penjualanperawatankomplemen'] = $penjualanPerawatanKomplemen;
+            $array["karyawan"] = $penjualanPerawatanKomplemen->karyawan;
+
             array_push($arrayPerawatanKomplemen, $array);
+            array_push($totalSlotPerPerawatanKomplemen, $penjualanPerawatanKomplemen->slotjams->count());
         }
         $arrKomplemen['jammulai'] = $slotJamBerubah->jam;
-        $durasiTerlamaPerawatanKomplemen = Perawatan::where('status_komplemen', 'ya')->whereIn('id', $idPerawatanKomplemen)->max('durasi');
-        $arrKomplemen['durasiterlama'] = $durasiTerlamaPerawatanKomplemen;
+
+
+        // $penjualanPerawatans = $reservasi->penjualan->penjualanperawatans;
+
+        // $durasiTerlamaPerawatanKomplemen = Perawatan::where('status_komplemen', 'ya')->whereIn('id', $idPerawatanKomplemen)->max('durasi');
+
+        $arrKomplemen['durasiterlama'] = max($totalSlotPerPerawatanKomplemen) * 30;
         $arrKomplemen['perawatans'] = $arrayPerawatanKomplemen;
 
         $idDiskonUnikYangSudahPernahDipakai = Penjualan::select("diskon_id")->distinct()->where("pelanggan_id", $reservasi->penjualan->pelanggan_id)->where("diskon_id", "!=", null)->get();
@@ -2407,12 +2445,38 @@ class ReservasiController extends Controller
 
             $totalPenjualanPerawatan = 0;
             $totalPenjualanProduk = 0;
+            $totalPotonganDiskon = 0;
             foreach ($reservasi as $r) {
                 if ($r->status == "selesai") {
-                    $totalPenjualanPerawatan += $r->penjualan->total_pembayaran;
+                    foreach ($r->penjualan->penjualanperawatans as $p) {
+                        $totalPenjualanPerawatan += $p->harga;
+                    }
 
                     foreach ($r->penjualan->produks as $p) {
                         $totalPenjualanProduk += $p->pivot->kuantitas * $p->pivot->harga;
+                    }
+
+                    $totalHargaPerawatanPerReservasi = 0;
+                    $totalHargaProdukPerReservasi = 0;
+
+                    foreach ($r->penjualan->penjualanperawatans as $pper) {
+                        $totalHargaPerawatanPerReservasi += $pper->harga;
+                    }
+
+                    foreach ($r->penjualan->produks as $ppro) {
+                        $totalHargaProdukPerReservasi += $ppro->pivot->kuantitas * $ppro->pivot->harga;
+                    }
+                    //Hitung Total potogan Diskon
+
+                    if ($r->penjualan->diskon_id != null) {
+                        $objDiskon = $r->penjualan->diskon;
+                        $totalPotonganDiskonPerReservasi = (($totalHargaPerawatanPerReservasi + $totalHargaProdukPerReservasi) * $objDiskon->jumlah_potongan) / 100;
+
+                        if ($totalPotonganDiskonPerReservasi > $objDiskon->maksimum_potongan) {
+                            $totalPotonganDiskonPerReservasi = $objDiskon->maksimum_potongan;
+                        }
+
+                        $totalPotonganDiskon += $totalPotonganDiskonPerReservasi;
                     }
                 }
 
@@ -2422,7 +2486,9 @@ class ReservasiController extends Controller
 
             $objectRiwayat["totalpenjualanperawatan"] = $totalPenjualanPerawatan;
 
-            $objectRiwayat["totalpembayaran"] = $totalPenjualanProduk + $totalPenjualanPerawatan;
+            $objectRiwayat["totalpotongandiskon"] = $totalPotonganDiskon;
+
+            $objectRiwayat["totalpembayaran"] = $totalPenjualanProduk + $totalPenjualanPerawatan - $totalPotonganDiskon;
 
             array_push($arrDaftarRiwayatReservasi, $objectRiwayat);
         }
@@ -2435,5 +2501,60 @@ class ReservasiController extends Controller
         $tanggal = $_POST['tanggal'];
         $riwayatReservasis = Reservasi::whereRaw("DATE(tanggal_reservasi) = '" . $tanggal . "'")->orderBy("id", "desc")->get();
         return response()->json(array('msg' => view('admin.reservasi.detailreservasiperawatan', compact('riwayatReservasis'))->render()), 200);
+    }
+
+    public function daftarReservasiKaryawan()
+    {
+
+        date_default_timezone_set('Asia/Jakarta');
+        $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+        $karyawan = Auth::user()->karyawan;
+        $tanggalHariIni = date('Y-m-d');
+        $allReservasis = Reservasi::orderBy('status', 'asc')->whereRaw("DATE(tanggal_reservasi) = '" . $tanggalHariIni . "'")->orderBy("tanggal_reservasi", "asc")->get();
+        $reservasis = [];
+        foreach ($allReservasis as $reservasi) {
+            if ($reservasi->penjualan->penjualanperawatans->firstWhere("karyawan_id", $karyawan->id) != null) {
+                array_push($reservasis, $reservasi);
+            }
+        }
+
+        $reservasisAkanDatang = [];
+        $tanggalUnik = Reservasi::selectRaw("DATE(tanggal_reservasi) as tanggal_reservasi")->distinct()->whereRaw("DATE(tanggal_reservasi) > '" . $tanggalHariIni . "'")->orderByRaw("tanggal_reservasi asc")->get();
+        foreach ($tanggalUnik as $tanggal) {
+            $reservasiTerpilih = Reservasi::orderBy('status', 'asc')->whereRaw("DATE(tanggal_reservasi) = '" . $tanggal->tanggal_reservasi . "'")->orderByRaw("tanggal_reservasi asc")->get();
+            if (count($reservasiTerpilih) > 0) {
+                $reservasiSementara = [];
+
+                $nomorHariDalamMingguan = date("w", strtotime($tanggal->tanggal_reservasi));
+                $hariReservasi = $hariIndonesia[$nomorHariDalamMingguan] ;
+                $reservasiSementara["hari_reservasi"] = $hariReservasi;
+                $reservasiSementara["tanggal_reservasi"] = $tanggal->tanggal_reservasi;
+                $reservasiSementara["total_reservasi"] = count($reservasiTerpilih);
+                $reservasiSementara["total_pelayanan"] = 0;
+                foreach ($reservasiTerpilih as $r) {
+                    $reservasiSementara["total_pelayanan"] += $r->penjualan->penjualanperawatans->where("karyawan_id", $karyawan->id)->count();
+                }
+                array_push($reservasisAkanDatang, $reservasiSementara);
+            }
+        }
+
+        return view("karyawansalon.reservasi.daftarreservasi", compact("reservasis", "reservasisAkanDatang"));
+    }
+
+    public function detailDaftarReservasiKaryawan(){
+        date_default_timezone_set('Asia/Jakarta');
+        $tanggalReservasi = $_POST["tanggalReservasi"];
+        $karyawan = Auth::user()->karyawan;
+        $tanggalHariIni = date('Y-m-d');
+        $allReservasis = Reservasi::orderBy('status', 'asc')->whereRaw("DATE(tanggal_reservasi) = '" . $tanggalReservasi . "'")->orderBy("tanggal_reservasi", "asc")->get();
+        $reservasis = [];
+        foreach ($allReservasis as $reservasi) {
+            if ($reservasi->penjualan->penjualanperawatans->firstWhere("karyawan_id", $karyawan->id) != null) {
+                array_push($reservasis, $reservasi);
+            }
+        }
+
+        
+        return response()->json(array('msg' => view('karyawansalon.reservasi.detaildaftarreservasipertanggal', compact('reservasis'))->render()), 200);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kategori;
 use App\Models\Kondisi;
 use App\Models\Merek;
+use App\Models\Paket;
 use App\Models\Penjualan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
@@ -46,7 +47,7 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         date_default_timezone_set("Asia/Jakarta");
         $validatedData = $request->validate(
             [
@@ -204,7 +205,38 @@ class ProdukController extends Controller
 
         $produk->nama = $namaProduk;
         $produk->harga_beli = $hargaBeli;
-        $produk->harga_jual = $hargaJual;
+
+        if ($hargaJual > $produk->harga_jual) {
+            $selisihPenambahan = $hargaJual - $produk->harga_jual;
+            $daftarPaket = Paket::join("paket_produk", "paket_produk.paket_id", "=", "pakets.id")->where("paket_produk.produk_id", $produk->id)->get();
+            if (count($daftarPaket) > 0) {
+                foreach ($daftarPaket as $paket) {
+                    $kuantitas = $paket->produks->firstWhere("id", $produk->id)->pivot->jumlah;
+                    $paketTerpilih = Paket::find($paket->id);
+                    $paketTerpilih->harga = $paketTerpilih->harga + ($kuantitas * $selisihPenambahan);
+                    $paketTerpilih->updated_at = date("Y-m-d H:i:s");
+                    $paketTerpilih->save();
+                }
+            }
+            $produk->harga_jual = $hargaJual;
+
+        } else if ($hargaJual < $produk->harga_jual) {
+            $selisihPengurangan = $produk->harga_jual - $hargaJual;
+            $daftarPaket = Paket::join("paket_produk", "paket_produk.paket_id", "=", "pakets.id")->where("paket_produk.produk_id", $produk->id)->get();
+            if (count($daftarPaket) > 0) {
+                foreach ($daftarPaket as $paket) {
+                    $kuantitas = $paket->produks->firstWhere("id", $produk->id)->pivot->jumlah;
+                    $paketTerpilih = Paket::find($paket->id);
+                    $paketTerpilih->harga = $paketTerpilih->harga - ($kuantitas * $selisihPengurangan);
+                    $paketTerpilih->updated_at = date("Y-m-d H:i:s");
+                    $paketTerpilih->save();
+                }
+            }
+            $produk->harga_jual = $hargaJual;
+        } else {
+            $produk->harga_jual = $hargaJual;
+        }
+
         $produk->deskripsi = $deskripsiProduk;
         $produk->stok = $stokProduk;
         $produk->status = $statusKeaktifan;

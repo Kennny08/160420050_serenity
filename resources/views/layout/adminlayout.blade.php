@@ -374,6 +374,9 @@
                                             Perawatan</a></li>
                                 @else
                                     {{-- Nanti diisi dengan menu karyawan salon untuk reservasi dirinya dan riwayat reservasi dirinya --}}
+
+                                    <li><a href="{{ route('reservasis.karyawan.daftarreservasi') }}"> Reservasi
+                                            Salon</a></li>
                                 @endif
                             </ul>
                         </li>

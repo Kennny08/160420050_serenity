@@ -150,7 +150,7 @@
                                     <div class="tab-pane active p-3" id="perawatan" role="tabpanel">
                                         <div class="mb-2">
                                             <div class="d-inline-block">
-                                                <h3 class="mt-0 header-title">Perawatan Non Komplemen</h3>
+                                                <h3 class="mt-0 header-title">Perawatan Sekuensial/berurutan</h3>
                                             </div>
 
                                             <div class="d-inline-block">
@@ -169,7 +169,7 @@
                                                     <tr class="text-center">
                                                         <th>Nama Perawatan</th>
                                                         <th>Jam Mulai</th>
-                                                        <th>Durasi</th>
+                                                        <th>Durasi (Menit)</th>
                                                         <th>Harga (Rp)</th>
                                                         <th>Karyawan</th>
                                                     </tr>
@@ -177,10 +177,21 @@
                                                 <tbody>
                                                     @foreach ($perawatanSlotJamNonKomplemen as $ps)
                                                         <tr class="text-center">
-                                                            <td>{{ $ps['perawatan']->nama }}</td>
+                                                            <td>
+                                                                @if ($ps['namapaket'] == 'null')
+                                                                    {{ $ps['penjualanperawatannonkomplemen']->perawatan->nama }}
+                                                                @else
+                                                                    {{ $ps['penjualanperawatannonkomplemen']->perawatan->nama }}
+                                                                    <br>
+                                                                    <span class="text-info font-weight-bold">*
+                                                                        {{ $ps['namapaket'] }}
+                                                                    </span>
+                                                                @endif
+
+                                                            </td>
                                                             <td>{{ $ps['jammulai'] }}</td>
-                                                            <td>{{ $ps['perawatan']->durasi }}</td>
-                                                            <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}
+                                                            <td>{{ $ps['durasi'] }}</td>
+                                                            <td>{{ number_format($ps['penjualanperawatannonkomplemen']->harga, 2, ',', '.') }}
                                                             </td>
                                                             <td>{{ $ps['karyawan']->nama }}</td>
                                                         </tr>
@@ -192,7 +203,7 @@
                                         <br>
                                         <div class="mb-2">
                                             <div class="d-inline-block">
-                                                <h3 class="mt-0 header-title">Perawatan Komplemen</h3>
+                                                <h3 class="mt-0 header-title">Perawatan Bersamaan</h3>
                                             </div>
 
                                             <div class="d-inline-block">
@@ -210,7 +221,7 @@
                                                     <tr class="text-center">
                                                         <th>Nama Perawatan</th>
                                                         <th>Jam Mulai</th>
-                                                        <th>Durasi</th>
+                                                        <th>Durasi (Menit)</th>
                                                         <th>Harga (Rp)</th>
                                                         <th>Karyawan</th>
                                                     </tr>
@@ -222,7 +233,18 @@
                                                     @foreach ($arrKomplemen['perawatans'] as $ps)
                                                         @if ($counter == 1)
                                                             <tr class="text-center">
-                                                                <td>{{ $ps['perawatan']->nama }}</td>
+                                                                <td>
+                                                                    @if ($ps['namapaket'] == 'null')
+                                                                        {{ $ps['penjualanperawatankomplemen']->perawatan->nama }}
+                                                                    @else
+                                                                        {{ $ps['penjualanperawatankomplemen']->perawatan->nama }}
+                                                                        <br>
+                                                                        <span class="text-info font-weight-bold">*
+                                                                            {{ $ps['namapaket'] }}
+                                                                        </span>
+                                                                    @endif
+
+                                                                </td>
                                                                 <td class="text-center align-middle"
                                                                     rowspan="{{ count($arrKomplemen['perawatans']) }}">
                                                                     {{ $arrKomplemen['jammulai'] }}</td>
@@ -230,14 +252,24 @@
                                                                     rowspan="{{ count($arrKomplemen['perawatans']) }}">
                                                                     {{ $arrKomplemen['durasiterlama'] }}
                                                                 </td>
-                                                                <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}
+                                                                <td>{{ number_format($ps['penjualanperawatankomplemen']->harga, 2, ',', '.') }}
                                                                 </td>
                                                                 <td>{{ $ps['karyawan']->nama }}</td>
                                                             </tr>
                                                         @else
                                                             <tr class="text-center">
-                                                                <td>{{ $ps['perawatan']->nama }}</td>
-                                                                <td>{{ number_format($ps['perawatan']->harga, 2, ',', '.') }}
+                                                                <td>
+                                                                    @if ($ps['namapaket'] == 'null')
+                                                                        {{ $ps['penjualanperawatankomplemen']->perawatan->nama }}
+                                                                    @else
+                                                                        {{ $ps['penjualanperawatankomplemen']->perawatan->nama }}
+                                                                        <br>
+                                                                        <span class="text-info font-weight-bold">*
+                                                                            {{ $ps['namapaket'] }}
+                                                                        </span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>{{ number_format($ps['penjualanperawatankomplemen']->harga, 2, ',', '.') }}
                                                                 </td>
                                                                 <td>{{ $ps['karyawan']->nama }}</td>
 
@@ -260,12 +292,12 @@
                                                     <address>
                                                         @foreach ($arrKomplemen['perawatans'] as $ps)
                                                             @php
-                                                                $totalHargaPerawatan += $ps['perawatan']->harga;
+                                                                $totalHargaPerawatan += $ps['penjualanperawatankomplemen']->harga;
                                                             @endphp
                                                         @endforeach
                                                         @foreach ($perawatanSlotJamNonKomplemen as $psnk)
                                                             @php
-                                                                $totalHargaPerawatan += $psnk['perawatan']->harga;
+                                                                $totalHargaPerawatan += $psnk['penjualanperawatannonkomplemen']->harga;
                                                             @endphp
                                                         @endforeach
                                                         <h6 style="font-weight: normal">Total Harga Perawatan: </h6>
@@ -289,35 +321,34 @@
                                                         <th>Merek</th>
                                                         <th>Harga(Rp)</th>
                                                         <th>Stok Dibeli</th>
-                                                        <th>Kategori</th>
-                                                        <th>Kondisi</th>
-                                                        <th>Deskripsi</th>
                                                         <th>Subtotal(Rp)</th>
                                                     </tr>
                                                 </thead>
 
                                                 <tbody>
                                                     @if (count($reservasi->penjualan->produks) > 0)
-                                                        @foreach ($reservasi->penjualan->produks as $p)
-                                                            <tr id="tr_{{ $p->id }}">
-                                                                <td>{{ $p->kode_produk }}</td>
-                                                                <td>{{ $p->nama }}</td>
-                                                                <td>{{ $p->merek->nama }}</td>
-                                                                <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                                                <td>{{ $p->pivot->kuantitas }}</td>
-                                                                <td>{{ $p->kategori->nama }}</td>
-                                                                <td class="text-left">
-                                                                    <ul>
-                                                                        @foreach ($p->kondisis as $kondisi)
-                                                                            <li>{{ $kondisi->keterangan }}</li>
+                                                        @foreach ($reservasi->penjualan->produks as $produk)
+                                                            <tr id="tr_{{ $produk->id }}">
+                                                                <td>{{ $produk->kode_produk }}</td>
+                                                                <td>
+                                                                    {{ $produk->nama }}
+                                                                    @if (count($reservasi->penjualan->pakets) > 0)
+                                                                        @foreach ($reservasi->penjualan->pakets as $paket)
+                                                                            @if ($paket->produks->firstWhere('id', $produk->id) != null)
+                                                                                <br>
+                                                                                <span class="text-info font-weight-bold">*
+                                                                                    {{ $paket->nama }} -
+                                                                                    ({{ $paket->pivot->jumlah }})
+                                                                                </span>
+                                                                            @endif
                                                                         @endforeach
-                                                                    </ul>
-
+                                                                    @endif
                                                                 </td>
-
-                                                                <td>{{ $p->deskripsi }}</td>
+                                                                <td>{{ $produk->merek->nama }}</td>
+                                                                <td>{{ number_format($produk->pivot->harga, 2, ',', '.') }}</td>
+                                                                <td>{{ $produk->pivot->kuantitas }}</td>
                                                                 <td class="text-center">
-                                                                    {{ number_format($p->pivot->kuantitas * $p->pivot->harga, 2, ',', '.') }}
+                                                                    {{ number_format($produk->pivot->kuantitas * $produk->pivot->harga, 2, ',', '.') }}
                                                                 </td>
                                                             </tr>
                                                         @endforeach

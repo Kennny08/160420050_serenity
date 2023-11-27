@@ -177,7 +177,7 @@
 
     <div id="modalKeranjang" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
             <div class="modal-content">
                 <form action="{{ route('reservasi.admin.konfirmasipenambahanproduk') }}" method="POST">
                     @csrf
@@ -187,7 +187,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div id="modalDetailKeranjang" class="modal-body text-center">
+                    <div id="modalDetailKeranjang" class="modal-body text-center" style="overflow-y: auto; max-height: 60vh;">
                         <input type="hidden" value="{{ $penjualan->id }}" name="idPenjualan">
 
                         <table id="tabelKeranjangProduk" class="table table-striped table-bordered dt-responsive wrap"
@@ -205,21 +205,48 @@
                                 @if (count($penjualan->produks) > 0)
                                     @foreach ($penjualan->produks as $p)
                                         <tr id="barisKeranjang_{{ $p->id }}">
-                                            <td>{{ $p->nama }}</td>
+                                            <td>
+                                                {{ $p->nama }}
+                                                @if (count($penjualan->pakets) > 0)
+                                                    @foreach ($penjualan->pakets as $paket)
+                                                        @if ($paket->produks->firstWhere('id', $p->id) != null)
+                                                            <br>
+                                                            <span class="text-info font-weight-bold">*
+                                                                {{ $paket->nama }} -
+                                                                ({{ $paket->pivot->jumlah }})
+                                                            </span>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </td>
                                             <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
                                             <td id="kolomStokDiambil_{{ $p->id }}">{{ $p->pivot->kuantitas }}</td>
                                             <td id="kolomSubTotal_{{ $p->id }}">
                                                 {{ number_format($p->harga_jual * $p->pivot->kuantitas, 2, ',', '.') }}
                                             </td>
                                             <td>
+                                                @php
+                                                    $jumlahMinimalStokDiambil = 0;
+                                                @endphp
+                                                @if (count($penjualan->pakets) > 0)
+                                                    @foreach ($penjualan->pakets as $paket)
+                                                        @if ($paket->produks->firstWhere('id', $p->id) != null)
+                                                            @php
+                                                                $jumlahMinimalStokDiambil += 1;
+                                                            @endphp
+                                                        @endif
+                                                    @endforeach
+                                                @endif
                                                 <button class='btn btn-danger btnHapusKeranjang'
                                                     id="btnHapusKeranjang_{{ $p->id }}"
                                                     idProduk="{{ $p->id }}"
                                                     stokDiambil="{{ $p->pivot->kuantitas }}"
-                                                    subTotal="{{ $p->harga_jual * $p->pivot->kuantitas }}">Hapus
+                                                    subTotal="{{ $p->harga_jual * $p->pivot->kuantitas }}"
+                                                    minStok = "{{ $jumlahMinimalStokDiambil }}">Hapus
                                                 </button>
                                             </td>
                                         </tr>
+                                        
                                     @endforeach
                                 @else
                                     <tr id="trSilahkan">
@@ -240,7 +267,7 @@
                                     @endforeach
                                     <tr>
                                         <td id="tabelTotalHarga" colspan="5" class="font-weight-bold">Total Harga :
-                                            Rp. {{ number_format($totalSementara, 2, ",", ".") }}
+                                            Rp. {{ number_format($totalSementara, 2, ',', '.') }}
                                         </td>
                                     </tr>
                                 @else
@@ -293,7 +320,36 @@
                     </h5>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-danger waves-effect" id="btnPeringatanTidakBolehMin"
+                        data-dismiss="modal">Tutup</button>
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <div id="modalMinimalStokProdukDiambil" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="modalMinimalStokProdukDiambil" class="modal-title mt-0">Terjadi Kesalahan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center d-flex align-items-center justify-content-center"
+                    style="overflow-y: auto; height: 150px">
+                    <h5 id="textModalMinimalStokProdukDiambil" class="text-danger">Kuantitas produk yang ingin dibeli
+                        sebagai tambahan produk
+                        minimal berjumlah 1!
+                    </h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger waves-effect" id="btnMinimalStokProdukDiambil"
+                        data-dismiss="modal">Tutup</button>
 
                 </div>
             </div>
@@ -359,12 +415,14 @@
                     $("#setNumberJumlahProduk").val("1");
                     $('#textModal').text(
                         "Kuantitas produk yang ingin dibeli sebagai tambahan produk minimal berjumlah 1!");
+                    $("#modalDetailProduk").modal('hide');
                     $("#modalPeringatanTidakBolehMin").modal("show");
                 } else if (stokDiambil > stokSaatIni) {
                     $("#setNumberJumlahProduk").val(stokSaatIni);
                     $('#textModal').text(
                         "Kuantitas produk yang ingin dibeli sebagai tambahan produk maksimal berjumlah " +
                         stokSaatIni + "!");
+                    $("#modalDetailProduk").modal('hide');
                     $("#modalPeringatanTidakBolehMin").modal("show");
                 } else {
                     $("#" + idButtonTambahKeranjang).attr('stokProduk', stokSaatIni - stokDiambil);
@@ -392,7 +450,11 @@
                         var stokSaatIni = parseInt($("#kolomStokDiambil_" + idProduk).text());
                         var stokBaruDiKeranjang = stokSaatIni + stokDiambil;
                         $("#kolomStokDiambil_" + idProduk).text(stokBaruDiKeranjang);
-                        $("#kolomSubTotal_" + idProduk).text(hargaProduk * stokBaruDiKeranjang);
+                        $("#kolomSubTotal_" + idProduk).text((hargaProduk * stokBaruDiKeranjang).toLocaleString(
+                            'id-ID', {
+                                style: 'currency',
+                                currency: 'IDR'
+                            }).replace('Rp', ''));
                         $("#btnHapusKeranjang_" + idProduk).attr('stokDiambil', stokBaruDiKeranjang);
                         $("#btnHapusKeranjang_" + idProduk).attr('subTotal', hargaProduk * stokBaruDiKeranjang);
                         $("#stokproduk_" + idProduk).val(stokBaruDiKeranjang);
@@ -414,7 +476,7 @@
                             idProduk +
                             "' idProduk='" + idProduk + "' stokDiambil='" + stokDiambil + "' subTotal='" +
                             subTotal +
-                            "'>Hapus</button>" + "</td>" +
+                            "' minStok='0'>Hapus</button>" + "</td>" +
                             "</tr>");
 
                         $("#modalDetailKeranjang").append("<input type='hidden' value='" + idProduk +
@@ -427,6 +489,7 @@
             } else {
                 $("#setNumberJumlahProduk").val("1");
                 $('#textModal').text("Mohon masukkan inputan kuantitas berupa angka!");
+                $("#modalDetailProduk").modal('hide');
                 $("#modalPeringatanTidakBolehMin").modal("show");
             }
 
@@ -456,39 +519,93 @@
 
         });
 
-        $('body').on('click', '.btnHapusKeranjang', function() {
+        $('body').on('click', '#btnMinimalStokProdukDiambil', function() {
+            $("#modalKeranjang").modal('show');
+        });
+
+        $('body').on('click', '#btnPeringatanTidakBolehMin', function() {
+            $("#modalDetailProduk").modal('show');
+        });
+
+        $('body').on('click', '.btnHapusKeranjang', function(e) {
+            e.preventDefault();
             var idProduk = $(this).attr('idProduk');
             var stokDiambil = parseInt($(this).attr('stokDiambil'));
             var stokSaatIni = parseInt($('#btnTambahKeranjang_' + idProduk).attr('stokProduk'));
+            var minimalStokDiambil = parseInt($(this).attr('minStok'));
 
-            $('#btnTambahKeranjang_' + idProduk).attr('stokProduk', (stokDiambil + stokSaatIni));
+            if (minimalStokDiambil > 0) {
+                if (stokDiambil > minimalStokDiambil) {
+                    $('#btnTambahKeranjang_' + idProduk).attr('stokProduk', (stokDiambil - minimalStokDiambil +
+                        stokSaatIni));
 
-            if ($('#btnTambahKeranjang_' + idProduk).attr('stokProduk') >= 1) {
-                $('#btnTambahKeranjang_' + idProduk).removeClass('btn-danger');
-                $('#btnTambahKeranjang_' + idProduk).addClass('btn-info');
-                $('#btnTambahKeranjang_' + idProduk).attr('disabled', false);
-                $('#btnTambahKeranjang_' + idProduk).text('Tambah');
+                    if ($('#btnTambahKeranjang_' + idProduk).attr('stokProduk') >= 1) {
+                        $('#btnTambahKeranjang_' + idProduk).removeClass('btn-danger');
+                        $('#btnTambahKeranjang_' + idProduk).addClass('btn-info');
+                        $('#btnTambahKeranjang_' + idProduk).attr('disabled', false);
+                        $('#btnTambahKeranjang_' + idProduk).text('Tambah');
+
+                    }
+
+                    var hargaPerProduk = parseInt($(this).attr("subTotal")) / stokDiambil;
+
+                    $("#kolomStokDiambil_" + idProduk).text(minimalStokDiambil);
+                    $("#kolomSubTotal_" + idProduk).text(hargaPerProduk * minimalStokDiambil);
+                    $(this).attr('stokDiambil', minimalStokDiambil);
+                    $(this).attr("subTotal", hargaPerProduk * minimalStokDiambil);
+
+                    var totalHarga = 0;
+                    $(".btnHapusKeranjang").each(function(index) {
+                        totalHarga += parseInt($(this).attr('subTotal'));
+                    });
+                    $("#tabelTotalHarga").text("Total harga : " + totalHarga.toLocaleString('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR'
+                    }));
+                    $("#stokproduk_" + idProduk).val(minimalStokDiambil);
+                } else {
+
+                    $("#modalKeranjang").modal('hide');
+                    $('#textModalMinimalStokProdukDiambil').text("Minimal stok produk yang diambil adalah " +
+                        minimalStokDiambil +
+                        " yang berasal dari Paket yang Anda pilih!");
+                    $("#modalMinimalStokProdukDiambil").modal("show");
+                }
+            } else {
+                $('#btnTambahKeranjang_' + idProduk).attr('stokProduk', (stokDiambil +
+                    stokSaatIni));
+
+                if ($('#btnTambahKeranjang_' + idProduk).attr('stokProduk') >= 1) {
+                    $('#btnTambahKeranjang_' + idProduk).removeClass('btn-danger');
+                    $('#btnTambahKeranjang_' + idProduk).addClass('btn-info');
+                    $('#btnTambahKeranjang_' + idProduk).attr('disabled', false);
+                    $('#btnTambahKeranjang_' + idProduk).text('Tambah');
+
+                }
+
+                $(this).parent().parent().remove();
+
+                if ($('#bodyTabelKeranjang').find("tr").length == 0) {
+                    $('#bodyTabelKeranjang').html(
+                        "<tr id='trSilahkan'><td colspan='5'>Silahkan tambahkan produk terlebih dahulu!</td></tr>"
+                    );
+                    $('#tabelTotalHarga').text("Total Harga : Rp. 0");
+                    // $("#btnKonfirmasiKeranjang").attr('hidden', true);
+                }
+
+                var totalHarga = 0;
+                $(".btnHapusKeranjang").each(function(index) {
+                    totalHarga += parseInt($(this).attr('subTotal'));
+                });
+                $("#tabelTotalHarga").text("Total harga : Rp. " + totalHarga.toLocaleString('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                }));
+
+                $("#produk_" + idProduk).remove();
+                $("#stokproduk_" + idProduk).remove();
 
             }
-
-            $(this).parent().parent().remove();
-
-            if ($('#bodyTabelKeranjang').find("tr").length == 0) {
-                $('#bodyTabelKeranjang').html(
-                    "<tr id='trSilahkan'><td colspan='5'>Silahkan tambahkan produk terlebih dahulu!</td></tr>");
-                $('#tabelTotalHarga').text("Total Harga : Rp. 0");
-                // $("#btnKonfirmasiKeranjang").attr('hidden', true);
-            }
-
-            var totalHarga = 0;
-            $(".btnHapusKeranjang").each(function(index) {
-                totalHarga += parseInt($(this).attr('subTotal'));
-            });
-            $("#tabelTotalHarga").text("Total harga : Rp. " + totalHarga);
-
-            $("#produk_" + idProduk).remove();
-            $("#stokproduk_" + idProduk).remove();
-
         });
     </script>
 @endsection
