@@ -15,9 +15,11 @@
                     <h3 class="mt-0 header-title">Daftar Karyawan</h3>
                     <p class="sub-title">
                     </p>
-                    {{-- <a class="btn btn-primary" data-toggle="modal" href="{{ route('categories.create') }}">Add Category</a> --}}
-                    <a class="btn btn-info waves-effect waves-light" href={{ route('karyawans.create') }}>Tambah
-                        Karyawan</a><br>
+                    @if (Auth::user()->role == 'admin')
+                        <a class="btn btn-info waves-effect waves-light" href={{ route('karyawans.create') }}>Tambah
+                            Karyawan</a><br>
+                    @endif
+
                     <br>
                     @if (session('status'))
                         <div class="alert alert-success">
@@ -45,8 +47,11 @@
                                     <th hidden>Tanggal Pembuatan</th>
                                     <th hidden>Tanggal Edit Terakhir</th>
                                     <th>Detail</th>
-                                    <th>Edit</th>
-                                    <th>Hapus</th>
+                                    @if (Auth::user()->role == 'admin')
+                                        <th>Edit</th>
+                                        <th>Hapus</th>
+                                    @endif
+
                                 </tr>
                             </thead>
 
@@ -69,14 +74,17 @@
                                                 idKaryawan = "{{ $k->id }}"
                                                 class=" btn btn-warning waves-effect waves-light btnDetailKaryawan">Detail</button>
                                         </td>
-                                        <td class="text-center"><a href="{{ route('karyawans.edit', $k->id) }}"
-                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
-                                        <td class="text-center"><button data-toggle="modal"
-                                                data-target="#modalKonfirmasiDeleteKaryawan"
-                                                idKaryawan = "{{ $k->id }}" namaKaryawan="{{ $k->nama }}"
-                                                routeUrl = "{{ route('karyawans.destroy', $k->id) }}"
-                                                class=" btn btn-danger waves-effect waves-light btnHapusKaryawan">Hapus</button>
-                                        </td>
+                                        @if (Auth::user()->role == 'admin')
+                                            <td class="text-center"><a href="{{ route('karyawans.edit', $k->id) }}"
+                                                    class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                            <td class="text-center"><button data-toggle="modal"
+                                                    data-target="#modalKonfirmasiDeleteKaryawan"
+                                                    idKaryawan = "{{ $k->id }}" namaKaryawan="{{ $k->nama }}"
+                                                    routeUrl = "{{ route('karyawans.destroy', $k->id) }}"
+                                                    class=" btn btn-danger waves-effect waves-light btnHapusKaryawan">Hapus</button>
+                                            </td>
+                                        @endif
+
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -150,7 +158,7 @@
     <script>
         $(document).ready(function() {
             $('#tabelDaftarKaryawan').DataTable({
-                order:[
+                order: [
                     [1, "asc"]
                 ]
             });
@@ -172,9 +180,9 @@
                 success: function(data) {
                     $('#contentDetailKaryawan').html(data.msg);
                     $('#tabelDaftarKaryawanPerawatan').DataTable({
-                        order:[
-                    [1, "desc"]
-                ]
+                        order: [
+                            [1, "desc"]
+                        ]
                     });
                 }
             })

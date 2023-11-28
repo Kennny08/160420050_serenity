@@ -1,17 +1,30 @@
 <div class="form-group row text-center">
-    <div class="form-group col-md-4">
-        <h6>Tanggal Lahir</h6>
-        <p>{{ date('d-m-Y', strtotime($karyawan->tanggal_lahir)) }}</p>
-    </div>
-    <div class="form-group col-md-4">
-        <h6>Nomor Telepon</h6>
-        <p>{{ $karyawan->nomor_telepon }}</p>
+    @if (Auth::user()->role == 'admin')
+        <div class="form-group col-md-4">
+            <h6>Tanggal Lahir</h6>
+            <p>{{ date('d-m-Y', strtotime($karyawan->tanggal_lahir)) }}</p>
+        </div>
+        <div class="form-group col-md-4">
+            <h6>Nomor Telepon</h6>
+            <p>{{ $karyawan->nomor_telepon }}</p>
 
-    </div>
-    <div class="form-group col-md-4">
-        <h6>Gaji Pokok</h6>
-        <p> Rp. {{ number_format($karyawan->gaji, 0, ',', '.') }}</p>
-    </div>
+        </div>
+        <div class="form-group col-md-4">
+            <h6>Gaji Pokok</h6>
+            <p> Rp. {{ number_format($karyawan->gaji, 0, ',', '.') }}</p>
+        </div>
+    @else
+        <div class="form-group col-md-6">
+            <h6>Tanggal Lahir</h6>
+            <p>{{ date('d-m-Y', strtotime($karyawan->tanggal_lahir)) }}</p>
+        </div>
+        <div class="form-group col-md-6">
+            <h6>Nomor Telepon</h6>
+            <p>{{ $karyawan->nomor_telepon }}</p>
+
+        </div>
+    @endif
+
 
 </div>
 

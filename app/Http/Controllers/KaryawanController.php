@@ -8,6 +8,7 @@ use App\Models\PenjualanPerawatan;
 use App\Models\Perawatan;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -560,6 +561,151 @@ class KaryawanController extends Controller
         }
 
         return response()->json(array('msg' => view('admin.karyawan.komisikaryawan.detailkomisikaryawan', compact('daftarPenjualan'))->render()), 200);
+
+    }
+
+    public function indexKomisiKaryawanSalon()
+    {
+        $karyawan = Auth::user()->karyawan;
+        $distinctTahun = Penjualan::selectRaw("year(tanggal_penjualan) as tahun")->distinct()->where('status_selesai', 'selesai')->orderByRaw("tahun desc")->get();
+        $bulans = [
+            ["id" => "01", "nama" => "Januari"],
+            ["id" => "02", "nama" => "Februari"],
+            ["id" => "03", "nama" => "Maret"],
+            ["id" => "04", "nama" => "April"],
+            ["id" => "05", "nama" => "Mei"],
+            ["id" => "06", "nama" => "Juni"],
+            ["id" => "07", "nama" => "Juli"],
+            ["id" => "08", "nama" => "Agustus"],
+            ["id" => "09", "nama" => "September"],
+            ["id" => "10", "nama" => "Oktober"],
+            ["id" => "11", "nama" => "November"],
+            ["id" => "12", "nama" => "Desember"],
+        ];
+
+
+        $komisiKaryawan = [];
+        $komisiKaryawan["karyawan"] = $karyawan;
+        $daftarPenjualan = PenjualanPerawatan::where("penjualan_perawatan.karyawan_id", $karyawan->id)->where("penjualans.status_selesai", "selesai")->join("penjualans", "penjualans.id", "=", "penjualan_perawatan.penjualan_id")->get();
+        $penjualanIdUnik = $daftarPenjualan->pluck('penjualan_id')->unique();
+        $komisiKaryawan["penjualan"] = $daftarPenjualan;
+        $komisiKaryawan["tanggal_awal"] = $penjualan = Penjualan::whereIn("id", $penjualanIdUnik)->where('status_selesai', 'selesai')->min("tanggal_penjualan");
+        $komisiKaryawan["tanggal_akhir"] = $penjualan = Penjualan::whereIn("id", $penjualanIdUnik)->where('status_selesai', 'selesai')->max("tanggal_penjualan");
+        $komisiKaryawan["jumlah_pelayanan"] = $daftarPenjualan->count();
+        $komisiKaryawan["total_komisi"] = $daftarPenjualan->sum(function ($penjualan) {
+            return ($penjualan->harga * $penjualan->perawatan->komisi) / 100;
+        });
+
+        return view("karyawansalon.komisikaryawan.komisikaryawansalon", compact("distinctTahun", "bulans", "komisiKaryawan"));
+    }
+
+    public function prosesKomisiKaryawanSalon()
+    {
+        $tahunPenjualan = $_POST["tahunPenjualan"];
+        $bulanPenjualan = $_POST["bulanPenjualan"];
+        //dd($tahunPenjualan, $bulanPenjualan);
+        $karyawan = Auth::user()->karyawan;
+
+        $distinctTahun = Penjualan::selectRaw("year(tanggal_penjualan) as tahun")->distinct()->orderByRaw("tahun desc")->get();
+        $bulans = [
+            ["id" => "01", "nama" => "Januari"],
+            ["id" => "02", "nama" => "Februari"],
+            ["id" => "03", "nama" => "Maret"],
+            ["id" => "04", "nama" => "April"],
+            ["id" => "05", "nama" => "Mei"],
+            ["id" => "06", "nama" => "Juni"],
+            ["id" => "07", "nama" => "Juli"],
+            ["id" => "08", "nama" => "Agustus"],
+            ["id" => "09", "nama" => "September"],
+            ["id" => "10", "nama" => "Oktober"],
+            ["id" => "11", "nama" => "November"],
+            ["id" => "12", "nama" => "Desember"],
+        ];
+
+        if ($tahunPenjualan == "semuaTahun" || $bulanPenjualan == "semuaBulan") {
+            if ($tahunPenjualan == "semuaTahun" && $bulanPenjualan != "semuaBulan") {
+                $idUnikPenjualan = Penjualan::select("id")->distinct()->whereRaw("MONTH(tanggal_penjualan) = '" . $bulanPenjualan . "'")->where("status_selesai", "selesai")->get();
+
+                $komisiKaryawan = [];
+                $komisiKaryawan["karyawan"] = $karyawan;
+                $daftarPenjualan = PenjualanPerawatan::where("karyawan_id", $karyawan->id)->whereIn("penjualan_id", $idUnikPenjualan)->get();
+                $komisiKaryawan["penjualan"] = $daftarPenjualan;
+                $komisiKaryawan["tanggal_awal"] = $penjualan = Penjualan::whereIn("penjualans.id", $idUnikPenjualan)->where("penjualan_perawatan.karyawan_id", $karyawan->id)->where("penjualans.status_selesai", "selesai")->join("penjualan_perawatan", "penjualan_perawatan.penjualan_id", "=", "penjualans.id")->min("penjualans.tanggal_penjualan");
+                $komisiKaryawan["tanggal_akhir"] = $penjualan = Penjualan::whereIn("penjualans.id", $idUnikPenjualan)->where("penjualan_perawatan.karyawan_id", $karyawan->id)->where("penjualans.status_selesai", "selesai")->join("penjualan_perawatan", "penjualan_perawatan.penjualan_id", "=", "penjualans.id")->max("penjualans.tanggal_penjualan");
+                $komisiKaryawan["jumlah_pelayanan"] = $daftarPenjualan->count();
+                $komisiKaryawan["total_komisi"] = $daftarPenjualan->sum(function ($penjualan) {
+                    return ($penjualan->harga * $penjualan->perawatan->komisi) / 100;
+                });
+
+            } else if ($tahunPenjualan != "semuaTahun" && $bulanPenjualan == "semuaBulan") {
+                $idUnikPenjualan = Penjualan::select("id")->distinct()->whereRaw("YEAR(tanggal_penjualan) = '" . $tahunPenjualan . "'")->where("status_selesai", "selesai")->get();
+
+                $komisiKaryawan = [];
+                $komisiKaryawan["karyawan"] = $karyawan;
+                $daftarPenjualan = PenjualanPerawatan::where("karyawan_id", $karyawan->id)->whereIn("penjualan_id", $idUnikPenjualan)->get();
+                $komisiKaryawan["penjualan"] = $daftarPenjualan;
+                $komisiKaryawan["tanggal_awal"] = $penjualan = Penjualan::whereIn("penjualans.id", $idUnikPenjualan)->where("penjualan_perawatan.karyawan_id", $karyawan->id)->where("penjualans.status_selesai", "selesai")->join("penjualan_perawatan", "penjualan_perawatan.penjualan_id", "=", "penjualans.id")->min("penjualans.tanggal_penjualan");
+                $komisiKaryawan["tanggal_akhir"] = $penjualan = Penjualan::whereIn("penjualans.id", $idUnikPenjualan)->where("penjualan_perawatan.karyawan_id", $karyawan->id)->where("penjualans.status_selesai", "selesai")->join("penjualan_perawatan", "penjualan_perawatan.penjualan_id", "=", "penjualans.id")->max("penjualans.tanggal_penjualan");
+                $komisiKaryawan["jumlah_pelayanan"] = $daftarPenjualan->count();
+                $komisiKaryawan["total_komisi"] = $daftarPenjualan->sum(function ($penjualan) {
+                    return ($penjualan->harga * $penjualan->perawatan->komisi) / 100;
+                });
+            } else {
+                $komisiKaryawan = [];
+                $komisiKaryawan["karyawan"] = $karyawan;
+                $daftarPenjualan = PenjualanPerawatan::where("penjualan_perawatan.karyawan_id", $karyawan->id)->where("penjualans.status_selesai", "selesai")->join("penjualans", "penjualans.id", "=", "penjualan_perawatan.penjualan_id")->get();
+                $penjualanIdUnik = $daftarPenjualan->pluck('penjualan_id')->unique();
+                $komisiKaryawan["penjualan"] = $daftarPenjualan;
+                $komisiKaryawan["tanggal_awal"] = $penjualan = Penjualan::whereIn("id", $penjualanIdUnik)->where('status_selesai', 'selesai')->min("tanggal_penjualan");
+                $komisiKaryawan["tanggal_akhir"] = $penjualan = Penjualan::whereIn("id", $penjualanIdUnik)->where('status_selesai', 'selesai')->max("tanggal_penjualan");
+                $komisiKaryawan["jumlah_pelayanan"] = $daftarPenjualan->count();
+                $komisiKaryawan["total_komisi"] = $daftarPenjualan->sum(function ($penjualan) {
+                    return ($penjualan->harga * $penjualan->perawatan->komisi) / 100;
+                });
+            }
+        } else {
+            $idUnikPenjualan = Penjualan::select("id")->distinct()->whereRaw("YEAR(tanggal_penjualan) = '" . $tahunPenjualan . "' and MONTH(tanggal_penjualan) = '" . $bulanPenjualan . "'")->where("status_selesai", "selesai")->get();
+
+            $komisiKaryawan = [];
+            $komisiKaryawan["karyawan"] = $karyawan;
+            $daftarPenjualan = PenjualanPerawatan::where("karyawan_id", $karyawan->id)->whereIn("penjualan_id", $idUnikPenjualan)->get();
+            $komisiKaryawan["penjualan"] = $daftarPenjualan;
+            $komisiKaryawan["tanggal_awal"] = $penjualan = Penjualan::whereIn("penjualans.id", $idUnikPenjualan)->where("penjualan_perawatan.karyawan_id", $karyawan->id)->where("penjualans.status_selesai", "selesai")->join("penjualan_perawatan", "penjualan_perawatan.penjualan_id", "=", "penjualans.id")->min("penjualans.tanggal_penjualan");
+            $komisiKaryawan["tanggal_akhir"] = $penjualan = Penjualan::whereIn("penjualans.id", $idUnikPenjualan)->where("penjualan_perawatan.karyawan_id", $karyawan->id)->where("penjualans.status_selesai", "selesai")->join("penjualan_perawatan", "penjualan_perawatan.penjualan_id", "=", "penjualans.id")->max("penjualans.tanggal_penjualan");
+            $komisiKaryawan["jumlah_pelayanan"] = $daftarPenjualan->count();
+            $komisiKaryawan["total_komisi"] = $daftarPenjualan->sum(function ($penjualan) {
+                return ($penjualan->harga * $penjualan->perawatan->komisi) / 100;
+            });
+        }
+
+        return response()->json(array('msg' => view('karyawansalon.komisikaryawan.tablekomisikaryawansalon', compact('komisiKaryawan'))->render()), 200);
+    }
+
+    public function getDetailKomisiKaryawanSalon()
+    {
+        $tahunPenjualan = $_POST["tahunPenjualan"];
+        $bulanPenjualan = $_POST["bulanPenjualan"];
+        $karyawan = Auth::user()->karyawan;
+
+        $daftarPenjualan = [];
+        if ($tahunPenjualan == "semuaTahun" || $bulanPenjualan == "semuaBulan") {
+            if ($tahunPenjualan == "semuaTahun" && $bulanPenjualan != "semuaBulan") {
+                $idUnikPenjualan = Penjualan::select("id")->distinct()->whereRaw("MONTH(tanggal_penjualan) = '" . $bulanPenjualan . "'")->where("status_selesai", "selesai")->get();
+                $daftarPenjualan = PenjualanPerawatan::where("karyawan_id", $karyawan->id)->whereIn("penjualan_id", $idUnikPenjualan)->get();
+
+            } else if ($tahunPenjualan != "semuaTahun" && $bulanPenjualan == "semuaBulan") {
+                $idUnikPenjualan = Penjualan::select("id")->distinct()->whereRaw("YEAR(tanggal_penjualan) = '" . $tahunPenjualan . "'")->where("status_selesai", "selesai")->get();
+                $daftarPenjualan = PenjualanPerawatan::where("karyawan_id", $karyawan->id)->whereIn("penjualan_id", $idUnikPenjualan)->get();
+
+            } else {
+                $daftarPenjualan = PenjualanPerawatan::where("penjualan_perawatan.karyawan_id", $karyawan->id)->where("penjualans.status_selesai", "selesai")->join("penjualans", "penjualans.id", "=", "penjualan_perawatan.penjualan_id")->get();
+            }
+        } else {
+            $idUnikPenjualan = Penjualan::select("id")->distinct()->whereRaw("YEAR(tanggal_penjualan) = '" . $tahunPenjualan . "' and MONTH(tanggal_penjualan) = '" . $bulanPenjualan . "'")->where("status_selesai", "selesai")->get();
+            $daftarPenjualan = PenjualanPerawatan::where("karyawan_id", $karyawan->id)->whereIn("penjualan_id", $idUnikPenjualan)->get();
+        }
+
+        return response()->json(array('msg' => view('karyawansalon.komisikaryawan.detailkomisikaryawansalon', compact('daftarPenjualan'))->render()), 200);
 
     }
 

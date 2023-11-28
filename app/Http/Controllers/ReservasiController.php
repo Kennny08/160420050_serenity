@@ -2542,6 +2542,7 @@ class ReservasiController extends Controller
     }
 
     public function detailDaftarReservasiKaryawan(){
+        
         date_default_timezone_set('Asia/Jakarta');
         $tanggalReservasi = $_POST["tanggalReservasi"];
         $karyawan = Auth::user()->karyawan;
@@ -2556,5 +2557,35 @@ class ReservasiController extends Controller
 
         
         return response()->json(array('msg' => view('karyawansalon.reservasi.detaildaftarreservasipertanggal', compact('reservasis'))->render()), 200);
+    }
+
+    public function daftarRiwayatReservasiKaryawan(){
+
+        date_default_timezone_set('Asia/Jakarta');
+        $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+        $karyawan = Auth::user()->karyawan;
+        $tanggalHariIni = date('Y-m-d');
+
+        $riwayatReservasi = [];
+        $tanggalUnik = Reservasi::selectRaw("DATE(tanggal_reservasi) as tanggal_reservasi")->distinct()->whereRaw("DATE(tanggal_reservasi) < '" . $tanggalHariIni . "'")->orderByRaw("tanggal_reservasi asc")->get();
+        foreach ($tanggalUnik as $tanggal) {
+            $reservasiTerpilih = Reservasi::orderBy('status', 'asc')->whereRaw("DATE(tanggal_reservasi) = '" . $tanggal->tanggal_reservasi . "'")->orderByRaw("tanggal_reservasi asc")->get();
+            if (count($reservasiTerpilih) > 0) {
+                $reservasiSementara = [];
+
+                $nomorHariDalamMingguan = date("w", strtotime($tanggal->tanggal_reservasi));
+                $hariReservasi = $hariIndonesia[$nomorHariDalamMingguan];
+                $reservasiSementara["hari_reservasi"] = $hariReservasi;
+                $reservasiSementara["tanggal_reservasi"] = $tanggal->tanggal_reservasi;
+                $reservasiSementara["total_reservasi"] = count($reservasiTerpilih);
+                $reservasiSementara["total_pelayanan"] = 0;
+                foreach ($reservasiTerpilih as $r) {
+                    $reservasiSementara["total_pelayanan"] += $r->penjualan->penjualanperawatans->where("karyawan_id", $karyawan->id)->count();
+                }
+                array_push($riwayatReservasi, $reservasiSementara);
+            }
+        }
+
+        return view("karyawansalon.reservasi.daftarriwayatreservasi", compact("riwayatReservasi"));
     }
 }

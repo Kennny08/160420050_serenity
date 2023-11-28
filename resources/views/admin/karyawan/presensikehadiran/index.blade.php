@@ -303,16 +303,5 @@
             });
         });
 
-
-        $('.btnHapusKaryawan').on('click', function() {
-
-            var idKaryawan = $(this).attr("idKaryawan");
-            var namaKaryawan = $(this).attr('namaKaryawan');
-            var routeUrl = $(this).attr('routeUrl');
-            $("#modalNamaKaryawanDelete").text("Konfirmasi Penghapusan Karyawan " + namaKaryawan);
-            $("#modalBodyHapusKaryawan").html("<h6>Apakah Anda yakin untuk menghapus perawatan " + namaKaryawan +
-                "?</h6>")
-            $("#formDeleteKaryawan").attr("action", routeUrl);
-        });
     </script>
 @endsection

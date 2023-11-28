@@ -73,22 +73,22 @@
                             <h4 id="judulTableDaftarKomisiKaryawan">Daftar Komisi Karyawan untuk Keseluruhan Penjualan</h4>
                         </div>
                     </div>
-                    <table id="tabelDaftarKomisiKaryawan"
-                        class="table table-bordered dt-responsive nowrap text-center w-100"
-                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>Nama Karyawan</th>
-                                <th>Tanggal Penjualan Awal</th>
-                                <th>Tanggal Penjualan Akhir</th>
-                                <th>Total Perawatan</th>
-                                <th>Total Komisi (Rp)</th>
-                                <th>Detail</th>
-                            </tr>
-                        </thead>
+                    <div class="table-responsive">
+                        <table id="tabelDaftarKomisiKaryawan"
+                            class="table table-bordered dt-responsive nowrap text-center w-100"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Nama Karyawan</th>
+                                    <th>Tanggal Penjualan Awal</th>
+                                    <th>Tanggal Penjualan Akhir</th>
+                                    <th>Total Perawatan</th>
+                                    <th>Total Komisi (Rp)</th>
+                                    <th>Detail</th>
+                                </tr>
+                            </thead>
 
-                        <tbody id="tableBodyDaftarKomisiKaryawan">
-                            @foreach ($komisiPerKaryawanKeseluruhan as $komisiKaryawan)
+                            <tbody id="tableBodyDaftarKomisiKaryawan">
                                 <tr>
                                     <td>{{ $komisiKaryawan['karyawan']->nama }}</td>
                                     <td>
@@ -124,9 +124,10 @@
 
                                     </td>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -162,13 +163,13 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            $('#tabelDaftarKomisiKaryawan').DataTable({
-                language: {
-                    emptyTable: "Tidak terdapat Daftar Komisi Karyawan",
-                    infoEmpty: "Tidak terdapat Daftar Komisi Karyawan",
-                }
-                
-            });
+            // $('#tabelDaftarKomisiKaryawan').DataTable({
+            //     language: {
+            //         emptyTable: "Tidak terdapat Daftar Komisi Karyawan",
+            //         infoEmpty: "Tidak terdapat Daftar Komisi Karyawan",
+            //     }
+
+            // });
         });
 
         $("body").on("click", "#btnCari", function() {
@@ -200,7 +201,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '{{ route('admin.karyawans.proseskomisikaryawan') }}',
+                url: '{{ route('karyawans.proseskomisikaryawansalon') }}',
                 data: {
                     '_token': '<?php echo csrf_token(); ?>',
                     'tahunPenjualan': tahun,
@@ -244,7 +245,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '{{ route('admin.karyawans.detailkomisikaryawan') }}',
+                url: '{{ route('karyawans.detailkomisikaryawansalon') }}',
                 data: {
                     '_token': '<?php echo csrf_token(); ?>',
                     'tahunPenjualan': tahun,
@@ -258,6 +259,7 @@
                             [1, "desc"]
                         ],
                     });
+                    
                 }
             })
         });

@@ -15,7 +15,12 @@
                     <h3 class="mt-0 header-title">Daftar Riwayat Izin Kehadiran</h3>
                     <p class="sub-title">
                     </p>
+                    <button data-toggle="modal" data-target="#modalPilihTanggalPengajuanIzin"
+                        class="btn btn-info btn-lg waves-effect waves-light" style="width: 200px">Ajukan Izin
+                    </button>
+                    <br>
                     @if (session('status'))
+                        <br>
                         <div class="alert alert-success">
                             <button type="button" class="close text-danger" data-dismiss="alert" aria-label="Close">
                                 <span class="text-success" aria-hidden="true">&times;</span>
@@ -24,6 +29,19 @@
                         </div>
                     @endif
 
+                    @if ($errors->any())
+                        <br>
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close text-danger" data-dismiss="alert" aria-label="Close">
+                                <span class="text-danger" aria-hidden="true">&times;</span>
+                            </button>
+                            <p class="mb-0"><strong>Maaf, terjadi kesalahan!</strong></p>
+                            @foreach ($errors->all() as $error)
+                                <p class="mt-0 mb-1">- {{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
+                    <br>
 
                     <div class="form-group row">
                         <div class="col-md-6">
@@ -41,49 +59,55 @@
                         </div>
                     </div>
 
+
+
                     <div class="table-responsive">
                         <table id="tabelDaftarRiwayatIzinKehadiranHariIniKedepan"
                             class="table table-bordered dt-responsive nowrap text-center w-100"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-
+                                    <th>Nama Karyawan</th>
+                                    <th>Waktu Pengajuan izin</th>
                                     <th>Tanggal Izin</th>
-                                    <th hidden>Tanggal Izin</th>
-                                    <th>Jumlah Karyawan Izin</th>
-                                    <th>Dikonfirmasi</th>
-                                    <th>Ditolak</th>
-                                    <th>Belum Dikonfirmasi</th>
-                                    <th>Detail</th>
+                                    <th>Status</th>
+                                    <th>Dikonfirmasi Terakhir Pukul</th>
                                 </tr>
                             </thead>
 
-                            <tbody id="bodyTableDaftarIzinHariIniKedepan">
-                                @foreach ($daftarIzinPresensiHariIniKedepan as $p)
-                                    <tr>
-                                        <td>{{ $p['tanggalIzinHari'] }}</td>
-                                        <td hidden>{{ $p['tanggalIzin'] }}</td>
-                                        <td>{{ $p['jumlahKaryawan'] }}
-                                        </td>
-                                        <td>{{ $p['daftarIzin']->where('status', 'konfirmasi')->count() }}
-                                        </td>
-                                        <td>{{ $p['daftarIzin']->where('status', 'tolak')->count() }}
+                            <tbody>
+                                @foreach ($daftarRiwayatIzinKaryawanHriIniKedepan as $p)
+                                    <tr id="tr_{{ $p->id }}">
+                                        <td>{{ $p->karyawan->nama }}</td>
+                                        <td>
+                                            {{ date('d-m-Y H:i', strtotime($p->created_at)) }}
                                         </td>
                                         <td>
-                                            @if ($p['daftarIzin']->where('status', 'belum')->count() > 0)
-                                                <span
-                                                    class="text-danger font-weight-bold">{{ $p['daftarIzin']->where('status', 'belum')->count() }}</span>
-                                            @else
-                                                0
-                                            @endif
+                                            {{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}
+                                        </td>
 
+                                        <td id="statusKonfirmasi_{{ $p->id }}">
+                                            @if ($p->status == 'belum')
+                                                <span style="font-size: 1em;padding: 0.5em 1em;"
+                                                    class="badge badge-warning">Belum
+                                                    Dikonfirmasi</span>
+                                            @elseif($p->status == 'konfirmasi')
+                                                <span style="font-size: 1em;padding: 0.5em 1em;"
+                                                    class="badge badge-success">Telah
+                                                    Dikonfirmasi</span>
+                                            @elseif($p->status == 'tolak')
+                                                <span style="font-size: 1em;padding: 0.5em 1em;"
+                                                    class="badge badge-danger">Izin
+                                                    Ditolak</span>
+                                            @endif
                                         </td>
-                                        <td>
-                                            <button data-toggle="modal" data-target="#modalDetailRiwayatIzin"
-                                                tanggalIzin="{{ $p['tanggalIzin'] }}"
-                                                tanggalizinHari="{{ $p['tanggalIzinHari'] }}"
-                                                class=" btn btn-info waves-effect waves-light btnDetailRiwayatIzin">Detail
-                                            </button>
+
+                                        <td class="align-middle" id="waktuKonfirmasi_{{ $p->id }}">
+                                            @if ($p->status == 'belum')
+                                                Menunggu Konfirmasi Admin
+                                            @else
+                                                {{ date('d-m-Y H:i', strtotime($p->updated_at)) }}
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -117,49 +141,50 @@
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-
+                                    <th>Nama Karyawan</th>
+                                    <th>Waktu Pengajuan izin</th>
                                     <th>Tanggal Izin</th>
-                                    <th hidden>Tanggal Izin</th>
-                                    <th>Jumlah Karyawan Izin</th>
-                                    <th>Dikonfirmasi</th>
-                                    <th>Ditolak</th>
-                                    <th>Belum Dikonfirmasi</th>
-                                    <th>Detail</th>
+                                    <th>Status</th>
+                                    <th>Dikonfirmasi Terakhir Pukul</th>
                                 </tr>
                             </thead>
 
-                            <tbody id="bodyTableDaftarIzinHariSebelumnya">
-                                @foreach ($daftarIzinPresensiHariSebelumnya as $p)
-                                    <tr>
-
-                                        <td>{{ $p['tanggalIzinHari'] }}</td>
-                                        <td hidden>{{ $p['tanggalIzin'] }}</td>
-                                        <td>{{ $p['jumlahKaryawan'] }}
-                                        </td>
-                                        <td>{{ $p['daftarIzin']->where('status', 'konfirmasi')->count() }}
-                                        </td>
-                                        <td>{{ $p['daftarIzin']->where('status', 'tolak')->count() }}
+                            <tbody>
+                                @foreach ($daftarRiwayatIzinKaryawanSebelumnya as $p)
+                                    <tr id="tr_{{ $p->id }}">
+                                        <td>{{ $p->karyawan->nama }}</td>
+                                        <td>
+                                            {{ date('d-m-Y H:i', strtotime($p->created_at)) }}
                                         </td>
                                         <td>
-                                            @if ($p['daftarIzin']->where('status', 'belum')->count() > 0)
-                                                <span
-                                                    class="text-danger font-weight-bold">{{ $p['daftarIzin']->where('status', 'belum')->count() }}</span>
-                                            @else
-                                                0
+                                            {{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}
+                                        </td>
+
+                                        <td id="statusKonfirmasi_{{ $p->id }}">
+                                            @if ($p->status == 'belum')
+                                                <span style="font-size: 1em;padding: 0.5em 1em;"
+                                                    class="badge badge-warning">Belum
+                                                    Dikonfirmasi</span>
+                                            @elseif($p->status == 'konfirmasi')
+                                                <span style="font-size: 1em;padding: 0.5em 1em;"
+                                                    class="badge badge-success">Telah
+                                                    Dikonfirmasi</span>
+                                            @elseif($p->status == 'tolak')
+                                                <span style="font-size: 1em;padding: 0.5em 1em;"
+                                                    class="badge badge-danger">Izin
+                                                    Ditolak</span>
                                             @endif
-
                                         </td>
-                                        <td>
-                                            <button data-toggle="modal" data-target="#modalDetailRiwayatIzin"
-                                                tanggalIzin="{{ $p['tanggalIzin'] }}"
-                                                tanggalizinHari="{{ $p['tanggalIzinHari'] }}"
-                                                class=" btn btn-info waves-effect waves-light btnDetailRiwayatIzin">Detail
-                                            </button>
 
+                                        <td class="align-middle" id="waktuKonfirmasi_{{ $p->id }}">
+                                            @if ($p->status == 'belum')
+                                                Menunggu Konfirmasi Admin
+                                            @else
+                                                {{ date('d-m-Y H:i', strtotime($p->updated_at)) }}
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
-
                             </tbody>
                         </table>
                     </div>
@@ -228,6 +253,46 @@
         <!-- /.modal-dialog -->
     </div>
 
+    <div id="modalPilihTanggalPengajuanIzin" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content ">
+                <form action="{{ route('karyawans.prosesizinkaryawansalon') }}" method="post">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title mt-0" id="modalNamaPilihTanggalPengajuanIzin">Pilih Tanggal Pembayaran</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="contentPilihTanggalPengajuanIzin">
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <h6>Silahkan Pilih Tanggal Pengajuan izin</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <input type="date" class="form-control" name="tanggalIzin" id="tanggalPengajuanIzin"
+                                    value="{{ date('Y-m-d') }}" aria-describedby="emailHelp" min="{{ date('Y-m-d') }}"
+                                    placeholder="Silahkan Pilih Tanggal Pengajuan izin" required>
+                                <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Pengajuan Izin
+                                    disini!</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup
+                        </button>
+                        <button type="submit" class="btn btn-info waves-effect">Konfirmasi
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
 
 @endsection
 
@@ -240,7 +305,7 @@
                 ],
                 language: {
                     emptyTable: "Tidak terdapat Daftar Izin Karyawan untuk hari ini dan kedepannya!",
-                    
+
                 }
             });
 
@@ -250,7 +315,7 @@
                 ],
                 language: {
                     emptyTable: "Tidak terdapat Daftar Riwayat Izin Kehadiran Karyawan!",
-                    
+
                 }
             });
         });

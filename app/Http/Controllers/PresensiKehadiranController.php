@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Karyawan;
 use App\Models\PresensiKehadiran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PresensiKehadiranController extends Controller
 {
@@ -437,5 +438,94 @@ class PresensiKehadiranController extends Controller
             return response()->json(array('updated_at' => date("d-m-Y H:i", strtotime($objPresensi->updated_at)), 'msg' => view('admin.karyawan.presensikehadiran.daftarizinsebelumnya', compact('daftarIzinPresensiHariSebelumnya'))->render(), "waktu" => "sebelumnya"), 200);
         }
 
+    }
+
+    public function presensiHariIniKaryawanSalon()
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $tanggalHariIni = date("Y-m-d");
+        $karyawan = Auth::user()->karyawan;
+
+        $idPresensiKaryawanMax = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->where("karyawan_id", $karyawan->id)->max("id");
+        $presensiKaryawan = PresensiKehadiran::find($idPresensiKaryawanMax);
+        $idMaxPresensiHariIniPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->groupBy("karyawan_id")->get();
+        $presensisHariIni = PresensiKehadiran::whereIn("id", $idMaxPresensiHariIniPerKaryawan)->get();
+        $jumlahKaryawan = Karyawan::count("id");
+        $idKaryawanUnikIzin = PresensiKehadiran::selectRaw("DISTINCT karyawan_id ")->where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->get();
+
+        $objectPertamaYangtanpaIzin = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->where("keterangan", "!=", "izin")->first();
+
+        return view("karyawansalon.presensikaryawan.presensihariini", compact("presensiKaryawan", "presensisHariIni", "idKaryawanUnikIzin", "jumlahKaryawan", "objectPertamaYangtanpaIzin"));
+    }
+
+    public function prosesPresensiHariIniKaryawanSalon(Request $request)
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $idPresensi = $request->get("idPresensiKaryawan");
+        $keteranganPresensi = $request->get("radioKeteranganPresensi");
+
+        $presensi = PresensiKehadiran::find($idPresensi);
+        $presensi->keterangan = $keteranganPresensi;
+        $presensi->tanggal_presensi = date("Y-m-d H:i:s");
+        $presensi->save();
+
+        return redirect()->route("karyawans.presensihariinikaryawansalon")->with("status", "Berhasil melakukan presensi untuk tanggal " . date("d-m-Y") . "!");
+
+    }
+
+    public function riwayatPresensiKaryawanSalon()
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $tanggalHariIni = date("Y-m-d");
+        $karyawan = Auth::user()->karyawan;
+
+        $daftarIdRiwayatPresensi = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) < '" . $tanggalHariIni . "'")->where("karyawan_id", $karyawan->id)->groupByRaw("DATE(tanggal_presensi)")->orderByRaw("DATE(tanggal_presensi) asc")->get();
+        $daftarRiwayatPresensis = PresensiKehadiran::whereIn("id", $daftarIdRiwayatPresensi)->orderBy("id", "desc")->get();
+        return view("karyawansalon.presensikaryawan.riwayatpresensi", compact("daftarRiwayatPresensis"));
+    }
+
+    public function daftarIzinKaryawanSalon()
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $tanggalHariIni = date("Y-m-d");
+        $karyawan = Auth::user()->karyawan;
+
+        $daftarRiwayatIzinKaryawanHriIniKedepan = PresensiKehadiran::where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where("karyawan_id", $karyawan->id)->orderByRaw("DATE(tanggal_presensi) desc")->get();
+        $daftarRiwayatIzinKaryawanSebelumnya = PresensiKehadiran::where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) < '" . $tanggalHariIni . "'")->where("karyawan_id", $karyawan->id)->orderByRaw("DATE(tanggal_presensi) desc")->get();
+
+        return view("karyawansalon.presensikaryawan.daftarizinkaryawan", compact("daftarRiwayatIzinKaryawanHriIniKedepan", "daftarRiwayatIzinKaryawanSebelumnya"));
+    }
+
+    public function prosesIzinKaryawanSalon(Request $request)
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $tanggalIzin = $request->get("tanggalIzin");
+        $karyawan = Auth::user()->karyawan;
+
+        $idMaxPresensiHariTersebut = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin . "'")->where("karyawan_id", $karyawan->id)->max("id");
+        // $checkIzin = PresensiKehadiran::where("status", "izin")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin . "'")->where("karyawan_id", $karyawan->id)->first();
+        $checkIzin = PresensiKehadiran::find($idMaxPresensiHariTersebut);
+
+
+        if ($checkIzin == null) {
+            $newIzinKaryawan = new PresensiKehadiran();
+            $newIzinKaryawan->karyawan_id = $karyawan->id;
+            $newIzinKaryawan->karyawan_id = $karyawan->id;
+            $newIzinKaryawan->tanggal_presensi = $tanggalIzin;
+            $newIzinKaryawan->keterangan = "izin";
+            $newIzinKaryawan->status = "belum";
+            $newIzinKaryawan->updated_at = date("Y-m-d H:i:s");
+            $newIzinKaryawan->created_at = date("Y-m-d H:i:s");
+            $newIzinKaryawan->save();
+
+            return redirect()->route("karyawans.daftarizinkaryawansalon")->with("status", "Berhasil mengajukan izin kehadiran untuk tanggal " . date("d-m-Y", strtotime($tanggalIzin)) . "!");
+        } else {
+            if ($checkIzin->keterangan == "izin") {
+                return redirect()->route("karyawans.daftarizinkaryawansalon")->withErrors("Anda sudah pernah mengajukan izin untuk tanggal " . date("d-m-Y", strtotime($tanggalIzin)) . "!");
+            }else{
+                return redirect()->route("karyawans.daftarizinkaryawansalon")->withErrors("Anda tidak dapat mengajukan izin untuk tanggal " . date("d-m-Y", strtotime($tanggalIzin)) . ", karena sudah terdapat presensi untuk Anda pada tanggal tersebut!");
+            }
+            
+        }
     }
 }

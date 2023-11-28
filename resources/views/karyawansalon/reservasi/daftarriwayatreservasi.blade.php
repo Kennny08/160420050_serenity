@@ -1,6 +1,6 @@
 @extends('layout.adminlayout')
 
-@section('title', 'Karyawan || Daftar Reservasi')
+@section('title', 'Karyawan || Daftar Riwayat Reservasi')
 
 @section('admincontent')
     <div class="page-title-box">
@@ -12,7 +12,7 @@
             <div class="card">
                 <div class="card-body">
 
-                    <h3 class="mt-0 header-title" id="grupAktif">Daftar Reservasi Perawatan</h3>
+                    <h3 class="mt-0 header-title" id="grupAktif">Daftar Riwayat Reservasi Perawatan</h3>
                     <p class="sub-title">
                     </p>
                     <br>
@@ -25,97 +25,10 @@
                         </div>
                     @endif
 
-                    <div class="form-group row">
-                        <div class="col-md-6">
-                            <h4>Daftar Reservasi Hari Ini</h4>
-                        </div>
-                        <div class="col-md-6 text-right">
-                            <div class="btn-group btn-group-toggle border">
-                                <a href="#grupAktif" class="btn btn-info waves-effect waves-light radioAktif">
-                                    Reservasi Hari Ini
-                                </a>
-                                <a href="#grupNonaktif" class="btn waves-effect waves-light radioNonaktif">
-                                    Reservasi Akan Datang
-                                </a>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="table-responsive">
                         <div>
-                            <table id="tabelDaftarReservasiHariIni"
-                                class="tabelDaftarReservasi table table-bordered dt-responsive nowrap text-center"
-                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>No. Nota Penjualan</th>
-                                        <th>Status</th>
-                                        <th>Pelanggan</th>
-                                        <th>Perawatan</th>
-                                        <th>Durasi (Menit)</th>
-                                        <th>Jam Pelayanan</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    @foreach ($reservasis as $r)
-                                        @foreach ($r->penjualan->penjualanperawatans as $pp)
-                                            @if ($pp->karyawan_id == Auth::user()->karyawan->id)
-                                                <tr>
-                                                    <td>{{ $r->id }}</td>
-                                                    <td>{{ $r->penjualan->nomor_nota }}</td>
-                                                    <td>
-                                                        @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan')
-                                                            <span
-                                                                class="badge badge-danger font-16">{{ $r->status }}</span>
-                                                        @elseif($r->status == 'selesai')
-                                                            <span
-                                                                class="badge badge-success font-16">{{ $r->status }}</span>
-                                                        @else
-                                                            <span
-                                                                class="badge badge-warning font-16">{{ $r->status }}</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>{{ $r->penjualan->pelanggan->nama }}</td>
-                                                    <td>{{ $pp->perawatan->nama }}</td>
-                                                    <td>{{ $pp->slotjams->count() * 30 }}</td>
-                                                    <td>
-                                                        @php
-                                                            $idMin = $pp->slotjams->min('id');
-                                                        @endphp
-                                                        {{ $pp->slotjams->firstWhere('id', $idMin)->jam }}
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <br>
-                    <br>
-                    <div class="form-group row">
-                        <div class="col-md-6">
-                            <h4>Daftar Reservasi Akan Datang</h4>
-                        </div>
-                        <div class="col-md-6 text-right">
-                            <div class="btn-group btn-group-toggle border">
-                                <a href="#grupAktif" class="btn btn-info waves-effect waves-light radioAktif">
-                                    Reservasi Hari Ini
-                                </a>
-                                <a href="#grupNonaktif" class="btn waves-effect waves-light radioNonaktif">
-                                    Reservasi Akan Datang
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <div>
-                            <table id="tabelDaftarReservasiAkanDatang"
+                            <table id="tabelDaftarRiwayatReservasi"
                                 class="tabelDaftarReservasi table table-bordered dt-responsive nowrap text-center"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
@@ -129,7 +42,7 @@
                                 </thead>
 
                                 <tbody>
-                                    @foreach ($reservasisAkanDatang as $r)
+                                    @foreach ($riwayatReservasi as $r)
                                         <tr>
                                             <td>{{ $r['hari_reservasi'] }}</td>
                                             <td>{{ date('d-m-Y', strtotime($r['tanggal_reservasi'])) }}</td>
@@ -185,18 +98,9 @@
     <script>
         $(document).ready(function() {
 
-            $("#tabelDaftarReservasiHariIni").DataTable({
+            $("#tabelDaftarRiwayatReservasi").DataTable({
                 order: [
-                    [6, "asc"],
-                ],
-                language: {
-                    emptyTable: "Tidak terdapat reservasi perawatan untuk hari ini!",
-                }
-            });
-
-            $("#tabelDaftarReservasiAkanDatang").DataTable({
-                order: [
-                    [1, "asc"],
+                    [1, "desc"],
                 ],
                 language: {
                     emptyTable: "Tidak terdapat reservasi perawatan untuk hari yang akan datang!",

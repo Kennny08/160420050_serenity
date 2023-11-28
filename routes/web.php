@@ -91,12 +91,21 @@ Route::middleware(['auth', 'salon'])->group(function () {
     Route::middleware(['karyawansalon'])->group(function () {
 
         //Reservasi hari ini dan riwayatnya
-        Route::get('/salon/karyawan/daftarreservasi', [ReservasiController::class, "daftarReservasiKaryawan"])->name("reservasis.karyawan.daftarreservasi");
-        Route::post('/salon/karyawan/detaildaftarreservasipertanggal', [ReservasiController::class, "detailDaftarReservasiKaryawan"])->name("reservasis.karyawan.detailreservasiperhari");
-        
-        //Absen
+        Route::get('/salon/karyawan/daftarreservasi', [ReservasiController::class, "daftarReservasiKaryawan"])->name("karyawans.daftarreservasi");
+        Route::post('/salon/karyawan/detaildaftarreservasipertanggal', [ReservasiController::class, "detailDaftarReservasiKaryawan"])->name("karyawans.detailreservasiperhari");
+        Route::get('/salon/karyawan/riwayatreservasi', [ReservasiController::class, "daftarRiwayatReservasiKaryawan"])->name("karyawans.daftarriwayatreservasi");
+
+        //Presensi
+        Route::get('/salon/karyawan/presensihariini', [PresensiKehadiranController::class, "presensiHariIniKaryawanSalon"])->name("karyawans.presensihariinikaryawansalon");
+        Route::post('/salon/karyawan/prosespresensi', [PresensiKehadiranController::class, "prosesPresensiHariIniKaryawanSalon"])->name("karyawans.prosespresensihariinikaryawansalon");
+        Route::get('/salon/karyawan/riwayatpresensi', [PresensiKehadiranController::class, "riwayatPresensiKaryawanSalon"])->name("karyawans.riwayatpresensikaryawansalon");
+        Route::get('/salon/karyawan/daftarizinkaryawansalon', [PresensiKehadiranController::class, "daftarIzinKaryawanSalon"])->name("karyawans.daftarizinkaryawansalon");
+        Route::post('/salon/karyawan/prosesizinkaryawansalon', [PresensiKehadiranController::class, "prosesIzinKaryawanSalon"])->name("karyawans.prosesizinkaryawansalon");
 
         //Komisi Karyawan Tersebut
+        Route::get('/salon/karyawan/komisikaryawan', [KaryawanController::class, "indexKomisiKaryawanSalon"])->name("karyawans.indexkomisikaryawansalon");
+        Route::post('/salon/karyawan/proseskomisikaryawan', [KaryawanController::class, "prosesKomisiKaryawanSalon"])->name("karyawans.proseskomisikaryawansalon");
+        Route::post('/salon/karyawan/detailkomisikaryawan', [KaryawanController::class, "getDetailKomisiKaryawanSalon"])->name("karyawans.detailkomisikaryawansalon");
 
     });
 
@@ -223,16 +232,16 @@ Route::middleware(['auth', 'salon'])->group(function () {
 
     Route::middleware(['admin'])->group(function () {
         //Komisi Karyawan
-        Route::get('/salon/karyawan/komisikaryawan', [KaryawanController::class, "indexKomisiKaryawan"])->name("admin.karyawans.indexkomisikaryawan");
-        Route::post('/salon/karyawan/proseskomisikaryawan', [KaryawanController::class, "prosesKomisiKaryawan"])->name("admin.karyawans.proseskomisikaryawan");
-        Route::post('/salon/karyawan/detailkomisikaryawan', [KaryawanController::class, "getDetailKomisiKaryawan"])->name("admin.karyawans.detailkomisikaryawan");
+        Route::get('/salon/admin/karyawan/komisikaryawan', [KaryawanController::class, "indexKomisiKaryawan"])->name("admin.karyawans.indexkomisikaryawan");
+        Route::post('/salon/admin/karyawan/proseskomisikaryawan', [KaryawanController::class, "prosesKomisiKaryawan"])->name("admin.karyawans.proseskomisikaryawan");
+        Route::post('/salon/admin/karyawan/detailkomisikaryawan', [KaryawanController::class, "getDetailKomisiKaryawan"])->name("admin.karyawans.detailkomisikaryawan");
 
         //Karyawan
-        Route::get('/salon/karyawan/create', [KaryawanController::class, "create"])->name("karyawans.create");
-        Route::post('/salon/karyawan/store', [KaryawanController::class, "store"])->name("karyawans.store");
-        Route::get('/salon/karyawan/{idKaryawan}/edit', [KaryawanController::class, "edit"])->name("karyawans.edit");
-        Route::put('/salon/karyawan/{idKaryawan}/udpate', [KaryawanController::class, "update"])->name("karyawans.update");
-        Route::delete('/salon/karyawan/{idKaryawan}/destroy', [KaryawanController::class, "destroy"])->name("karyawans.destroy");
+        Route::get('/salon/admin/karyawan/create', [KaryawanController::class, "create"])->name("karyawans.create");
+        Route::post('/salon/admin/karyawan/store', [KaryawanController::class, "store"])->name("karyawans.store");
+        Route::get('/salon/admin/karyawan/{idKaryawan}/edit', [KaryawanController::class, "edit"])->name("karyawans.edit");
+        Route::put('/salon/admin/karyawan/{idKaryawan}/udpate', [KaryawanController::class, "update"])->name("karyawans.update");
+        Route::delete('/salon/admin/karyawan/{idKaryawan}/destroy', [KaryawanController::class, "destroy"])->name("karyawans.destroy");
     });
 });
 
