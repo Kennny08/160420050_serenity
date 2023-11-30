@@ -39,8 +39,8 @@
                     <div class="form-group row">
                         <div class="col-md-12">
                             <h5>Nomor Nota : <span class="text-danger">{{ $penjualan->nomor_nota }}</span></h5>
-                            <h5>Total Pembayaran : <span
-                                    class="text-danger"> Rp. {{ number_format($penjualan->total_pembayaran, 2, ',', '.') }}</span>
+                            <h5>Total Pembayaran : <span class="text-danger"> Rp.
+                                    {{ number_format($penjualan->total_pembayaran, 2, ',', '.') }}</span>
                             </h5>
 
                         </div>
@@ -90,6 +90,25 @@
 
                         </tfoot>
                     </table>
+
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            @if ($penjualan->reservasi != null)
+                                <a class="btn btn-lg btn-info waves-effect waves-light mt-3 mr-3"
+                                    href={{ route('reservasi.admin.detailreservasi', $penjualan->reservasi->id) }}><i
+                                        class="mdi mdi-keyboard-backspace"></i>
+                                    &nbsp;Detail Reservasi
+                                </a>
+                            @else
+                                <a class="btn btn-lg btn-info waves-effect waves-light mt-3 mr-3"
+                                    href={{ route('penjualans.admin.detailpenjualan', $penjualan->id) }}><i
+                                        class="mdi mdi-keyboard-backspace"></i>
+                                    &nbsp;Detail Penjualan
+                                </a>
+                            @endif
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -121,7 +140,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup</button>
-                        <button  class="btn btn-info waves-effect" type="submit">Pakai</button>
+                        <button class="btn btn-info waves-effect" type="submit">Pakai</button>
                     </div>
                 </form>
             </div>
@@ -157,7 +176,8 @@
                 totalPotongan = maksimumPotongan;
             }
 
-            $("#contentPakaiDiskon").html("<h6>Apakah Anda yakin untuk menggunakan diskon <span class='text-danger'>" + nama +
+            $("#contentPakaiDiskon").html(
+                "<h6>Apakah Anda yakin untuk menggunakan diskon <span class='text-danger'>" + nama +
                 "</span>, dengan potongan sebesar <span class='text-danger'>" + jumlahPotongan +
                 "%</span> berjumlah <span class='text-danger'>" + totalPotongan.toLocaleString('id-ID', {
                     style: 'currency',

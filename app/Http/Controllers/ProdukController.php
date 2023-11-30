@@ -52,7 +52,7 @@ class ProdukController extends Controller
         $validatedData = $request->validate(
             [
                 'namaProduk' => 'required|max:255',
-                'kode_produk' => 'required|unique:produks',
+                'kode_produk' => 'required|unique:produks|starts_with:p',
                 'hargaJual' => 'required|numeric|min:1',
                 'hargaBeli' => 'required|numeric|min:1',
                 'stokProduk' => 'required|numeric|min:1',
@@ -63,6 +63,7 @@ class ProdukController extends Controller
                 'namaProduk.required' => 'Nama produk tidak boleh kosong!',
                 'kode_produk.required' => 'Kode Produk tidak boleh kosong!',
                 'kode_produk.unique' => 'Kode Produk sudah pernah dipakai, mohon gunakan kode yang lain!',
+                'kode_produk.starts_with' => "Kode produk harap diawali dengan huruf 'p'",
                 'hargaJual.required' => 'Harga Jual produk tidak boleh kosong!',
                 'hargaJual.numeric' => 'Harga Jual produk harus berupa angka!',
                 'hargaBeli.required' => 'Harga Beli produk tidak boleh kosong',
@@ -79,7 +80,7 @@ class ProdukController extends Controller
                 'minimumStok.min' => 'Minimum Stok produk adalah 1!',
             ]
         );
-        //dd($request->all());
+        
         $namaProduk = $request->get("namaProduk");
         $kodeProduk = $request->get("kode_produk");
         $hargaJual = $request->get("hargaJual");
@@ -277,7 +278,7 @@ class ProdukController extends Controller
         }
     }
 
-    public function reservasiTambahProduk($id)
+    public function penjualanTambahProduk($id)
     {
         $idPenjualan = $id;
         $penjualan = Penjualan::find($idPenjualan);
@@ -291,7 +292,7 @@ class ProdukController extends Controller
                 if ($penjualan->reservasi != null) {
                     return redirect()->route('reservasi.admin.detailreservasi', $penjualan->reservasi->id);
                 } else {
-                    return redirect()->route('penjualan.null.errorpage'); //nanti diganti dengan halaman detail penjualan dengan pesan error penjualan sudah selesai
+                    return redirect()->route('penjualans.admin.detailpenjualan', $penjualan->id); //nanti diganti dengan halaman detail penjualan dengan pesan error penjualan sudah selesai
                 }
 
             }

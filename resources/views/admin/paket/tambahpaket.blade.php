@@ -34,29 +34,58 @@
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <label for="exampleInputEmail1"><strong>Nama Paket</strong></label>
                                 <input type="text" class="form-control" name="namaPaket" id="txtNamaPaket"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan nama paket" required
                                     value="{{ old('namaPaket') }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan nama paket disini!</small>
                             </div>
+                            <div class="col-md-6">
+                                <label for="exampleInputEmail1"><strong>Kode Paket</strong></label>
+                                <input type="text" class="form-control" name="kode_paket" id="txtKodePaket"
+                                    aria-describedby="emailHelp" placeholder="Silahkan masukkan kode paket (awali dengan huruf 'm')" required
+                                    value="{{ old('kode_paket') }}">
+                                <small id="emailHelp" class="form-text text-muted">Masukkan kode paket disini(awali dengan huruf "<span class="text-danger">m</span>")!</small>
+                            </div>
                         </div>
 
                         <div class="form-group row">
                             <div class="col-md-4">
-                                <label for="exampleInputEmail1"><strong>Kode Paket</strong></label>
-                                <input type="text" class="form-control" name="kode_paket" id="txtKodePaket"
-                                    aria-describedby="emailHelp" placeholder="Silahkan masukkan kode paket" required
-                                    value="{{ old('kode_paket') }}">
-                                <small id="emailHelp" class="form-text text-muted">Masukkan jumlah kode disini!</small>
+                                <label for="exampleInputEmail1"><strong>Diskon</strong></label><br>
+                                <select name="idDiskon" id="idDiskonSelect" class="form-control"
+                                    aria-label="Default select example" required>
+                                    @if (old('idDiskon'))
+                                        @foreach ($diskonAktif as $diskon)
+                                            @if ($diskon->id == old('idDiskon'))
+                                                <option selected value="{{ $diskon->id }}">{{ $diskon->nama }}</option>
+                                            @else
+                                                <option value="{{ $diskon->id }}">{{ $diskon->nama }}</option>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        @if (count($diskonAktif) == 0)
+                                            <option selected disabled value="null">Tidak ada Diskon Aktif Tersedia!
+                                            </option>
+                                        @else
+                                            <option selected disabled value="null">Pilih Diskon jika Paket memiliki diskon tertentu</option>
+                                            @foreach ($diskonAktif as $diskon)
+                                                <option value="{{ $diskon->id }}">{{ $diskon->nama }}</option>
+                                            @endforeach
+                                        @endif
+
+                                    @endif
+
+                                </select>
+                                <small id="emailHelp" class="form-text text-muted">Pilih Jam Reservasi produk
+                                    disini!</small>
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Harga Paket(Rp)</strong></label>
                                 <input type="number" class="form-control" name="hargaPaket" id="numHargaPaket"
                                     min="1" aria-describedby="emailHelp"
                                     placeholder="Silahkan masukkan harga layanan paket" required
-                                    value="{{ old('hargaPaket', 0) }}" disabled readonly>
+                                    value="{{ old('hargaPaket', 0) }}" readonly>
                                 <small id="emailHelp" class="form-text text-muted">Masukkan harga paket
                                     disini!</small>
                             </div>

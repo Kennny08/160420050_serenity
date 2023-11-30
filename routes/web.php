@@ -113,35 +113,46 @@ Route::middleware(['auth', 'salon'])->group(function () {
     Route::middleware(['karyawanadmin'])->group(function () {
 
         //After Login
-        Route::get('/salon', [ReservasiController::class, "index"])->name("reservasis.index");
+        // Route::get('/salon', [ReservasiController::class, "index"])->name("reservasis.index");
 
 
         //Reservasi
-        Route::resource('reservasis', ReservasiController::class);
-        Route::get('/reservasi/admin/create', [ReservasiController::class, "reservasiAdminCreate"])->name("reservasi.admin.create");
-        Route::get('/reservasi/admin/riwayatreservasiperawatan', [ReservasiController::class, "riwayatReservasiPerawatanAdmin"])->name("riwayatreservasis.index");
-        Route::post('/reservasi/admin/getdetailriwayatreservasiperawatan', [ReservasiController::class, "getDetailRiwayatReservasiPerawatan"])->name("admin.getdetailriwayatreservasiperawatan");
+        Route::get('/salon/reservasi/admin/index', [ReservasiController::class, "index"])->name("reservasis.index");
+        Route::get('/salon/reservasi/admin/create', [ReservasiController::class, "reservasiAdminCreate"])->name("reservasi.admin.create");
+        Route::get('/salon/reservasi/admin/riwayatreservasiperawatan', [ReservasiController::class, "riwayatReservasiPerawatanAdmin"])->name("riwayatreservasis.index");
+        Route::post('/salon/reservasi/admin/getdetailriwayatreservasiperawatan', [ReservasiController::class, "getDetailRiwayatReservasiPerawatan"])->name("admin.getdetailriwayatreservasiperawatan");
 
-        Route::post('/reservasi/admin/selectstaf', [ReservasiController::class, "reservasiAdminPilihKaryawanNew"])->name("reservasi.admin.pilihkaryawan");
+        Route::post('/salon/reservasi/admin/selectstaf', [ReservasiController::class, "reservasiAdminPilihKaryawanNew"])->name("reservasi.admin.pilihkaryawan");
 
-        Route::post('/reservasi/admin/getslotjamaktif', [SlotJamController::class, "getSlotJamAktif"])->name("reservasi.admin.getslotjamaktif");
-        Route::post('/reservasi/admin/getdetailperawatan', [PerawatanController::class, "getDetailPerawatan"])->name("reservasi.admin.getdetailperawatan");
-        Route::post('/reservasi/admin/getdetailpaketreservasi', [PaketController::class, "getDetailPaketReservasi"])->name("reservasi.admin.getdetailpaketreservasi");
-        Route::post('/reservasi/admin/addpaketreservasitolist', [PaketController::class, "addPaketToListReservasi"])->name("reservasi.admin.addpaketreservasitolist");
-        Route::post('/reservasi/admin/updateperawatanafterdeletepaket', [PaketController::class, "updatePerawatanAfterDeletePaket"])->name("reservasi.admin.updatecbperawatanafterdeletepaket");
-        Route::post('/reservasi/admin/checkisipaketsama', [PaketController::class, "checkPaketIsiSama"])->name("reservasi.admin.checkpaketisisama");
+        Route::post('/salon/reservasi/admin/getslotjamaktif', [SlotJamController::class, "getSlotJamAktif"])->name("reservasi.admin.getslotjamaktif");
+        Route::post('/salon/reservasi/admin/getdetailperawatan', [PerawatanController::class, "getDetailPerawatan"])->name("reservasi.admin.getdetailperawatan");
+        Route::post('/salon/reservasi/admin/getdetailpaketreservasi', [PaketController::class, "getDetailPaketReservasi"])->name("reservasi.admin.getdetailpaketreservasi");
+        Route::post('/salon/reservasi/admin/addpaketreservasitolist', [PaketController::class, "addPaketToListReservasi"])->name("reservasi.admin.addpaketreservasitolist");
+        Route::post('/salon/reservasi/admin/updateperawatanafterdeletepaket', [PaketController::class, "updatePerawatanAfterDeletePaket"])->name("reservasi.admin.updatecbperawatanafterdeletepaket");
+        Route::post('/salon/reservasi/admin/checkisipaketsama', [PaketController::class, "checkPaketIsiSama"])->name("reservasi.admin.checkpaketisisama");
 
-        Route::post('/reservasi/admin/store', [ReservasiController::class, "reservasiAdminStore"])->name("reservasi.admin.store");
-        Route::post('/reservasi/admin/konfirmasi', [ReservasiController::class, "reservasiAdminKonfirmasi"])->name("reservasi.admin.konfirmasireservasi");
+        Route::post('/salon/reservasi/admin/store', [ReservasiController::class, "reservasiAdminStore"])->name("reservasi.admin.store");
+        Route::post('/salon/reservasi/admin/konfirmasipilihkaryawan', [ReservasiController::class, "reservasiAdminKonfirmasi"])->name("reservasi.admin.konfirmasireservasi");
 
-        Route::get('/reservasi/admin/tambahproduk/{id}', [ProdukController::class, "reservasiTambahProduk"])->name("reservasi.admin.reservasitambahproduk");
-        Route::post('/reservasi/admin/tambahproduk/konfirmasiproduk', [PenjualanController::class, "konfirmasiPenambahanProduk"])->name("reservasi.admin.konfirmasipenambahanproduk");
-        Route::get('/reservasi/admin/detailreservasi/{idReservasi}', [ReservasiController::class, "detailReservasi"])->name("reservasi.admin.detailreservasi");
-        Route::post('/reservasi/admin/batalkan', [ReservasiController::class, "adminBatalkanReservasi"])->name("reservasi.admin.batalkan");
-        Route::post('/reservasi/admin/selesai', [ReservasiController::class, "adminSelesaiReservasi"])->name("reservasi.admin.selesai");
+        Route::get('/salon/penjualan/admin/tambahproduk/{id}', [ProdukController::class, "penjualanTambahProduk"])->name("penjualan.admin.penjualantambahproduk");
+        Route::post('/salon/penjualan/admin/tambahproduk/konfirmasiproduk', [PenjualanController::class, "konfirmasiPenambahanProduk"])->name("penjualans.admin.konfirmasipenambahanproduk");
+        Route::get('/salon/reservasi/admin/detailreservasi/{idReservasi}', [ReservasiController::class, "detailReservasi"])->name("reservasi.admin.detailreservasi");
+        Route::post('/salon/reservasi/admin/batalkan', [ReservasiController::class, "adminBatalkanReservasi"])->name("reservasi.admin.batalkan");
+        Route::post('/salon/reservasi/admin/selesai', [ReservasiController::class, "adminSelesaiReservasi"])->name("reservasi.admin.selesai");
 
         //Penjualan
-        Route::resource('penjualans', PenjualanController::class);
+        Route::get('/salon/penjualan/admin/index', [PenjualanController::class, "index"])->name("penjualans.index");
+        Route::get('/salon/penjualan/admin/create', [PenjualanController::class, "penjualanAdminCreate"])->name("penjualans.admin.create");
+        Route::post('/salon/penjualan/admin/selectstaf', [PenjualanController::class, "penjualanAdminPilihKaryawan"])->name("penjualans.admin.pilihkaryawan");
+        Route::post('/salon/penjualan/admin/konfirmasipilihkaryawan', [PenjualanController::class, "penjualanAdminKonfirmasi"])->name("penjualans.admin.konfirmasipenjualan");
+
+        Route::get('/salon/penjualan/admin/riwayatpenjualan', [PenjualanController::class, "riwayatPenjualan"])->name("penjualans.admin.riwayatpenjualan");
+        Route::post('/salon/penjualan/admin/getdetailriwayatpenjualan', [PenjualanController::class, "getDetailRiwayatPenjualan"])->name("penjualans.admin.getdetailriwayatpenjualan");
+
+        Route::get('/salon/penjualan/admin/detailpenjualan/{idPenjualan}', [PenjualanController::class, "detailPenjualan"])->name("penjualans.admin.detailpenjualan");
+
+        Route::post('/salon/penjualan/admin/batalkan', [PenjualanController::class, "adminBatalkanPenjualan"])->name("penjualans.admin.batalkan");
+        Route::post('/salon/penjualan/admin/selesai', [PenjualanController::class, "adminSelesaiPenjualan"])->name("penjualans.admin.selesai");
 
         //Karyawan
         Route::get('/salon/karyawan/index', [KaryawanController::class, "index"])->name("karyawans.index");

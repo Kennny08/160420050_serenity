@@ -45,7 +45,7 @@ class PerawatanController extends Controller
         $validatedData = $request->validate(
             [
                 'namaPerawatan' => 'required|max:255',
-                'kode_perawatan' => 'required|unique:perawatans',
+                'kode_perawatan' => 'required|unique:perawatans|starts_with:s',
                 'hargaPerawatan' => 'required|numeric|min:1',
                 'durasi' => 'required|numeric|min:30|multiple_of:30',
                 'komisiKaryawan' => 'required|numeric|min:1|max:100',
@@ -54,6 +54,7 @@ class PerawatanController extends Controller
                 'namaPerawatan.required' => 'Nama perawatan tidak boleh kosong!',
                 'kode_perawatan.required' => 'Kode perawatan tidak boleh kosong!',
                 'kode_perawatan.unique' => 'Kode perawatan sudah pernah dipakai, mohon gunakan kode yang lain!',
+                'kode_perawatan.starts_with' => "Kode perawatan harap diawali dengan huruf 's'",
                 'hargaPerawatan.required' => 'Harga perawatan tidak boleh kosong!',
                 'hargaPerawatan.numeric' => 'Harga perawatan harus berupa angka!',
                 'hargaPerawatan.min' => 'Harga perawatan harus lebih dari Rp. 0!',

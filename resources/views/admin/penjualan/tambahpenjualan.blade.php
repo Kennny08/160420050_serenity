@@ -1,6 +1,6 @@
 @extends('layout.adminlayout')
 
-@section('title', 'Admin || Buat Reservasi')
+@section('title', 'Admin || Tambah Data Penjualan')
 
 @section('admincontent')
     <div class="page-title-box">
@@ -13,7 +13,7 @@
             <div class="card">
                 <div class="card-body">
 
-                    <h3 class="mt-0 header-title">Buat Jadwal Reservasi (ADMIN)</h3>
+                    <h3 class="mt-0 header-title">Tambah Data Penjualan</h3>
                     <p class="sub-title">
                     </p>
                     @if ($errors->any())
@@ -28,7 +28,7 @@
                         </div>
                     @endif
 
-                    <form id="formPilihPerawatan" method="POST" action="{{ route('reservasi.admin.pilihkaryawan') }}"
+                    <form id="formPilihPerawatan" method="POST" action="{{ route('penjualans.admin.pilihkaryawan') }}"
                         enctype="multipart/form-data">
                         @csrf
 
@@ -37,6 +37,14 @@
                                 <h3>Tanggal Pembuatan : {{ $tanggalHariIni }}</h3>
                             </div>
 
+
+
+
+                        </div>
+
+
+
+                        <div class="form-group row">
                             <div class="form-group col-md-6">
                                 <label for="exampleInputEmail1"><strong>Nama Pelanggan</strong></label><br>
                                 <select name="idPelanggan" id="userPelanggan" class="form-control"
@@ -61,34 +69,8 @@
                                     disini!</small>
                             </div>
 
-
-                        </div>
-
-
-
-                        <div class="form-group row">
                             <div class="col-md-6">
-                                <label for="exampleInputEmail1"><strong>Tanggal Reservasi</strong></label>
-                                @if (session('tanggalReservasi'))
-                                    <input type="date" class="form-control" name="tanggalReservasi" id="tanggalReservasi"
-                                        min="{{ $tanggalPertamaDalamMinggu }}" max="{{ $tanggalTerakhirDalamMinggu }}"
-                                        aria-describedby="emailHelp" placeholder="Silahkan Pilih Tanggal Reservasi"
-                                        value="{{ session('tanggalReservasi') }}" required>
-                                    <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Reservasi Anda
-                                        disini!</small>
-                                @else
-                                    <input type="date" class="form-control" name="tanggalReservasi" id="tanggalReservasi"
-                                        min="{{ $tanggalPertamaDalamMinggu }}" max="{{ $tanggalTerakhirDalamMinggu }}"
-                                        aria-describedby="emailHelp" placeholder="Silahkan Pilih Tanggal Reservasi"
-                                        required>
-                                    <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Reservasi Anda
-                                        disini!</small>
-                                @endif
-
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="exampleInputEmail1"><strong>Jam Reservasi</strong></label><br>
+                                <label for="exampleInputEmail1"><strong>Jam Penjualan</strong></label><br>
                                 <select name="slotJam" id="slotJamSelect" class="form-control"
                                     aria-label="Default select example" required>
                                     @if (session('daftarSlotJam'))
@@ -122,7 +104,7 @@
                                     @endif
 
                                 </select>
-                                <small id="emailHelp" class="form-text text-muted">Pilih Jam Reservasi
+                                <small id="emailHelp" class="form-text text-muted">Pilih Jam Penjualan
                                     disini!</small>
                             </div>
                         </div>
@@ -211,9 +193,8 @@
 
                             @if (session('arrPerawatanObject'))
                                 @foreach (session('arrPerawatanObject') as $aro)
-                                    <input id="perawatan{{ $aro->id }}" type="hidden"
-                                        class='classarrayperawatanid' value="{{ $aro->id }}"
-                                        name="arrayperawatanid[]">
+                                    <input id="perawatan{{ $aro->id }}" type="hidden" class='classarrayperawatanid'
+                                        value="{{ $aro->id }}" name="arrayperawatanid[]">
                                 @endforeach
                             @endif
                         </div>
@@ -475,7 +456,7 @@
                         <div class="form-group text-right">
                             <button id="btnKonfirmasiPerawatan" type="button" data-toggle = "modal"
                                 data-target="#modalKonfirmasiPerawatan"
-                                class="btn btn-primary btn-lg waves-effect waves-light">Konfirmasi Reservasi</button>
+                                class="btn btn-primary btn-lg waves-effect waves-light">Konfirmasi Penjualan</button>
                         </div>
 
                         <div id="modalKonfirmasiPerawatan" class="modal fade bs-example-modal-center" tabindex="-1"
@@ -543,25 +524,25 @@
         var jamReservasi = '09.00';
         var jamTutup = '20:00';
 
-        $('#tanggalReservasi').on('change', function() {
-            var tanggal = $(this).val();
+        // $('#tanggalPenjualan').on('change', function() {
+        //     var tanggal = $(this).val();
 
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('reservasi.admin.getslotjamaktif') }}',
-                data: {
-                    '_token': '<?php echo csrf_token(); ?>',
-                    'tanggal': tanggal,
-                },
-                success: function(data) {
-                    if (data.status == "ok") {
-                        $('#slotJamSelect').html(data.msg);
-                    } else {
-                        $('#slotJamSelect').html(data.msg);
-                    }
-                }
-            })
-        });
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: '{{ route('reservasi.admin.getslotjamaktif') }}',
+        //         data: {
+        //             '_token': '<?php echo csrf_token(); ?>',
+        //             'tanggal': tanggal,
+        //         },
+        //         success: function(data) {
+        //             if (data.status == "ok") {
+        //                 $('#slotJamSelect').html(data.msg);
+        //             } else {
+        //                 $('#slotJamSelect').html(data.msg);
+        //             }
+        //         }
+        //     })
+        // });
 
         $('#slotJamSelect').on('change', function() {});
 
@@ -602,7 +583,6 @@
             var hargaperawatan = $("#perawatanSelect option:selected").attr('harga');
             var deskripsiperawatan = $("#perawatanSelect option:selected").attr('deskripsi');
             var kodeperawatan = $("#perawatanSelect option:selected").attr('kode');
-            var tanggalReservasi = $("#tanggalReservasi").val();
 
             if (perawatanid != null) {
                 $("#containerLayananPerawatan").append("<input id='perawatan" + perawatanid +
@@ -830,7 +810,6 @@
             var hargaperawatan = $(this).attr('hargaPerawatan');
             var deskripsiperawatan = $(this).attr('deskripsiPerawatan');
             var kodeperawatan = $(this).attr('kodePerawatan');
-            var tanggalReservasi = $("#tanggalReservasi").val();
 
             $("#perawatanSelect").append("<option value='" + perawatanid + "' durasi='" + durasiperawatan +
                 "' harga='" + hargaperawatan + "' deskripsi='" + deskripsiperawatan + "' kode='" +

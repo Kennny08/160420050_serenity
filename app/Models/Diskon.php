@@ -13,4 +13,9 @@ class Diskon extends Model
     {
         return $this->hasMany(Penjualan::class, 'diskon_id');
     }
+
+    public function paket()
+    {
+        return $this->hasOne(Paket::class, 'paket_id');
+    }
 }

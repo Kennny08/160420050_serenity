@@ -65,7 +65,7 @@
                                     @foreach ($reservasis as $r)
                                         <tr id="tr_{{ $r->id }}">
                                             <td>{{ $r->id }}</td>
-                                            <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_reservasi)) }}</td>
+                                            <td>{{ date('d-m-Y', strtotime($r->tanggal_reservasi)) }}</td>
                                             <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_pembuatan_reservasi)) }}
                                             </td>
                                             <td>
@@ -128,7 +128,7 @@
                                     @foreach ($reservasisAkanDatang as $r)
                                         <tr id="tr_{{ $r->id }}">
                                             <td>{{ $r->id }}</td>
-                                            <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_reservasi)) }}</td>
+                                            <td>{{ date('d-m-Y', strtotime($r->tanggal_reservasi)) }}</td>
                                             <td>{{ date('d-m-Y H:i:s', strtotime($r->tanggal_pembuatan_reservasi)) }}
                                             </td>
                                             <td>

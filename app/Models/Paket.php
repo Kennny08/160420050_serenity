@@ -25,4 +25,9 @@ class Paket extends Model
     {
         return $this->belongsToMany(Penjualan::class, 'paket_penjualan', 'paket_id', 'penjualan_id');
     }
+
+    public function diskon()
+    {
+        return $this->belongsTo(Diskon::class, 'diskon_id');
+    }
 }

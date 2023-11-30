@@ -35,22 +35,40 @@
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <label for="exampleInputEmail1"><strong>Nama Paket</strong></label>
                                 <input type="text" class="form-control" name="namaPaket" id="txtNamaPaket"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan nama paket" required
                                     value="{{ $paket->nama }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan nama paket disini!</small>
                             </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="exampleInputEmail1"><strong>Kode Paket</strong></label>
                                 <input type="text" class="form-control" name="kode_paket" id="txtKodePaket"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan kode paket" required
                                     value="{{ $paket->kode_paket }}" readonly>
                                 <small id="emailHelp" class="form-text text-muted">Masukkan jumlah kode disini!</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                @if ($paket->diskon_id != null)
+                                    <label for="exampleInputEmail1"><strong>Diskon Paket</strong></label>
+                                    <input type="text" class="form-control" name="idDiskon" id="txtDiskonPaket"
+                                        aria-describedby="emailHelp" placeholder="Silahkan masukkan kode paket" required
+                                        value="{{ $paket->diskon->nama }}" readonly>
+                                    <small id="emailHelp" class="form-text text-muted">Diskon yang Berlaku untuk Paket
+                                        ini!</small>
+                                @else
+                                    <label for="exampleInputEmail1"><strong>Diskon Paket</strong></label>
+                                    <input type="text" class="form-control" name="idDiskon" id="txtDiskonPaket"
+                                        aria-describedby="emailHelp" placeholder="Silahkan masukkan kode paket" required
+                                        value="Tidak Ada diskon yang ditetapkan untuk paket ini!" readonly>
+                                    <small id="emailHelp" class="form-text text-muted">Diskon yang Berlaku untuk Paket
+                                        ini!</small>
+                                @endif
+
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Harga Paket(Rp)</strong></label>
@@ -257,7 +275,7 @@
 
                             @endif
                         </div> --}}
-                        
+
                         <div class="form-group row text-center">
                             <div class="col-md-12 text-left">
                                 <h5>Daftar Produk</h5>

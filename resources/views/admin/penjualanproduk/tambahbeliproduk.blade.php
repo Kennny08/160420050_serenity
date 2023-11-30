@@ -24,6 +24,9 @@
                             href="{{ route('reservasi.admin.detailreservasi', $penjualan->reservasi->id) }}">
                             Batal Tambah Produk</a>
                     @else
+                        <a class="btn btn-primary waves-effect waves-light"
+                            href="{{ route('penjualans.admin.detailpenjualan', $penjualan->id) }}">
+                            Batal Tambah Produk</a>
                         {{-- <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" id="btnKonfirmasi">
                             Batal Tambah Produk</button> --}}
                     @endif
@@ -125,8 +128,12 @@
                     <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Ya</button>
                     @if ($penjualan->reservasi != null)
                         <a type="button" href="{{ route('reservasi.admin.detailreservasi', $penjualan->reservasi->id) }}"
-                            class="btn btn-secondary waves-effect waves-light">Tidak</a>
+                            class="btn btn-secondary waves-effect waves-light">Tidak
+                        </a>
                     @else
+                        <a type="button" href="{{ route('penjualans.admin.detailpenjualan', $penjualan->id) }}"
+                            class="btn btn-secondary waves-effect waves-light">Tidak
+                        </a>
                     @endif
                 </div>
             </div>
@@ -179,7 +186,7 @@
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
             <div class="modal-content">
-                <form action="{{ route('reservasi.admin.konfirmasipenambahanproduk') }}" method="POST">
+                <form action="{{ route('penjualans.admin.konfirmasipenambahanproduk') }}" method="POST">
                     @csrf
                     <div class="modal-header">
                         <h5 id="modalNamaProduk" class="modal-title mt-0">Keranjang Produk Anda</h5>
@@ -187,7 +194,8 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div id="modalDetailKeranjang" class="modal-body text-center" style="overflow-y: auto; max-height: 60vh;">
+                    <div id="modalDetailKeranjang" class="modal-body text-center"
+                        style="overflow-y: auto; max-height: 60vh;">
                         <input type="hidden" value="{{ $penjualan->id }}" name="idPenjualan">
 
                         <table id="tabelKeranjangProduk" class="table table-striped table-bordered dt-responsive wrap"
@@ -246,7 +254,6 @@
                                                 </button>
                                             </td>
                                         </tr>
-                                        
                                     @endforeach
                                 @else
                                     <tr id="trSilahkan">

@@ -419,18 +419,33 @@
                         @if (Auth::user()->role == 'karyawan')
                             @if (Auth::user()->karyawan->jenis_karyawan == 'pekerja salon')
                                 <li>
-                                <a href="{{ route('karyawans.indexkomisikaryawansalon') }}" class="waves-effect">
-                                    <i class="mdi mdi-cash-multiple"></i> <span>Komisi Karyawan</span>
-                                </a>
-                            </li>
+                                    <a href="{{ route('karyawans.indexkomisikaryawansalon') }}" class="waves-effect">
+                                        <i class="mdi mdi-cash-multiple"></i> <span>Komisi Karyawan</span>
+                                    </a>
+                                </li>
                             @endif
                         @endif
 
                         @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                             <li>
-                                <a href="{{ route('penjualans.index') }}" class="waves-effect">
-                                    <i class="mdi mdi-cash-multiple"></i> <span> Penjualan </span>
-                                </a>
+                                <a href="javascript:void(0);" class="waves-effect"><i
+                                        class="mdi mdi-cash-multiple"></i><span>
+                                        Penjualan <span class="float-right menu-arrow"><i
+                                                class="mdi mdi-chevron-right"></i></span> </span></a>
+                                
+                                <ul class="submenu">
+                                    <li>
+                                        <a href="{{ route('penjualans.index') }}">
+                                            Daftar Penjualan
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('penjualans.admin.riwayatpenjualan') }}">
+                                            Daftar Riwayat
+                                            Penjualan
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
                         @endif
 

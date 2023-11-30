@@ -1111,7 +1111,7 @@ class ReservasiController extends Controller
 
                     $dataIdPenjualan = $newPenjualan->id; //nanti diganti dengan $dataIDPenjualan, ini sementara saja
 
-                    return redirect()->route('reservasi.admin.reservasitambahproduk', $dataIdPenjualan);
+                    return redirect()->route('penjualan.admin.penjualantambahproduk', $dataIdPenjualan);
 
 
                 }
@@ -2274,7 +2274,7 @@ class ReservasiController extends Controller
 
         $dataIdPenjualan = $newPenjualan->id; //nanti diganti dengan $dataIDPenjualan, ini sementara saja
 
-        return redirect()->route('reservasi.admin.reservasitambahproduk', $dataIdPenjualan);
+        return redirect()->route('penjualan.admin.penjualantambahproduk', $dataIdPenjualan);
     }
 
     public function detailReservasi($id)
@@ -2369,8 +2369,29 @@ class ReservasiController extends Controller
 
         $idDiskonUnikYangSudahPernahDipakai = Penjualan::select("diskon_id")->distinct()->where("pelanggan_id", $reservasi->penjualan->pelanggan_id)->where("diskon_id", "!=", null)->get();
         $tanggalHariIni = date("Y-m-d");
-        $diskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->where("minimal_transaksi", "<=", $reservasi->penjualan->total_pembayaran)->get();
 
+        //Pencarian Diskon
+        $diskonAktifBerlaku = [];
+        $daftarPenjualanPaket = $reservasi->penjualan->pakets;
+        if (count($daftarPenjualanPaket) == 0) {
+            $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
+            $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
+            $diskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $reservasi->penjualan->total_pembayaran)->get();
+        } else {
+            $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
+            $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
+            $arrDiskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $reservasi->penjualan->total_pembayaran)->get();
+            foreach ($arrDiskonAktifBerlaku as $value) {
+                array_push($diskonAktifBerlaku, $value);
+            }
+            $idDiskonDariPaketsPenjualan = $daftarPenjualanPaket->where("diskon_id", "!=", null)->pluck("diskon_id")->unique();
+            foreach ($idDiskonDariPaketsPenjualan as $value) {
+                $diskon = Diskon::find($value);
+                array_push($diskonAktifBerlaku, $diskon);
+            }
+        }
+
+        //dd($diskonAktifBerlaku);
 
         return view('admin.reservasi.detailreservasi', compact('reservasi', 'jamMulai', 'arrKomplemen', 'perawatanSlotJamNonKomplemen', 'diskonAktifBerlaku'));
 
@@ -2526,7 +2547,7 @@ class ReservasiController extends Controller
                 $reservasiSementara = [];
 
                 $nomorHariDalamMingguan = date("w", strtotime($tanggal->tanggal_reservasi));
-                $hariReservasi = $hariIndonesia[$nomorHariDalamMingguan] ;
+                $hariReservasi = $hariIndonesia[$nomorHariDalamMingguan];
                 $reservasiSementara["hari_reservasi"] = $hariReservasi;
                 $reservasiSementara["tanggal_reservasi"] = $tanggal->tanggal_reservasi;
                 $reservasiSementara["total_reservasi"] = count($reservasiTerpilih);
@@ -2541,8 +2562,9 @@ class ReservasiController extends Controller
         return view("karyawansalon.reservasi.daftarreservasi", compact("reservasis", "reservasisAkanDatang"));
     }
 
-    public function detailDaftarReservasiKaryawan(){
-        
+    public function detailDaftarReservasiKaryawan()
+    {
+
         date_default_timezone_set('Asia/Jakarta');
         $tanggalReservasi = $_POST["tanggalReservasi"];
         $karyawan = Auth::user()->karyawan;
@@ -2555,11 +2577,12 @@ class ReservasiController extends Controller
             }
         }
 
-        
+
         return response()->json(array('msg' => view('karyawansalon.reservasi.detaildaftarreservasipertanggal', compact('reservasis'))->render()), 200);
     }
 
-    public function daftarRiwayatReservasiKaryawan(){
+    public function daftarRiwayatReservasiKaryawan()
+    {
 
         date_default_timezone_set('Asia/Jakarta');
         $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');

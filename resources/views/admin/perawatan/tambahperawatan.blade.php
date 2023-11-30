@@ -46,9 +46,9 @@
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Kode Perawatan</strong></label>
                                 <input type="text" class="form-control" name="kode_perawatan" id="txtKodePerawatan"
-                                    aria-describedby="emailHelp" placeholder="Silahkan masukkan kode perawatan" required
+                                    aria-describedby="emailHelp" placeholder="Silahkan masukkan kode perawatan (awali dengan huruf 's')" required
                                     value="{{ old('kode_perawatan') }}">
-                                <small id="emailHelp" class="form-text text-muted">Masukkan jumlah kode disini!</small>
+                                <small id="emailHelp" class="form-text text-muted">Masukkan kode perawatan disini (awali dengan huruf "<span class="text-danger">s</span>")!</small>
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Harga Layanan Perawatan(Rp)</strong></label>

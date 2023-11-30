@@ -106,7 +106,7 @@
                                             @foreach ($presensiIzinKehadiranHariIni as $p)
                                                 <tr id="tr_{{ $p->id }}">
                                                     <td>{{ $p->karyawan->nama }}</td>
-                                                    <td>{{ date('Y-m-d', strtotime($p->tanggal_presensi)) }}</td>
+                                                    <td>{{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}</td>
                                                     @if (count($presensisHariIni) != $jumlahKaryawan)
                                                         <td>Presensi Belum Dibuka</td>
                                                     @else
@@ -114,7 +114,7 @@
                                                     @endif
 
                                                     <td>
-                                                        {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                                                        {{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}
                                                     </td>
                                                     @if ($p->keterangan == 'hadir')
                                                         <td class="text-success">HADIR</td>

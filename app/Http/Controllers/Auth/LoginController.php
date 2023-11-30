@@ -33,7 +33,7 @@ class LoginController extends Controller
         $role = Auth::user()->role;
         if (Auth::user()->role == 'admin' || Auth::user()->role == 'karyawan') {
             if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin') {
-                return '/salon';
+                return '/salon/reservasi/admin/index';
             }else{
                 //Arahin ke halaman daftar reservasi untuk karyawan salon tertentu saja
                 return '/salon/karyawan/daftarreservasi'; 

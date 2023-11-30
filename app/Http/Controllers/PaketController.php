@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Diskon;
 use App\Models\Paket;
 use App\Models\Perawatan;
 use App\Models\Produk;
@@ -29,10 +30,13 @@ class PaketController extends Controller
      */
     public function create()
     {
+        date_default_timezone_set('Asia/Jakarta');
+        $tanggalHariIni = date("Y-m-d");
         $perawatanAktif = Perawatan::where("status", "aktif")->orderBy("nama")->get();
         $produkAktif = Produk::where("status", "aktif")->where("status_jual", "aktif")->orderBy("nama")->get();
+        $diskonAktif = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->orderBy("nama")->get();
 
-        return view("admin.paket.tambahpaket", compact("perawatanAktif", "produkAktif"));
+        return view("admin.paket.tambahpaket", compact("perawatanAktif", "produkAktif", "diskonAktif"));
     }
 
     /**
@@ -48,7 +52,7 @@ class PaketController extends Controller
         $validatedData = $request->validate(
             [
                 'namaPaket' => 'required|max:255',
-                'kode_paket' => 'required|unique:pakets',
+                'kode_paket' => 'required|unique:pakets|starts_with:m',
                 'hargaPaket' => 'required|numeric|min:1',
                 'arrayperawatanid' => 'required|array|min:2',
             ],
@@ -56,6 +60,7 @@ class PaketController extends Controller
                 'namaPaket.required' => 'Nama paket tidak boleh kosong!',
                 'kode_paket.required' => 'Kode Paket tidak boleh kosong!',
                 'kode_paket.unique' => 'Kode paket sudah pernah dipakai, mohon masukkan kode paket lainnya!',
+                'kode_paket.starts_with' => "Kode paket harap diawali dengan huruf 'm'",
                 'hargaPaket.required' => 'Harga Paket tidak boleh kosong!',
                 'hargaPaket.numeric' => 'Harga Paket harus berupa angka!',
 
@@ -73,6 +78,7 @@ class PaketController extends Controller
         $arrProdukKuantitas = $request->get("arrayprodukkuantitas");
         $statusPaket = $request->get("radioStatusPaket");
         $deskripsiPaket = $request->get("deskripsiPaket");
+        $idDiskon = $request->get("idDiskon");
 
         $newPaket = new Paket();
         $newPaket->nama = $namaPaket;
@@ -82,6 +88,9 @@ class PaketController extends Controller
             $newPaket->deskripsi = $deskripsiPaket;
         }
         $newPaket->status = $statusPaket;
+        if ($idDiskon != "null") {
+            $newPaket->diskon_id = $idDiskon;
+        }
         $newPaket->created_at = date("Y-m-d H:i:s");
         $newPaket->updated_at = date("Y-m-d H:i:s");
         $newPaket->save();

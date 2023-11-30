@@ -46,9 +46,9 @@
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Kode Produk</strong></label>
                                 <input type="text" class="form-control" name="kode_produk" id="txtKodeProduk"
-                                    aria-describedby="emailHelp" placeholder="Silahkan masukkan kode produk" required
+                                    aria-describedby="emailHelp" placeholder="Silahkan masukkan kode produk (awali dengan huruf 'p')" required
                                     value="{{ old('kode_produk') }}">
-                                <small id="emailHelp" class="form-text text-muted">Masukkan kode produk disini!</small>
+                                <small id="emailHelp" class="form-text text-muted">Masukkan kode produk disini (awali dengan huruf "<span class="text-danger">p</span>")!</small>
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Harga Jual Produk</strong></label>
