@@ -65,10 +65,10 @@
                                         <tbody>
                                             @php
                                                 $counter = 0;
-                                                $arrKeterangan = ['null', 'hadir', 'sakit', 'izin', 'absen'];
+                                                $arrKeterangan = ['hadir', 'sakit', 'izin', 'absen'];
                                                 $arrKeteranganTolak = ['null', 'hadir', 'sakit', 'absen'];
-                                                $arrStatusIzin = ['null', 'belum', 'konfirmasi', 'tolak'];
-                                                $arrStatus = ['null', 'belum', 'konfirmasi'];
+                                                $arrStatusIzin = ['belum', 'konfirmasi', 'tolak'];
+                                                $arrStatus = ['belum', 'konfirmasi'];
 
                                             @endphp
 
@@ -90,35 +90,20 @@
                                                                     @if (old('keteranganPresensi') != null)
                                                                         @foreach ($arrKeterangan as $k)
                                                                             @if (old('keteranganPresensi')[$counter] == $k)
-                                                                                @if ($k == 'null')
-                                                                                    <option class="text-danger" selected
-                                                                                        value="null">
-                                                                                        Pilih Keterangan
-                                                                                        Presensi</option>
-                                                                                @else
-                                                                                    <option selected
-                                                                                        value="{{ $k }}">
-                                                                                        {{ strtoupper($k) }}</option>
-                                                                                @endif
+                                                                                <option selected
+                                                                                    value="{{ $k }}">
+                                                                                    {{ strtoupper($k) }}
+                                                                                </option>
                                                                             @else
-                                                                                @if ($k == 'null')
-                                                                                    <option class="text-danger"
-                                                                                        value="null">
-                                                                                        Pilih Keterangan
-                                                                                        Presensi</option>
-                                                                                @else
-                                                                                    <option value="{{ $k }}">
-                                                                                        {{ strtoupper($k) }}</option>
-                                                                                @endif
+                                                                                <option value="{{ $k }}">
+                                                                                    {{ strtoupper($k) }}
+                                                                                </option>
                                                                             @endif
                                                                         @endforeach
                                                                     @else
-                                                                        <option class="text-danger" selected value="null">
-                                                                            Pilih Keterangan
-                                                                            Presensi</option>
+                                                                        <option value="absen">ABSEN</option>
                                                                         <option value="hadir">HADIR</option>
                                                                         <option value="sakit">SAKIT</option>
-                                                                        <option value="absen">ABSEN</option>
                                                                         <option value="izin">IZIN</option>
                                                                     @endif
 
@@ -137,29 +122,15 @@
                                                                                 required>
                                                                                 @foreach ($arrStatusIzin as $s)
                                                                                     @if (old('statusPresensi')[$counter] == $s)
-                                                                                        @if ($s == 'null')
-                                                                                            <option class="text-danger"
-                                                                                                selected value="null">
-                                                                                                Pilih Status Presensi
-                                                                                            </option>
-                                                                                        @else
-                                                                                            <option selected
-                                                                                                value="{{ $s }}">
-                                                                                                {{ $s }}
-                                                                                            </option>
-                                                                                        @endif
+                                                                                        <option selected
+                                                                                            value="{{ $s }}">
+                                                                                            {{ $s }}
+                                                                                        </option>
                                                                                     @else
-                                                                                        @if ($s == 'null')
-                                                                                            <option class="text-danger"
-                                                                                                value="null">
-                                                                                                Pilih Status Presensi
-                                                                                            </option>
-                                                                                        @else
-                                                                                            <option
-                                                                                                value="{{ $s }}">
-                                                                                                {{ $s }}
-                                                                                            </option>
-                                                                                        @endif
+                                                                                        <option
+                                                                                            value="{{ $s }}">
+                                                                                            {{ $s }}
+                                                                                        </option>
                                                                                     @endif
                                                                                 @endforeach
                                                                             </select>
@@ -169,13 +140,10 @@
                                                                                 class="form-control statusPresensiSelect"
                                                                                 aria-label="Default select example"
                                                                                 required>
-                                                                                <option class="text-danger" selected
-                                                                                    value="null">
-                                                                                    Pilih Status Presensi</option>
-                                                                                <option value="konfirmasi">konfimasi
                                                                                 </option>
                                                                                 <option value="belum">belum
                                                                                 </option>
+                                                                                <option value="konfirmasi">konfimasi
                                                                                 <option value="tolak">tolak
                                                                                 </option>
                                                                             </select>
@@ -189,29 +157,15 @@
                                                                                 required>
                                                                                 @foreach ($arrStatus as $s)
                                                                                     @if (old('statusPresensi')[$counter] == $s)
-                                                                                        @if ($s == 'null')
-                                                                                            <option class="text-danger"
-                                                                                                selected value="null">
-                                                                                                Pilih Status Presensi
-                                                                                            </option>
-                                                                                        @else
-                                                                                            <option selected
-                                                                                                value="{{ $s }}">
-                                                                                                {{ $s }}
-                                                                                            </option>
-                                                                                        @endif
+                                                                                        <option selected
+                                                                                            value="{{ $s }}">
+                                                                                            {{ $s }}
+                                                                                        </option>
                                                                                     @else
-                                                                                        @if ($s == 'null')
-                                                                                            <option class="text-danger"
-                                                                                                value="null">
-                                                                                                Pilih Status Presensi
-                                                                                            </option>
-                                                                                        @else
-                                                                                            <option
-                                                                                                value="{{ $s }}">
-                                                                                                {{ $s }}
-                                                                                            </option>
-                                                                                        @endif
+                                                                                        <option
+                                                                                            value="{{ $s }}">
+                                                                                            {{ $s }}
+                                                                                        </option>
                                                                                     @endif
                                                                                 @endforeach
                                                                             </select>
@@ -221,13 +175,11 @@
                                                                                 class="form-control statusPresensiSelect"
                                                                                 aria-label="Default select example"
                                                                                 required>
-                                                                                <option class="text-danger" selected
-                                                                                    value="null">
-                                                                                    Pilih Status Presensi</option>
-                                                                                <option value="konfirmasi">konfirmasi
-                                                                                </option>
                                                                                 <option value="belum">belum
                                                                                 </option>
+                                                                                <option value="konfirmasi">konfirmasi
+                                                                                </option>
+
                                                                             </select>
                                                                         @endif
                                                                     @endif
@@ -236,13 +188,11 @@
                                                                         id="statusPresensiSelect_{{ $karyawan->id }}"
                                                                         class="form-control statusPresensiSelect"
                                                                         aria-label="Default select example" required>
-                                                                        <option class="text-danger" selected
-                                                                            value="null">
-                                                                            Pilih Status Presensi</option>
-                                                                        <option value="konfirmasi">konfirmasi
-                                                                        </option>
                                                                         <option value="belum">belum
                                                                         </option>
+                                                                        <option value="konfirmasi">konfirmasi
+                                                                        </option>
+
                                                                     </select>
                                                                 @endif
                                                             </div>
@@ -279,8 +229,8 @@
                                                                             @foreach ($arrKeteranganTolak as $k)
                                                                                 @if (old('keteranganPresensi')[$counter] == $k)
                                                                                     @if ($k == 'null')
-                                                                                        <option class="text-danger"
-                                                                                            selected value="null">
+                                                                                        <option class="text-danger" selected
+                                                                                            value="null">
                                                                                             Pilih Keterangan
                                                                                             Presensi (izin ditolak)</option>
                                                                                     @else

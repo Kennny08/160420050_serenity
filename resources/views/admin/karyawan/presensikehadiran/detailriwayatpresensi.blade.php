@@ -43,21 +43,20 @@
 
                     @if ($p->keterangan == 'izin')
                         @if ($p->status == 'belum')
-                            <td><span style="font-size: 1em;padding: 0.5em 1em;" class="badge badge-warning">Belum
+                            <td><span class="text-warning font-weight-bold">Belum
                                     Dikonfirmasi</span></td>
                         @elseif($p->status == 'konfirmasi')
-                            <td><span style="font-size: 1em;padding: 0.5em 1em;" class="badge badge-success">Telah
+                            <td><span class="text-success font-weight-bold">Telah
                                     Dikonfirmasi</span></td>
                         @elseif($p->status == 'tolak')
-                            <td><span style="font-size: 1em;padding: 0.5em 1em;" class="badge badge-danger">Izin
-                                    Ditolak</span></td>
+                            <td><span class="text-danger font-weight-bold">Izin Ditolak</span></td>
                         @endif
                     @else
                         @if ($p->status == 'belum')
-                            <td><span style="font-size: 1em;padding: 0.5em 1em;" class="badge badge-warning">Belum
+                            <td><span class="text-warning font-weight-bold">Belum
                                     Dikonfirmasi</span></td>
                         @elseif($p->status == 'konfirmasi')
-                            <td><span style="font-size: 1em;padding: 0.5em 1em;" class="badge badge-success">Telah
+                            <td><span class="text-success font-weight-bold">Telah
                                     Dikonfirmasi</span></td>
                         @endif
                     @endif

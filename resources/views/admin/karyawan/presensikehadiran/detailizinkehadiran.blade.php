@@ -4,9 +4,11 @@
         <thead>
             <tr>
                 <th>Nama Karyawan</th>
+                <th>Keterangan</th>
                 <th>Waktu Pengajuan izin</th>
                 <th>Tanggal Izin</th>
-                <th>Keterangan</th>
+                <th>Deskripsi Izin</th>
+                <th>File Tambahan</th>
                 <th>Status</th>
                 <th>Dikonfirmasi Terakhir Pukul</th>
             </tr>
@@ -16,6 +18,11 @@
             @foreach ($daftarPresensiIzin as $p)
                 <tr id="tr_{{ $p->id }}">
                     <td>{{ $p->karyawan->nama }}</td>
+                    @if ($p->keterangan == 'izin')
+                        <td class="text-warning">IZIN</td>
+                    @elseif($p->keterangan == 'sakit')
+                        <td class="text-info">SAKIT</td>
+                    @endif
                     <td>
                         {{ date('d-m-Y H:i', strtotime($p->created_at)) }}
                     </td>
@@ -23,18 +30,29 @@
                         {{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}
                     </td>
 
-                    <td class="text-warning">IZIN</td>
+                    <td>{{ $p->deskripsi }}</td>
+
+                    <td>
+                        @if ($p->file_tambahan != null)
+                            <button data-toggle="modal" data-target="#modalFileTambahan"
+                                class="btn btn-info waves-effect waves-light btnLihatFileTambahan"
+                                namaImage="{{ asset('assets_admin/images/izin_sakit_karyawan/') }}/{{ $p->file_tambahan }}">Lihat
+                            </button>
+                        @else
+                            Tidak ada File Tambahan
+                        @endif
+                    </td>
+
 
                     <td id="statusKonfirmasi_{{ $p->id }}">
                         @if ($p->status == 'belum')
-                            <span style="font-size: 1em;padding: 0.5em 1em;" class="badge badge-warning">Belum
+                            <span class="text-warning font-weight-bold">Belum
                                 Dikonfirmasi</span>
                         @elseif($p->status == 'konfirmasi')
-                            <span style="font-size: 1em;padding: 0.5em 1em;" class="badge badge-success">Telah
+                            <span class="text-success font-weight-bold">Telah
                                 Dikonfirmasi</span>
                         @elseif($p->status == 'tolak')
-                            <span style="font-size: 1em;padding: 0.5em 1em;" class="badge badge-danger">Izin
-                                Ditolak</span>
+                            <span class="text-danger font-weight-bold">Izin Ditolak</span>
                         @endif
                     </td>
 

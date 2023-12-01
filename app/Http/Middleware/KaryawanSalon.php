@@ -17,7 +17,7 @@ class KaryawanSalon
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::user()->karyawan->jenis_karyawan === 'pekerja salon') {
+        if (Auth::user()->role === 'karyawan') {
             return $next($request);
         } else {
             return redirect()->back();

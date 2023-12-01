@@ -124,7 +124,10 @@
                     $('#contentDetailRiwayat').html(data.msg);
 
                     $('#tabelDetailDaftarReservasi').DataTable({
-                        ordering: false
+                        order: [
+                            [1, "asc"],
+                            [4, "asc"],
+                        ],
                     });
                 }
             })

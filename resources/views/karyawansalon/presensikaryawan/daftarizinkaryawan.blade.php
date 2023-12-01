@@ -67,9 +67,11 @@
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>Nama Karyawan</th>
+                                    <th>Keterangan</th>
                                     <th>Waktu Pengajuan izin</th>
                                     <th>Tanggal Izin</th>
+                                    <th>Deskripsi Izin</th>
+                                    <th>File Tambahan</th>
                                     <th>Status</th>
                                     <th>Dikonfirmasi Terakhir Pukul</th>
                                 </tr>
@@ -78,7 +80,13 @@
                             <tbody>
                                 @foreach ($daftarRiwayatIzinKaryawanHriIniKedepan as $p)
                                     <tr id="tr_{{ $p->id }}">
-                                        <td>{{ $p->karyawan->nama }}</td>
+
+                                        @if ($p->keterangan == 'izin')
+                                            <td class="text-warning">IZIN</td>
+                                        @elseif($p->keterangan == 'sakit')
+                                            <td class="text-info">SAKIT</td>
+                                        @endif
+
                                         <td>
                                             {{ date('d-m-Y H:i', strtotime($p->created_at)) }}
                                         </td>
@@ -86,19 +94,29 @@
                                             {{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}
                                         </td>
 
+                                        <td>{{ $p->deskripsi }}</td>
+
+                                        <td>
+                                            @if ($p->file_tambahan != null)
+                                                <button data-toggle="modal" data-target="#modalFileTambahan"
+                                                    class="btn btn-info waves-effect waves-light btnLihatFileTambahan"
+                                                    namaImage="{{ asset('assets_admin/images/izin_sakit_karyawan/') }}/{{ $p->file_tambahan }}">Lihat
+                                                </button>
+                                            @else
+                                                Tidak ada File Tambahan
+                                            @endif
+                                        </td>
+
+
                                         <td id="statusKonfirmasi_{{ $p->id }}">
                                             @if ($p->status == 'belum')
-                                                <span style="font-size: 1em;padding: 0.5em 1em;"
-                                                    class="badge badge-warning">Belum
+                                                <span class="text-warning font-weight-bold">Belum
                                                     Dikonfirmasi</span>
                                             @elseif($p->status == 'konfirmasi')
-                                                <span style="font-size: 1em;padding: 0.5em 1em;"
-                                                    class="badge badge-success">Telah
+                                                <span class="text-success font-weight-bold">Telah
                                                     Dikonfirmasi</span>
                                             @elseif($p->status == 'tolak')
-                                                <span style="font-size: 1em;padding: 0.5em 1em;"
-                                                    class="badge badge-danger">Izin
-                                                    Ditolak</span>
+                                                <span class="text-danger font-weight-bold">Izin Ditolak</span>
                                             @endif
                                         </td>
 
@@ -141,9 +159,11 @@
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>Nama Karyawan</th>
+                                    <th>Keterangan</th>
                                     <th>Waktu Pengajuan izin</th>
                                     <th>Tanggal Izin</th>
+                                    <th>Deskripsi Izin</th>
+                                    <th>File Tambahan</th>
                                     <th>Status</th>
                                     <th>Dikonfirmasi Terakhir Pukul</th>
                                 </tr>
@@ -152,7 +172,13 @@
                             <tbody>
                                 @foreach ($daftarRiwayatIzinKaryawanSebelumnya as $p)
                                     <tr id="tr_{{ $p->id }}">
-                                        <td>{{ $p->karyawan->nama }}</td>
+
+                                        @if ($p->keterangan == 'izin')
+                                            <td class="text-warning">IZIN</td>
+                                        @elseif($p->keterangan == 'sakit')
+                                            <td class="text-info">SAKIT</td>
+                                        @endif
+
                                         <td>
                                             {{ date('d-m-Y H:i', strtotime($p->created_at)) }}
                                         </td>
@@ -160,19 +186,29 @@
                                             {{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}
                                         </td>
 
+                                        <td>{{ $p->deskripsi }}</td>
+
+                                        <td>
+                                            @if ($p->file_tambahan != null)
+                                                <button data-toggle="modal" data-target="#modalFileTambahan"
+                                                    class="btn btn-info waves-effect waves-light btnLihatFileTambahan"
+                                                    namaImage="{{ asset('assets_admin/images/izin_sakit_karyawan/') }}/{{ $p->file_tambahan }}">Lihat
+                                                </button>
+                                            @else
+                                                Tidak ada File Tambahan
+                                            @endif
+                                        </td>
+
+
                                         <td id="statusKonfirmasi_{{ $p->id }}">
                                             @if ($p->status == 'belum')
-                                                <span style="font-size: 1em;padding: 0.5em 1em;"
-                                                    class="badge badge-warning">Belum
+                                                <span class="text-warning font-weight-bold">Belum
                                                     Dikonfirmasi</span>
                                             @elseif($p->status == 'konfirmasi')
-                                                <span style="font-size: 1em;padding: 0.5em 1em;"
-                                                    class="badge badge-success">Telah
+                                                <span class="text-success font-weight-bold">Telah
                                                     Dikonfirmasi</span>
                                             @elseif($p->status == 'tolak')
-                                                <span style="font-size: 1em;padding: 0.5em 1em;"
-                                                    class="badge badge-danger">Izin
-                                                    Ditolak</span>
+                                                <span class="text-danger font-weight-bold">Izin Ditolak</span>
                                             @endif
                                         </td>
 
@@ -196,23 +232,22 @@
         <!-- end col -->
     </div>
 
-    <div id="modalDetailRiwayatIzin" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+    <div id="modalFileTambahan" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 90%;">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" >
             <div class="modal-content ">
                 <div class="modal-header">
-                    <h5 class="modal-title mt-0" id="modalNamaDetailRiwayatIzin">Detail Riwayat Presensi</h5>
+                    <h5 class="modal-title mt-0" id="modalNamaFileTambahan">Detail File Tambahan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="contentDetailRiwayatIzin">
+                <div class="modal-body" id="contentFileTambahan">
                     <div class="text-center">
                         <div class="spinner-border text-info" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
-
                 </div>
                 <div class="modal-footer"> <button type="button" class="btn btn-danger waves-effect"
                         data-dismiss="modal">Tutup</button>
@@ -223,58 +258,108 @@
         <!-- /.modal-dialog -->
     </div>
 
-    <div id="modalKonfirmasiIzin" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
-        aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content ">
-                <div class="modal-header">
-                    <h5 class="modal-title mt-0" id="modalNamaKonfirmasiIzin">Konfirmasi Izin</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="contentKonfirmasiIzin">
-                    <div class="text-center">
-                        <div class="spinner-border text-info" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button id="btnKonfirmasTutup" type="button" class="btn btn-danger waves-effect"
-                        data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-info waves-effect" data-dismiss="modal" idPresensi="0"
-                        keterangan="" id="btnKonfirmasiSimpanIzin">Ya</button>
-                </div>
-
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
 
     <div id="modalPilihTanggalPengajuanIzin" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content ">
-                <form action="{{ route('karyawans.prosesizinkaryawansalon') }}" method="post">
+                <form action="{{ route('karyawans.prosesizinkaryawansalon') }}" method="post"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
-                        <h5 class="modal-title mt-0" id="modalNamaPilihTanggalPengajuanIzin">Pilih Tanggal Pembayaran</h5>
+                        <h5 class="modal-title mt-0" id="modalNamaPilihTanggalPengajuanIzin">Formulir Pengajuan Izin</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body" id="contentPilihTanggalPengajuanIzin">
                         <div class="form-group row">
-                            <div class="col-md-12">
-                                <h6>Silahkan Pilih Tanggal Pengajuan izin</h6>
+                            <div class="col-md-6">
+                                <h6>Tanggal Pengajuan Izin</h6>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-6">
+                                <h6>Keterangan Izin</h6>
+                            </div>
+                            <div class="col-md-6">
                                 <input type="date" class="form-control" name="tanggalIzin" id="tanggalPengajuanIzin"
-                                    value="{{ date('Y-m-d') }}" aria-describedby="emailHelp" min="{{ date('Y-m-d') }}"
+                                    aria-describedby="emailHelp" min="{{ date('Y-m-d') }}"
+                                    value="{{ old('tanggalIzin', date('Y-m-d')) }}"
                                     placeholder="Silahkan Pilih Tanggal Pengajuan izin" required>
                                 <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Pengajuan Izin
+                                    disini!</small>
+                            </div>
+                            <div class="col-md-6">
+                                @if (old('radioKeteranganPresensi') != null)
+                                    @if (old('radioKeteranganPresensi') == 'izin')
+                                        <div class="btn-group btn-group-toggle border w-100" data-toggle="buttons">
+                                            <label class="btn btn-warning waves-effect waves-light"
+                                                id="lblKeteranganIzin">
+                                                <input type="radio" value="izin" name="radioKeteranganPresensi"
+                                                    id="optionKeteranganIzin" class="radioKeteranganPresensi" checked>
+                                                Izin
+                                            </label>
+                                            <label class="btn waves-effect waves-light" id="lblKeteranganSakit">
+                                                <input type="radio" value="sakit" name="radioKeteranganPresensi"
+                                                    id="optionKeteranganSakit" class="radioKeteranganPresensi">
+                                                Sakit
+                                            </label>
+                                        </div>
+                                    @else
+                                        <div class="btn-group btn-group-toggle border w-100" data-toggle="buttons">
+                                            <label class="btn waves-effect waves-light" id="lblKeteranganIzin">
+                                                <input type="radio" value="izin" name="radioKeteranganPresensi"
+                                                    id="optionKeteranganIzin" class="radioKeteranganPresensi">
+                                                Izin
+                                            </label>
+                                            <label class="btn btn-danger waves-effect waves-light"
+                                                id="lblKeteranganSakit">
+                                                <input type="radio" value="sakit" name="radioKeteranganPresensi"
+                                                    id="optionKeteranganSakit" class="radioKeteranganPresensi" checked>
+                                                Sakit
+                                            </label>
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="btn-group btn-group-toggle border w-100" data-toggle="buttons">
+                                        <label class="btn btn-warning waves-effect waves-light" id="lblKeteranganIzin">
+                                            <input type="radio" value="izin" name="radioKeteranganPresensi"
+                                                id="optionKeteranganIzin" class="radioKeteranganPresensi" checked>
+                                            Izin
+                                        </label>
+                                        <label class="btn waves-effect waves-light" id="lblKeteranganSakit">
+                                            <input type="radio" value="sakit" name="radioKeteranganPresensi"
+                                                id="optionKeteranganSakit" class="radioKeteranganPresensi">
+                                            Sakit
+                                        </label>
+                                    </div>
+                                @endif
+
+                                <small id="emailHelp" class="form-text text-muted">Pilih Keterangan Pengajuan Izin
+                                    disini!</small>
+                            </div>
+                            <div class="col-md-12">
+                                <h6>Deskripsi Keterangan Izin</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <textarea aria-describedby="emailHelp" class="form-control" name="deskripsiIzin" id="" cols="30"
+                                    rows="4" placeholder="Silahkan masukkan alasan Anda izin" required>
+@if (old('deskripsiIzin') != null)
+{{ old('deskripsiIzin') }}
+@endif
+                                </textarea>
+                                <small id="emailHelp" class="form-text text-muted">Masukan alasan Pengajuan Izin
+                                    disini!</small>
+                            </div>
+                            <div class="col-md-12">
+                                <h6>File Tambahan <span class="text-danger">*Contoh: Surat Dokter</span></h6>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="fallback">
+                                    <input type="file" class="form-control" name="fileTambahan" id="fileUpload"
+                                        aria-describedby="emailHelp" value="{{ old('fileTambahan') }}" accept="image/*">
+                                </div>
+
+                                <small id="emailHelp" class="form-text text-muted">Upload file tambahan Pengajuan Izin
                                     disini!</small>
                             </div>
                         </div>
@@ -286,6 +371,7 @@
                         </button>
                     </div>
                 </form>
+
 
             </div>
             <!-- /.modal-content -->
@@ -320,98 +406,12 @@
             });
         });
 
-        $('body').on('click', '.btnDetailRiwayatIzin', function() {
-            var tanggalIzin = $(this).attr("tanggalIzin");
-            var tanggalIzinHari = $(this).attr('tanggalIzinHari');
-
-            $("#modalNamaDetailRiwayatIzin").text(" Detail Izin Kehadiran " + tanggalIzinHari);
-
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('admin.getdetailizinkehadiran') }}',
-                data: {
-                    '_token': '<?php echo csrf_token(); ?>',
-                    'tanggalIzin': tanggalIzin,
-                },
-                success: function(data) {
-                    $('#contentDetailRiwayatIzin').html(data.msg);
-                    $('#tabelDaftarDetailRiwayatIzin').DataTable({});
-                }
-            })
+        $('body').on('click', '.btnLihatFileTambahan', function() {
+            var namaImage = $(this).attr("namaImage");
+            
+            $("#contentFileTambahan").html("<img class='img-fluid' src='" + namaImage + "' alt='filetambahan'>");
         });
 
-
-        $('body').on('click', '#btnKonfirmasTutup', function() {
-            $("#modalDetailRiwayatIzin").modal("show");
-        });
-
-        $('body').on('click', '.btnKonfirmasiIzin', function() {
-            var idPresensi = $(this).attr("idPresensi");
-            var tanggalIzin = $(this).attr('tanggalIzin');
-            var keteranganKonfirmasi = $(this).attr('keterangan');
-            var namaKaryawan = $(this).attr('namaKaryawan');
-
-            $("#modalNamaKonfirmasiIzin").text("Konfirmasi Izin untuk Karyawan " + namaKaryawan);
-
-            if (keteranganKonfirmasi == "konfirmasi") {
-                $("#contentKonfirmasiIzin").html(
-                    "<h6>Apakah Anda yakin untuk memberikan izin kehadiran untuk karyawan <span class='text-danger'>" +
-                    namaKaryawan + "</span> dengan waktu izin pada <span class='text-danger'>" + tanggalIzin +
-                    "</span>?</h6>");
-                $("#btnKonfirmasiSimpanIzin").attr("idPresensi", idPresensi);
-                $("#btnKonfirmasiSimpanIzin").attr("keterangan", keteranganKonfirmasi);
-            } else {
-                $("#contentKonfirmasiIzin").html(
-                    "<h6>Apakah Anda yakin untuk menolak pengajuan izin kehadiran untuk karyawan <span class='text-danger'>" +
-                    namaKaryawan + "</span> dengan waktu izin pada <span class='text-danger'>" + tanggalIzin +
-                    "</span>?</h6>");
-                $("#btnKonfirmasiSimpanIzin").attr("idPresensi", idPresensi);
-                $("#btnKonfirmasiSimpanIzin").attr("keterangan", keteranganKonfirmasi);
-            }
-            $("#modalDetailRiwayatIzin").modal("hide");
-        });
-
-        $('body').on('click', '#btnKonfirmasiSimpanIzin', function() {
-            var idPresensi = $(this).attr("idPresensi");
-            var keteranganKonfirmasi = $(this).attr('keterangan');
-
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('admin.updatestatusizin') }}',
-                data: {
-                    '_token': '<?php echo csrf_token(); ?>',
-                    'idPresensi': idPresensi,
-                    'keteranganKonfirmasi': keteranganKonfirmasi,
-                },
-                success: function(data) {
-                    if (keteranganKonfirmasi == "konfirmasi") {
-                        if (data.waktu == "hariinikedepan") {
-                            $("#bodyTableDaftarIzinHariIniKedepan").html(data.msg);
-                        } else {
-                            $("#bodyTableDaftarIzinHariSebelumnya").html(data.msg);
-                        }
-                        $("#waktuKonfirmasi_" + idPresensi).html("<p>" + data.updated_at + "</p>");
-                        $("#statusKonfirmasi_" + idPresensi).html(
-                            "<span style='font-size: 1em;padding: 0.5em 1em;' class='badge badge-success'>Telah " +
-                            "Dikonfirmasi </span>");
-                        $("#modalDetailRiwayatIzin").modal("show");
-
-                    } else {
-                        if (data.waktu == "hariinikedepan") {
-                            $("#bodyTableDaftarIzinHariIniKedepan").html(data.msg);
-                        } else {
-                            $("#bodyTableDaftarIzinHariSebelumnya").html(data.msg);
-                        }
-                        $("#waktuKonfirmasi_" + idPresensi).html("<p>" + data.updated_at + "</p>");
-                        $("#statusKonfirmasi_" + idPresensi).html(
-                            "<span style='font-size: 1em;padding: 0.5em 1em;' class='badge badge-danger'>Izin " +
-                            "Ditolak </span>");
-                        $("#modalDetailRiwayatIzin").modal("show");
-                    }
-
-                }
-            })
-        });
 
 
         $('.radioAktif').on('click', function() {
@@ -422,6 +422,17 @@
         $('.radioNonaktif').on('click', function() {
             $(".radioNonaktif").addClass("btn-info");
             $(".radioAktif").removeClass("btn-info");
+        });
+
+        $('body').on('change', '.radioKeteranganPresensi', function() {
+            var statusSaatIni = $(this).val();
+            if (statusSaatIni == "sakit") {
+                $("#lblKeteranganIzin").removeClass("btn-warning");
+                $("#lblKeteranganSakit").addClass("btn-danger");
+            } else {
+                $("#lblKeteranganIzin").addClass("btn-warning");
+                $("#lblKeteranganSakit").removeClass("btn-danger");
+            }
         });
     </script>
 @endsection

@@ -68,7 +68,7 @@
                                             @php
                                                 $counter = 0;
                                                 $arrKeterangan = ['hadir', 'sakit', 'izin', 'absen'];
-                                                $arrKeteranganTolak = ['absen', 'hadir', 'sakit'];
+                                                $arrKeteranganTolak = ['absen', 'hadir'];
                                                 $arrStatusIzin = ['belum', 'konfirmasi', 'tolak'];
                                                 $arrStatus = ['belum', 'konfirmasi'];
 
@@ -80,7 +80,7 @@
                                                     <td>{{ $tanggalPresensiTeks }}</td>
 
 
-                                                    @if ($presensi->keterangan != 'izin')
+                                                    @if ($presensi->keterangan != 'izin' || $presensi->keterangan != 'sakit')
                                                         <input type="hidden" value="{{ $presensi->karyawan->id }}"
                                                             name="daftarNamaKaryawan[]">
                                                         <td>
@@ -102,6 +102,8 @@
                                                                             @endif
                                                                         @endforeach
                                                                         <option disabled class="text-danger" value="tolak">
+                                                                            SAKIT - ditolak</option>
+                                                                        <option disabled class="text-danger" value="tolak">
                                                                             IZIN - ditolak</option>
                                                                     @else
                                                                         @foreach ($arrKeterangan as $k)
@@ -120,43 +122,22 @@
                                                         </td>
                                                         <td>
                                                             <div class="col-md-12">
-                                                                @if ($presensi->keterangan == 'izin')
-                                                                    <select name="statusPresensi[]"
-                                                                        id="statusPresensiSelect_{{ $presensi->karyawan->id }}"
-                                                                        class="form-control statusPresensiSelect"
-                                                                        aria-label="Default select example" required>
-                                                                        @foreach ($arrStatusIzin as $s)
-                                                                            @if ($presensi->status == $s)
-                                                                                <option selected
-                                                                                    value="{{ $s }}">
-                                                                                    {{ $s }}
-                                                                                </option>
-                                                                            @else
-                                                                                <option value="{{ $s }}">
-                                                                                    {{ $s }}
-                                                                                </option>
-                                                                            @endif
-                                                                        @endforeach
-                                                                    </select>
-                                                                @else
-                                                                    <select name="statusPresensi[]"
-                                                                        id="statusPresensiSelect_{{ $presensi->karyawan->id }}"
-                                                                        class="form-control statusPresensiSelect"
-                                                                        aria-label="Default select example" required>
-                                                                        @foreach ($arrStatus as $s)
-                                                                            @if ($presensi->status == $s)
-                                                                                <option selected
-                                                                                    value="{{ $s }}">
-                                                                                    {{ $s }}
-                                                                                </option>
-                                                                            @else
-                                                                                <option value="{{ $s }}">
-                                                                                    {{ $s }}
-                                                                                </option>
-                                                                            @endif
-                                                                        @endforeach
-                                                                    </select>
-                                                                @endif
+                                                                <select name="statusPresensi[]"
+                                                                    id="statusPresensiSelect_{{ $presensi->karyawan->id }}"
+                                                                    class="form-control statusPresensiSelect"
+                                                                    aria-label="Default select example" required>
+                                                                    @foreach ($arrStatus as $s)
+                                                                        @if ($presensi->status == $s)
+                                                                            <option selected value="{{ $s }}">
+                                                                                {{ $s }}
+                                                                            </option>
+                                                                        @else
+                                                                            <option value="{{ $s }}">
+                                                                                {{ $s }}
+                                                                            </option>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
 
                                                         </td>
@@ -237,6 +218,8 @@
                                                                                     {{ strtoupper($k) }}</option>
                                                                             @endif
                                                                         @endforeach
+                                                                        <option disabled class="text-danger" value="tolak">
+                                                                            SAKIT - ditolak</option>
                                                                         <option disabled class="text-danger" value="tolak">
                                                                             IZIN - ditolak</option>
 
@@ -368,7 +351,7 @@
             var valueKeterangan = $(this).val();
             var idKaryawan = $(this).attr("idKaryawan");
 
-            if (valueKeterangan == "izin") {
+            if (valueKeterangan == "izin" || valueKeterangan == "sakit") {
                 $("#statusPresensiSelect_" + idKaryawan + " option[value='tolak']").remove();
                 $("#statusPresensiSelect_" + idKaryawan).append("<option value='tolak'>tolak</option>");
             } else {

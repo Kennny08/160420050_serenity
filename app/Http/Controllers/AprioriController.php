@@ -12,20 +12,22 @@ class AprioriController extends Controller
     {
         $tanggalPenjualanAwal = Penjualan::where('status_selesai', 'selesai')->min('tanggal_penjualan');
         $tanggalPenjualanAkhir = Penjualan::where('status_selesai', 'selesai')->max('tanggal_penjualan');
+        $minSupport = 1;
+        $minConfidence = 1;
         if ($tanggalPenjualanAwal != null && $tanggalPenjualanAkhir != null) {
             $jumlahPenjualan = Penjualan::where('tanggal_penjualan', '>=', $tanggalPenjualanAwal)->where('tanggal_penjualan', '<=', $tanggalPenjualanAkhir)->where('status_selesai', 'selesai')->get();
             if (count($jumlahPenjualan) > 0) {
                 $keterangan = "Berhasil";
                 $tanggalMulai = date('Y-m-d', strtotime($tanggalPenjualanAwal));
                 $tanggalAkhir = date('Y-m-d', strtotime($tanggalPenjualanAkhir));
-                return view("admin.rekomendasiproduk.settingrekomendasiproduk", compact('tanggalMulai', 'tanggalAkhir', 'keterangan'));
+                return view("admin.rekomendasiproduk.settingrekomendasiproduk", compact('tanggalMulai', 'tanggalAkhir', 'keterangan', 'minSupport', 'minConfidence'));
             } else {
                 $keterangan = "Gagal";
-                return view("admin.rekomendasiproduk.settingrekomendasiproduk", compact('keterangan'));
+                return view("admin.rekomendasiproduk.settingrekomendasiproduk", compact('keterangan', 'minSupport', 'minConfidence'));
             }
         } else {
             $keterangan = "Gagal";
-            return view("admin.rekomendasiproduk.settingrekomendasiproduk", compact('keterangan'));
+            return view("admin.rekomendasiproduk.settingrekomendasiproduk", compact('keterangan', 'minSupport', 'minConfidence'));
         }
 
 
@@ -57,20 +59,41 @@ class AprioriController extends Controller
 
         foreach ($penjualans as $penjualan) {
             $item = [];
-            foreach ($penjualan->penjualanperawatans as $pp) {
-                array_push($item, $pp->perawatan->nama);
-            }
-            if (count($penjualan->produks) > 0) {
-                foreach ($penjualan->produks as $produk) {
-                    array_push($item, $produk->nama);
+
+            $idPaketPerawatan = [];
+            $idPaketProduk = [];
+
+            if (count($penjualan->pakets) > 0) {
+                foreach ($penjualan->pakets as $paket) {
+                    array_push($item, $paket->nama);
+                    foreach ($paket->perawatans as $perawatan) {
+                        array_push($idPaketPerawatan, $perawatan->id);
+                    }
+                    foreach ($paket->produks as $produk) {
+                        array_push($idPaketProduk, $produk->id);
+                    }
                 }
             }
 
-            
+            foreach ($penjualan->penjualanperawatans as $pp) {
+                if (!in_array($pp->perawatan->id, $idPaketPerawatan)) {
+                    array_push($item, $pp->perawatan->nama);
+                }
+
+            }
+            if (count($penjualan->produks) > 0) {
+                foreach ($penjualan->produks as $produk) {
+                    if (!in_array($produk->id, $idPaketProduk)) {
+                        array_push($item, $produk->nama);
+                    }
+                }
+            }
+
+
             $itemText = implode(",", $item);
             array_push($dataSet, $itemText);
         }
-        
+
         //dd($dataSet);
         // $dataSet = [
         //     "Cuci,Gunting,Creambath",
@@ -116,13 +139,13 @@ class AprioriController extends Controller
         $Apriori->process($dataSet);
         $freqItemSets = $Apriori->printFreqItemsets();
         $assocRules = $Apriori->getAssociationRules();
-        $keterangan ="Berhasil";
+        $keterangan = "Berhasil";
 
         $tanggalMulai = Penjualan::where('status_selesai', 'selesai')->min('tanggal_penjualan');
         $tanggalAkhir = Penjualan::where('status_selesai', 'selesai')->max('tanggal_penjualan');
         $tanggalMulai = date('Y-m-d', strtotime($tanggalMulai));
         $tanggalAkhir = date('Y-m-d', strtotime($tanggalAkhir));
-        return view('admin.rekomendasiproduk.settingrekomendasiproduk', compact('freqItemSets', 'assocRules', 'keterangan', 'tanggalMulai', 'tanggalAkhir', 'titleTabel'));
+        return view('admin.rekomendasiproduk.settingrekomendasiproduk', compact('freqItemSets', 'assocRules', 'keterangan', 'tanggalMulai', 'tanggalAkhir', 'titleTabel', 'minSupport', 'minConfidence'));
     }
 
 }

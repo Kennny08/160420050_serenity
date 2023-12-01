@@ -26,7 +26,7 @@
 
     <!-- Begin page -->
     <div class="home-btn d-none d-sm-block">
-        <a href="index.html" class="text-white"><i class="mdi mdi-home h1"></i></a>
+        <a href="{{ route("login") }}" class="text-white"><i class="mdi mdi-home h1"></i></a>
     </div>
 
     <div class="wrapper-page">
@@ -37,7 +37,7 @@
                     <div class="card card-pages shadow-none mt-4">
                         <div class="card-body">
                             <div class="text-center mt-0 mb-3">
-                                <a href="index.html" class="logo logo-admin">
+                                <a href="{{ route("login") }}" class="logo logo-admin">
                                     <img src="{{ asset('assets_admin/images/logo-dark.png') }}" class="mt-3"
                                         alt="" height="26"></a>
                                 <p class="text-muted w-75 mx-auto mb-4 mt-4">Masukkan Username dan Password Anda yang
@@ -98,10 +98,7 @@
                                     <div class="col-12">
                                         <div class="float-left">
                                             <a href="pages-recoverpw.html" class="text-muted"><i
-                                                    class="fa fa-lock mr-1"></i> Forgot your password?</a>
-                                        </div>
-                                        <div class="text-right">
-                                            <a href="pages-register.html" class="text-muted">Create an account</a>
+                                                    class="fa fa-lock mr-1"></i>Lupa Password?</a>
                                         </div>
                                     </div>
                                 </div>

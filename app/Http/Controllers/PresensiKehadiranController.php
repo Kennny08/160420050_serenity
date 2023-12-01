@@ -26,11 +26,20 @@ class PresensiKehadiranController extends Controller
         }
         $idMaxPresensiHariIniPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->groupBy("karyawan_id")->get();
         $presensisHariIni = PresensiKehadiran::whereIn("id", $idMaxPresensiHariIniPerKaryawan)->get();
-        $jumlahIzinKehadiran = PresensiKehadiran::where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where("status", "belum")->count();
-        $presensiIzinKehadiranHariIni = PresensiKehadiran::where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->get();
+        $jumlahIzinKehadiran = PresensiKehadiran::where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where("status", "belum")->count();
+        $presensiIzinKehadiranHariIni = PresensiKehadiran::where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->get();
         $jumlahKaryawan = Karyawan::count("id");
-        $idKaryawanUnikIzin = PresensiKehadiran::selectRaw("DISTINCT karyawan_id ")->where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->get();
-        $objectPertamaYangtanpaIzin = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->where("keterangan", "!=", "izin")->first();
+        $idKaryawanUnikIzin = PresensiKehadiran::selectRaw("DISTINCT karyawan_id ")->where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->get();
+        $objectPertamaYangtanpaIzin = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->whereNotIn("keterangan", ["izin", "sakit"])->first();
 
         return view("admin.karyawan.presensikehadiran.index", compact("tanggalHariIni", "daftarRiwayatPresensi", "presensisHariIni", "jumlahIzinKehadiran", "presensiIzinKehadiranHariIni", "jumlahKaryawan", "idKaryawanUnikIzin", "objectPertamaYangtanpaIzin"));
     }
@@ -46,7 +55,7 @@ class PresensiKehadiranController extends Controller
         $tanggalHariIni = date("Y-m-d");
         $karyawans = Karyawan::orderBy("nama")->get();
 
-        $idMaxPresensiHariIniPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->where("keterangan", "!=", "izin")->groupBy("karyawan_id")->get();
+        $idMaxPresensiHariIniPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->whereNotIn("keterangan", ["izin", "sakit"])->groupBy("karyawan_id")->get();
 
         $idPresensiKaryawanYangSudahPresensiHariIni = [];
         foreach ($idMaxPresensiHariIniPerKaryawan as $presensi) {
@@ -56,7 +65,10 @@ class PresensiKehadiranController extends Controller
         $arrObjectPresensiHariIniTanpaIzin = PresensiKehadiran::whereIn("id", $idPresensiKaryawanYangSudahPresensiHariIni)->get();
         // dd($arrObjectPresensiHariIniTanpaIzin);
 
-        $daftarIzinPresensiHariIni = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->where("keterangan", "izin")->get();
+        $daftarIzinPresensiHariIni = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->get();
         $daftarKaryawanIzinHariIni = [];
         if (count($daftarIzinPresensiHariIni) > 0) {
             foreach ($karyawans as $karyawan) {
@@ -121,7 +133,7 @@ class PresensiKehadiranController extends Controller
 
         for ($i = 0; $i < count($daftarNamaKaryawan); $i++) {
 
-            if ($keteranganPresensi[$i] == "izin") {
+            if ($keteranganPresensi[$i] == "izin" || $keteranganPresensi[$i] == "sakit") {
                 $presensiIzinTerpilih = PresensiKehadiran::where('karyawan_id', $daftarNamaKaryawan[$i])->where('status', 'belum')->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->first();
                 if ($presensiIzinTerpilih != null) {
                     $presensiIzinTerpilih->status = $statusPresensi[$i];
@@ -201,7 +213,10 @@ class PresensiKehadiranController extends Controller
     {
         date_default_timezone_set("Asia/Jakarta");
         $idMaxPresensiPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalPresensi . "'")->groupBy("karyawan_id")->get();
-        $idMaxPresensiPerKaryawanIzinDitolak = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalPresensi . "'")->where("keterangan", "izin")->where("status", "tolak")->groupBy("karyawan_id")->get();
+        $idMaxPresensiPerKaryawanIzinDitolak = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalPresensi . "'")->where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->where("status", "tolak")->groupBy("karyawan_id")->get();
         $objectUnikKaryawanYangIzinDitolak = PresensiKehadiran::selectRaw("DISTINCT karyawan_id")->whereIn("id", $idMaxPresensiPerKaryawanIzinDitolak)->get();
         $idUnikKaryawanYangIzinDitolak = [];
         foreach ($objectUnikKaryawanYangIzinDitolak as $presensiIzinDitolak) {
@@ -249,7 +264,7 @@ class PresensiKehadiranController extends Controller
 
             if ($keteranganPresensi[$i] != $presensiKaryawanMax->keterangan) {
                 if ($statusPresensi[$i] != $presensiKaryawanMax->status) {
-                    if ($presensiKaryawanMax->keterangan == "izin" && $presensiKaryawanMax->status == "tolak") {
+                    if (($presensiKaryawanMax->keterangan == "izin" || $presensiKaryawanMax->keterangan == "sakit") && $presensiKaryawanMax->status == "tolak") {
                         $newPresensi = new PresensiKehadiran();
                         $newPresensi->keterangan = $keteranganPresensi[$i];
                         $newPresensi->status = $statusPresensi[$i];
@@ -340,8 +355,14 @@ class PresensiKehadiranController extends Controller
         date_default_timezone_set("Asia/Jakarta");
         $tanggalHariIni = date("Y-m-d");
 
-        $tanggalUnikIzinSebelumnya = PresensiKehadiran::selectRaw("distinct DATE(tanggal_presensi) as tanggal_presensi")->whereRaw("DATE(tanggal_presensi) < '" . $tanggalHariIni . "'")->where("keterangan", "izin")->orderBy("tanggal_presensi", "asc")->get();
-        $tanggalUnikIzinHariIniKedepan = PresensiKehadiran::selectRaw("distinct DATE(tanggal_presensi) as tanggal_presensi")->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where("keterangan", "izin")->orderBy("tanggal_presensi", "desc")->get();
+        $tanggalUnikIzinSebelumnya = PresensiKehadiran::selectRaw("distinct DATE(tanggal_presensi) as tanggal_presensi")->whereRaw("DATE(tanggal_presensi) < '" . $tanggalHariIni . "'")->where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->orderBy("tanggal_presensi", "asc")->get();
+        $tanggalUnikIzinHariIniKedepan = PresensiKehadiran::selectRaw("distinct DATE(tanggal_presensi) as tanggal_presensi")->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->orderBy("tanggal_presensi", "desc")->get();
 
         $daftarIzinPresensiHariSebelumnya = [];
         $daftarIzinPresensiHariIniKedepan = [];
@@ -352,8 +373,15 @@ class PresensiKehadiranController extends Controller
             $nomorHariDalamMingguan = date("w", strtotime($tanggalIzin->tanggal_presensi));
             $tanggalIzinTeks = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y', strtotime($tanggalIzin->tanggal_presensi));
 
-            $objIzinSementara["daftarIzin"] = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where("keterangan", "izin")->orderBy("tanggal_presensi", "asc")->get();
-            $objIzinSementara["jumlahKaryawan"] = PresensiKehadiran::selectRaw("DISTINCT karyawan_id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where("keterangan", "izin")->count("id");
+
+            $objIzinSementara["daftarIzin"] = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where(function ($query) {
+                $query->where('keterangan', 'sakit')
+                    ->orWhere('keterangan', 'izin');
+            })->orderBy("tanggal_presensi", "asc")->get();
+            $objIzinSementara["jumlahKaryawan"] = PresensiKehadiran::selectRaw("DISTINCT karyawan_id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where(function ($query) {
+                $query->where('keterangan', 'sakit')
+                    ->orWhere('keterangan', 'izin');
+            })->count();
             $objIzinSementara["tanggalIzin"] = $tanggalIzin->tanggal_presensi;
             $objIzinSementara["tanggalIzinHari"] = $tanggalIzinTeks;
             array_push($daftarIzinPresensiHariSebelumnya, $objIzinSementara);
@@ -366,8 +394,14 @@ class PresensiKehadiranController extends Controller
             $nomorHariDalamMingguan = date("w", strtotime($tanggalIzin->tanggal_presensi));
             $tanggalIzinTeks = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y', strtotime($tanggalIzin->tanggal_presensi));
 
-            $objIzinSementara["daftarIzin"] = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where("keterangan", "izin")->orderBy("tanggal_presensi", "asc")->get();
-            $objIzinSementara["jumlahKaryawan"] = PresensiKehadiran::selectRaw("DISTINCT karyawan_id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where("keterangan", "izin")->count("id");
+            $objIzinSementara["daftarIzin"] = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where(function ($query) {
+                $query->where('keterangan', 'sakit')
+                    ->orWhere('keterangan', 'izin');
+            })->orderBy("tanggal_presensi", "asc")->get();
+            $objIzinSementara["jumlahKaryawan"] = PresensiKehadiran::selectRaw("DISTINCT karyawan_id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where(function ($query) {
+                $query->where('keterangan', 'sakit')
+                    ->orWhere('keterangan', 'izin');
+            })->count();
             $objIzinSementara["tanggalIzin"] = $tanggalIzin->tanggal_presensi;
             $objIzinSementara["tanggalIzinHari"] = $tanggalIzinTeks;
             array_push($daftarIzinPresensiHariIniKedepan, $objIzinSementara);
@@ -380,7 +414,10 @@ class PresensiKehadiranController extends Controller
     public function getDetailIzinKehadiran()
     {
         $tanggalIzin = $_POST['tanggalIzin'];
-        $idMaxIzinPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin . "'")->where("keterangan", "izin")->groupBy("karyawan_id")->get();
+        $idMaxIzinPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin . "'")->where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->groupBy("karyawan_id")->get();
         $daftarPresensiIzin = PresensiKehadiran::whereIn("id", $idMaxIzinPerKaryawan)->get();
         return response()->json(array('msg' => view('admin.karyawan.presensikehadiran.detailizinkehadiran', compact('daftarPresensiIzin'))->render()), 200);
     }
@@ -400,7 +437,10 @@ class PresensiKehadiranController extends Controller
         $tanggalPresensiYangDiupdate = date('Y-m-d', strtotime($objPresensi->tanggal_presensi));
 
         if (strtotime($tanggalPresensiYangDiupdate) >= strtotime($tanggalHariIni)) {
-            $tanggalUnikIzinHariIniKedepan = PresensiKehadiran::selectRaw("distinct DATE(tanggal_presensi) as tanggal_presensi")->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where("keterangan", "izin")->orderBy("tanggal_presensi", "asc")->get();
+            $tanggalUnikIzinHariIniKedepan = PresensiKehadiran::selectRaw("distinct DATE(tanggal_presensi) as tanggal_presensi")->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where(function ($query) {
+                $query->where('keterangan', 'sakit')
+                    ->orWhere('keterangan', 'izin');
+            })->orderBy("tanggal_presensi", "asc")->get();
             $daftarIzinPresensiHariIniKedepan = [];
             foreach ($tanggalUnikIzinHariIniKedepan as $tanggalIzin) {
                 $objIzinSementara = [];
@@ -409,8 +449,14 @@ class PresensiKehadiranController extends Controller
                 $nomorHariDalamMingguan = date("w", strtotime($tanggalIzin->tanggal_presensi));
                 $tanggalIzinTeks = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y', strtotime($tanggalIzin->tanggal_presensi));
 
-                $objIzinSementara["daftarIzin"] = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where("keterangan", "izin")->orderBy("tanggal_presensi", "asc")->get();
-                $objIzinSementara["jumlahKaryawan"] = PresensiKehadiran::selectRaw("DISTINCT karyawan_id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where("keterangan", "izin")->count("id");
+                $objIzinSementara["daftarIzin"] = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where(function ($query) {
+                    $query->where('keterangan', 'sakit')
+                        ->orWhere('keterangan', 'izin');
+                })->orderBy("tanggal_presensi", "asc")->get();
+                $objIzinSementara["jumlahKaryawan"] = PresensiKehadiran::selectRaw("DISTINCT karyawan_id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where(function ($query) {
+                    $query->where('keterangan', 'sakit')
+                        ->orWhere('keterangan', 'izin');
+                })->count("id");
                 $objIzinSementara["tanggalIzin"] = $tanggalIzin->tanggal_presensi;
                 $objIzinSementara["tanggalIzinHari"] = $tanggalIzinTeks;
                 array_push($daftarIzinPresensiHariIniKedepan, $objIzinSementara);
@@ -418,7 +464,10 @@ class PresensiKehadiranController extends Controller
             }
             return response()->json(array('updated_at' => date("d-m-Y H:i", strtotime($objPresensi->updated_at)), 'msg' => view('admin.karyawan.presensikehadiran.daftarizinhariinikedepan', compact('daftarIzinPresensiHariIniKedepan'))->render(), "waktu" => "hariinikedepan"), 200);
         } else {
-            $tanggalUnikIzinSebelumnya = PresensiKehadiran::selectRaw("distinct DATE(tanggal_presensi) as tanggal_presensi")->whereRaw("DATE(tanggal_presensi) < '" . $tanggalHariIni . "'")->where("keterangan", "izin")->orderBy("tanggal_presensi", "desc")->get();
+            $tanggalUnikIzinSebelumnya = PresensiKehadiran::selectRaw("distinct DATE(tanggal_presensi) as tanggal_presensi")->whereRaw("DATE(tanggal_presensi) < '" . $tanggalHariIni . "'")->where(function ($query) {
+                $query->where('keterangan', 'sakit')
+                    ->orWhere('keterangan', 'izin');
+            })->orderBy("tanggal_presensi", "desc")->get();
 
             $daftarIzinPresensiHariSebelumnya = [];
             foreach ($tanggalUnikIzinSebelumnya as $tanggalIzin) {
@@ -428,8 +477,14 @@ class PresensiKehadiranController extends Controller
                 $nomorHariDalamMingguan = date("w", strtotime($tanggalIzin->tanggal_presensi));
                 $tanggalIzinTeks = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y', strtotime($tanggalIzin->tanggal_presensi));
 
-                $objIzinSementara["daftarIzin"] = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where("keterangan", "izin")->orderBy("tanggal_presensi", "asc")->get();
-                $objIzinSementara["jumlahKaryawan"] = PresensiKehadiran::selectRaw("DISTINCT karyawan_id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where("keterangan", "izin")->count("id");
+                $objIzinSementara["daftarIzin"] = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where(function ($query) {
+                    $query->where('keterangan', 'sakit')
+                        ->orWhere('keterangan', 'izin');
+                })->orderBy("tanggal_presensi", "asc")->get();
+                $objIzinSementara["jumlahKaryawan"] = PresensiKehadiran::selectRaw("DISTINCT karyawan_id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin->tanggal_presensi . "'")->where(function ($query) {
+                    $query->where('keterangan', 'sakit')
+                        ->orWhere('keterangan', 'izin');
+                })->count("id");
                 $objIzinSementara["tanggalIzin"] = $tanggalIzin->tanggal_presensi;
                 $objIzinSementara["tanggalIzinHari"] = $tanggalIzinTeks;
                 array_push($daftarIzinPresensiHariSebelumnya, $objIzinSementara);
@@ -451,15 +506,19 @@ class PresensiKehadiranController extends Controller
         $idMaxPresensiHariIniPerKaryawan = PresensiKehadiran::selectRaw("max(id) as id")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->groupBy("karyawan_id")->get();
         $presensisHariIni = PresensiKehadiran::whereIn("id", $idMaxPresensiHariIniPerKaryawan)->get();
         $jumlahKaryawan = Karyawan::count("id");
-        $idKaryawanUnikIzin = PresensiKehadiran::selectRaw("DISTINCT karyawan_id ")->where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->get();
+        $idKaryawanUnikIzin = PresensiKehadiran::selectRaw("DISTINCT karyawan_id ")->where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->get();
 
-        $objectPertamaYangtanpaIzin = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->where("keterangan", "!=", "izin")->first();
+        $objectPertamaYangtanpaIzin = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->whereNotIn("keterangan", ["izin", "sakit"])->first();
 
         return view("karyawansalon.presensikaryawan.presensihariini", compact("presensiKaryawan", "presensisHariIni", "idKaryawanUnikIzin", "jumlahKaryawan", "objectPertamaYangtanpaIzin"));
     }
 
     public function prosesPresensiHariIniKaryawanSalon(Request $request)
     {
+
         date_default_timezone_set("Asia/Jakarta");
         $idPresensi = $request->get("idPresensiKaryawan");
         $keteranganPresensi = $request->get("radioKeteranganPresensi");
@@ -489,17 +548,31 @@ class PresensiKehadiranController extends Controller
         date_default_timezone_set("Asia/Jakarta");
         $tanggalHariIni = date("Y-m-d");
         $karyawan = Auth::user()->karyawan;
-
-        $daftarRiwayatIzinKaryawanHriIniKedepan = PresensiKehadiran::where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where("karyawan_id", $karyawan->id)->orderByRaw("DATE(tanggal_presensi) desc")->get();
-        $daftarRiwayatIzinKaryawanSebelumnya = PresensiKehadiran::where("keterangan", "izin")->whereRaw("DATE(tanggal_presensi) < '" . $tanggalHariIni . "'")->where("karyawan_id", $karyawan->id)->orderByRaw("DATE(tanggal_presensi) desc")->get();
+        $daftarRiwayatIzinKaryawanHriIniKedepan = PresensiKehadiran::where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where("karyawan_id", $karyawan->id)->orderByRaw("DATE(tanggal_presensi) desc")->get();
+        $daftarRiwayatIzinKaryawanSebelumnya = PresensiKehadiran::where(function ($query) {
+            $query->where('keterangan', 'sakit')
+                ->orWhere('keterangan', 'izin');
+        })->whereRaw("DATE(tanggal_presensi) < '" . $tanggalHariIni . "'")->where("karyawan_id", $karyawan->id)->orderByRaw("DATE(tanggal_presensi) desc")->get();
 
         return view("karyawansalon.presensikaryawan.daftarizinkaryawan", compact("daftarRiwayatIzinKaryawanHriIniKedepan", "daftarRiwayatIzinKaryawanSebelumnya"));
     }
 
     public function prosesIzinKaryawanSalon(Request $request)
     {
+
+
+        if ($request->get("deskripsiIzin") == null) {
+            return redirect()->back()->withInput()->withErrors("Deskripsi Keterangan Izin tidak boleh kosong ketika ingin mengajukan Izin!");
+        }
+
         date_default_timezone_set("Asia/Jakarta");
         $tanggalIzin = $request->get("tanggalIzin");
+        $keteranganizin = $request->get("radioKeteranganPresensi");
+        $deskripsiIzin = $request->get("deskripsiIzin");
+        $fileTambahan = $request->file("fileTambahan");
         $karyawan = Auth::user()->karyawan;
 
         $idMaxPresensiHariTersebut = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalIzin . "'")->where("karyawan_id", $karyawan->id)->max("id");
@@ -512,20 +585,38 @@ class PresensiKehadiranController extends Controller
             $newIzinKaryawan->karyawan_id = $karyawan->id;
             $newIzinKaryawan->karyawan_id = $karyawan->id;
             $newIzinKaryawan->tanggal_presensi = $tanggalIzin;
-            $newIzinKaryawan->keterangan = "izin";
+
+            if ($keteranganizin == "izin") {
+                $newIzinKaryawan->keterangan = "izin";
+            } else {
+                $newIzinKaryawan->keterangan = "sakit";
+            }
+
+            $newIzinKaryawan->deskripsi = $deskripsiIzin;
+
+
             $newIzinKaryawan->status = "belum";
             $newIzinKaryawan->updated_at = date("Y-m-d H:i:s");
             $newIzinKaryawan->created_at = date("Y-m-d H:i:s");
             $newIzinKaryawan->save();
 
+            if ($fileTambahan != null) {
+                $extensionImage = $fileTambahan->getClientOriginalExtension();
+                $namaImage = "keterangan-" . $keteranganizin . "-" . $newIzinKaryawan->id . "." . $extensionImage;
+                $fileTambahan->move(public_path('assets_admin/images/izin_sakit_karyawan'), $namaImage);
+                $newIzinKaryawan->file_tambahan = $namaImage;
+                $newIzinKaryawan->updated_at = date("Y-m-d H:i:s");
+                $newIzinKaryawan->save();
+            }
+
             return redirect()->route("karyawans.daftarizinkaryawansalon")->with("status", "Berhasil mengajukan izin kehadiran untuk tanggal " . date("d-m-Y", strtotime($tanggalIzin)) . "!");
         } else {
-            if ($checkIzin->keterangan == "izin") {
+            if ($checkIzin->keterangan == "izin" || $checkIzin->keterangan == "sakit") {
                 return redirect()->route("karyawans.daftarizinkaryawansalon")->withErrors("Anda sudah pernah mengajukan izin untuk tanggal " . date("d-m-Y", strtotime($tanggalIzin)) . "!");
-            }else{
+            } else {
                 return redirect()->route("karyawans.daftarizinkaryawansalon")->withErrors("Anda tidak dapat mengajukan izin untuk tanggal " . date("d-m-Y", strtotime($tanggalIzin)) . ", karena sudah terdapat presensi untuk Anda pada tanggal tersebut!");
             }
-            
+
         }
     }
 }

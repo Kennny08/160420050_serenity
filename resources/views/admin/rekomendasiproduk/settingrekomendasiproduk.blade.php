@@ -41,7 +41,7 @@
                                     <label for="exampleInputEmail1"><strong>Tanggal Mulai Riwayat Penjualan</strong></label>
                                     <input type="date" class="form-control" name="tanggalMulai" min="{{ $tanggalMulai }}"
                                         max="{{ $tanggalAkhir }}" id="tanggalMulaiPenjualan" aria-describedby="emailHelp"
-                                        placeholder="Silahkan Pilih Tanggal Reservasi" required>
+                                        placeholder="Silahkan Pilih Tanggal Reservasi" required value="{{ $tanggalMulai }}">
                                     <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Mulai Riwayat
                                         Penjualan Anda
                                         disini!</small>
@@ -52,7 +52,7 @@
                                     <label for="exampleInputEmail1"><strong>Tanggal Akhir Riwayat Penjualan</strong></label>
                                     <input type="date" class="form-control" name="tanggalAkhir" min="{{ $tanggalMulai }}"
                                         max="{{ $tanggalAkhir }}" id="tanggalAkhirPenjualan" aria-describedby="emailHelp"
-                                        placeholder="Silahkan Pilih Tanggal Reservasi" required>
+                                        placeholder="Silahkan Pilih Tanggal Reservasi" required value="{{ $tanggalAkhir }}">
                                     <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Akhir Riwayat Penjualan
                                         Anda
                                         disini!</small>
@@ -62,7 +62,7 @@
                                 <div class="col-md-6">
                                     <label for="exampleInputEmail1"><strong>Minimum Support (min 1)</strong></label>
                                     <input type="number" class="form-control" name="minSupport" min="1"
-                                        id="txtMinimumSupport" aria-describedby="emailHelp" value="1"
+                                        id="txtMinimumSupport" aria-describedby="emailHelp" value="{{ $minSupport }}"
                                         placeholder="nilai support" required>
                                     <small id="emailHelp" class="form-text text-muted">Masukkan nilai Minimum Support
                                         disini!</small>
@@ -72,7 +72,7 @@
                                 <div class="col-md-6">
                                     <label for="exampleInputEmail1"><strong>Minimum Confidence(%)</strong></label>
                                     <input type="number" class="form-control" name="minConfidence" min="1"
-                                        max="100" id="txtMinimumConfidence" aria-describedby="emailHelp" value="1"
+                                        max="100" id="txtMinimumConfidence" aria-describedby="emailHelp" value="{{ $minConfidence }}"
                                         placeholder="minimum confidence" required>
                                     <small id="emailHelp" class="form-text text-muted">Masukkan nilai Minimum Confidence
                                         disini!</small>
@@ -92,9 +92,9 @@
                                                 <h5>{{ $titleTabel }}</h5>
                                             </div>
                                         </div>
-                                        <div class="form-group row text-center mt-3">
-                                            <div class="form-group col-md-12">
-                                                <table class="table table-bordered">
+                                        <div class="form-group row">
+                                            <div class="form-group col-md-12 table-responsive">
+                                                {{-- <table class="table table-bordered">
                                                     <thead class="thead-default">
                                                         <tr class="text-center">
                                                             <th>Pasangan Perawatan atau Produk beserta Jumlah Kemunculannya</th>
@@ -108,25 +108,37 @@
                                                         @endforeach
                                                     </tbody>
                                                 </table>
-                                                <br>
-                                                <table class="table table-bordered">
+                                                <br> --}}
+                                                <table id="tableHasilAssociationRules"
+                                                    class="table table-bordered dt-responsive nowrap text-center w-100"
+                                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                                     <thead class="thead-default">
                                                         <tr class="text-center">
-                                                            <th>Kombinasi Perawatan atau Produk</th>
-                                                            <th>Confidence</th>
+                                                            <th>Item yang ingin dipromosikan</th>
+                                                            <th>Pasangan Item untuk Promosi</th>
+                                                            <th hidden>Confidence </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         @foreach ($assocRules as $ar => $ar1)
                                                             @foreach ($ar1 as $ar2 => $ar3)
                                                                 <tr>
-                                                                    <td><span style="font-size: 15px"
-                                                                            class="font-weight-bold">jika ingin mempromosikan </span>
-                                                                        {{ $ar }} <span style="font-size: 15px"
-                                                                            class="font-weight-bold">maka dapat dipasangkan dengan </span>
-                                                                        {{ $ar2 }}
+                                                                    <td>
+                                                                        <span
+                                                                            style="font-size: 15px">{!! implode(',<br>', explode(',', $ar)) !!}
+                                                                        </span>
                                                                     </td>
-                                                                    <td>{{ $ar3 }}%</td>
+                                                                    <td>
+                                                                        <span style="font-size: 15px">
+                                                                            {!! implode(',<br>', explode(',', $ar2)) !!}
+                                                                        </span>
+
+                                                                    </td>
+
+                                                                    </td>
+                                                                    <td hidden>
+                                                                        {{ $ar3 }}
+                                                                    </td>
                                                                 </tr>
                                                             @endforeach
                                                         @endforeach
@@ -167,6 +179,14 @@
 
 @section('javascript')
     <script>
-        
+        $(document).ready(function() {
+            $('#tableHasilAssociationRules').DataTable({
+                order: [
+                    [2, "desc"],
+                ]
+            });
+
+
+        });
     </script>
 @endsection

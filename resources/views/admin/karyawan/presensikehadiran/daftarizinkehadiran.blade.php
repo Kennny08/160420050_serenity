@@ -228,6 +228,32 @@
         <!-- /.modal-dialog -->
     </div>
 
+    <div id="modalFileTambahan" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h5 class="modal-title mt-0" id="modalNamaFileTambahan">Detail File Tambahan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="contentFileTambahan">
+                    <div class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"> <button type="button" class="btn btn-danger waves-effect btnTutupFileTambahan"
+                        data-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
 
 @endsection
 
@@ -240,7 +266,7 @@
                 ],
                 language: {
                     emptyTable: "Tidak terdapat Daftar Izin Karyawan untuk hari ini dan kedepannya!",
-                    
+
                 }
             });
 
@@ -250,7 +276,7 @@
                 ],
                 language: {
                     emptyTable: "Tidak terdapat Daftar Riwayat Izin Kehadiran Karyawan!",
-                    
+
                 }
             });
         });
@@ -327,7 +353,7 @@
                         }
                         $("#waktuKonfirmasi_" + idPresensi).html("<p>" + data.updated_at + "</p>");
                         $("#statusKonfirmasi_" + idPresensi).html(
-                            "<span style='font-size: 1em;padding: 0.5em 1em;' class='badge badge-success'>Telah " +
+                            "<span class='text-success font-weight-bolds'>Telah " +
                             "Dikonfirmasi </span>");
                         $("#modalDetailRiwayatIzin").modal("show");
 
@@ -339,7 +365,7 @@
                         }
                         $("#waktuKonfirmasi_" + idPresensi).html("<p>" + data.updated_at + "</p>");
                         $("#statusKonfirmasi_" + idPresensi).html(
-                            "<span style='font-size: 1em;padding: 0.5em 1em;' class='badge badge-danger'>Izin " +
+                            "<span class='text-danger font-weight-bold'>Izin " +
                             "Ditolak </span>");
                         $("#modalDetailRiwayatIzin").modal("show");
                     }
@@ -357,6 +383,16 @@
         $('.radioNonaktif').on('click', function() {
             $(".radioNonaktif").addClass("btn-info");
             $(".radioAktif").removeClass("btn-info");
+        });
+
+        $('body').on('click', '.btnTutupFileTambahan', function() {
+            $("#modalDetailRiwayatIzin").modal("show");
+        });
+
+        $('body').on('click', '.btnLihatFileTambahan', function() {
+            var namaImage = $(this).attr("namaImage");
+            $("#modalDetailRiwayatIzin").modal("hide");
+            $("#contentFileTambahan").html("<img class='img-fluid' src='" + namaImage + "' alt='filetambahan'>");
         });
     </script>
 @endsection

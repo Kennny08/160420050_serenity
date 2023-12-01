@@ -256,18 +256,7 @@
                                             class="mdi mdi-chevron-right"></i></span> </span>
                             </a>
                             <ul class="submenu">
-                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
-                                    <li>
-                                        <a href="javascript:void(0);" class="waves-effect"><i
-                                                class="mdi mdi-inbox"></i><span>
-                                                Pembelian <span class="float-right menu-arrow"><i
-                                                        class="mdi mdi-chevron-right"></i></span> </span></a>
-                                        <ul class="submenu">
-                                            <li><a href="{{ route('pembelians.index') }}">Daftar Pembelian</a></li>
-                                            <li><a href="{{ route('suppliers.index') }}">Supplier</a></li>
-                                        </ul>
-                                    </li>
-                                @endif
+
 
                                 <li>
                                     <a href="{{ route('perawatans.index') }}" class="waves-effect">
@@ -313,9 +302,18 @@
                                         <ul class="submenu">
                                             @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                                                 <li><a href="{{ route('karyawans.index') }}">Daftar Karyawan</a></li>
-                                                <li><a href="{{ route('presensikehadirans.index') }}">Presensi
-                                                        Karyawan</a>
-                                                </li>
+                                                @if (Auth::user()->role == 'admin')
+                                                    <li><a href="{{ route('presensikehadirans.index') }}">Presensi
+                                                            Karyawan</a>
+                                                    </li>
+                                                @else
+                                                    <li><a
+                                                            href="{{ route('karyawans.presensihariinikaryawansalon') }}">Presensi
+                                                            Karyawan
+                                                        </a>
+                                                    </li>
+                                                @endif
+
                                                 <li><a href="{{ route('admin.presensikehadirans.riwayatpresensi') }}">Riwayat
                                                         Presensi Karyawan</a></li>
                                                 <li><a
@@ -336,6 +334,11 @@
                                     <li>
                                         <a href="{{ route('slotjams.index') }}" class="waves-effect">
                                             <i class="dripicons-clock"></i> <span> Slot Jam </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('suppliers.index') }}" class="waves-effect">
+                                            <i class="mdi mdi-alpha-s-box-outline"></i> <span>Supplier</span>
                                         </a>
                                     </li>
                                 @endif
@@ -361,6 +364,15 @@
                             </ul>
                         </li>
 
+                        @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                            <li>
+                                <a href="javascript:void(0);" class="waves-effect"><i
+                                        class="mdi mdi-inbox"></i><span>
+                                        Pembelian </span></a>
+
+                            </li>
+                        @endif
+
                         @if (Auth::user()->role == 'karyawan')
                             @if (Auth::user()->karyawan->jenis_karyawan == 'pekerja salon')
                                 <li>
@@ -380,7 +392,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="{{ route('karyawans.daftarizinkaryawansalon') }}">Daftar Izin
+                                            <a href="{{ route('karyawans.daftarizinkaryawansalon') }}">Izin
                                                 Karyawan
                                             </a>
                                         </li>
@@ -432,7 +444,7 @@
                                         class="mdi mdi-cash-multiple"></i><span>
                                         Penjualan <span class="float-right menu-arrow"><i
                                                 class="mdi mdi-chevron-right"></i></span> </span></a>
-                                
+
                                 <ul class="submenu">
                                     <li>
                                         <a href="{{ route('penjualans.index') }}">

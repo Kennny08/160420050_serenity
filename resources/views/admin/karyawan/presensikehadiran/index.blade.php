@@ -116,6 +116,7 @@
                                                     <td>
                                                         {{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}
                                                     </td>
+
                                                     @if ($p->keterangan == 'hadir')
                                                         <td class="text-success">HADIR</td>
                                                     @elseif($p->keterangan == 'absen')
@@ -126,32 +127,24 @@
                                                         <td class="text-info">SAKIT</td>
                                                     @endif
 
-                                                    @if ($p->keterangan == 'izin')
+                                                    @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
                                                         @if ($p->status == 'belum')
-                                                            <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                                    class="badge badge-warning">Belum
-                                                                    Dikonfirmasi</span>
-                                                            </td>
+                                                            <td><span class="text-warning font-weight-bold">Belum
+                                                                    Dikonfirmasi</span></td>
                                                         @elseif($p->status == 'konfirmasi')
-                                                            <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                                    class="badge badge-success">Telah
-                                                                    Dikonfirmasi</span>
-                                                            </td>
+                                                            <td><span class="text-success font-weight-bold">Telah
+                                                                    Dikonfirmasi</span></td>
                                                         @elseif($p->status == 'tolak')
-                                                            <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                                    class="badge badge-danger">Izin Ditolak</span></td>
+                                                            <td><span class="text-danger font-weight-bold">Izin
+                                                                    Ditolak</span></td>
                                                         @endif
                                                     @else
                                                         @if ($p->status == 'belum')
-                                                            <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                                    class="badge badge-warning">Belum
-                                                                    Dikonfirmasi</span>
-                                                            </td>
+                                                            <td><span class="text-warning font-weight-bold">Belum
+                                                                    Dikonfirmasi</span></td>
                                                         @elseif($p->status == 'konfirmasi')
-                                                            <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                                    class="badge badge-success">Telah
-                                                                    Dikonfirmasi</span>
-                                                            </td>
+                                                            <td><span class="text-success font-weight-bold">Telah
+                                                                    Dikonfirmasi</span></td>
                                                         @endif
                                                     @endif
 
@@ -193,7 +186,7 @@
                                             <td>{{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}</td>
 
                                             <td>
-                                                @if ($p->keterangan == 'izin')
+                                                @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
                                                     {{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}
                                                 @else
                                                     {{ date('H:i', strtotime($p->created_at)) }}
@@ -204,7 +197,7 @@
                                                 @if (date('H:i:s', strtotime($p->created_at)) == date('H:i:s', strtotime($p->tanggal_presensi)))
                                                     Menunggu Karyawan Presensi
                                                 @else
-                                                    @if ($p->keterangan == 'izin')
+                                                    @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
                                                         {{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}
                                                     @else
                                                         {{ date('H:i', strtotime($p->tanggal_presensi)) }}
@@ -222,24 +215,23 @@
                                                 <td class="text-info">SAKIT</td>
                                             @endif
 
-                                            @if ($p->keterangan == 'izin')
+                                            @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
                                                 @if ($p->status == 'belum')
-                                                    <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                            class="badge badge-warning">Belum Dikonfirmasi</span></td>
+                                                    <td><span class="text-warning font-weight-bold">Belum
+                                                            Dikonfirmasi</span></td>
                                                 @elseif($p->status == 'konfirmasi')
-                                                    <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                            class="badge badge-success">Telah Dikonfirmasi</span></td>
+                                                    <td><span class="text-success font-weight-bold">Telah
+                                                            Dikonfirmasi</span></td>
                                                 @elseif($p->status == 'tolak')
-                                                    <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                            class="badge badge-danger">Izin Ditolak</span></td>
+                                                    <td><span class="text-danger font-weight-bold">Izin Ditolak</span></td>
                                                 @endif
                                             @else
                                                 @if ($p->status == 'belum')
-                                                    <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                            class="badge badge-warning">Belum Dikonfirmasi</span></td>
+                                                    <td><span class="text-warning font-weight-bold">Belum
+                                                            Dikonfirmasi</span></td>
                                                 @elseif($p->status == 'konfirmasi')
-                                                    <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                            class="badge badge-success">Telah Dikonfirmasi</span></td>
+                                                    <td><span class="text-success font-weight-bold">Telah
+                                                            Dikonfirmasi</span></td>
                                                 @endif
                                             @endif
 
@@ -302,6 +294,5 @@
 
             });
         });
-
     </script>
 @endsection

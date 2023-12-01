@@ -35,27 +35,32 @@
 
                     @if ($objectPertamaYangtanpaIzin != null)
                         <div class="form-group row">
-                            <div class="col-md-6">
+                            <div class="col-md-8">
                                 <h5>Waktu Buka Presensi :
                                     {{ date('H:i', strtotime($objectPertamaYangtanpaIzin->created_at)) }}
                                 </h5>
                                 @if (
                                     $presensiKaryawan != null &&
-                                        $presensiKaryawan->keterangan != 'izin' &&
+                                        ($presensiKaryawan->keterangan != 'izin' || $presensiKaryawan->keterangan != 'sakit') &&
                                         date('H:i:s', strtotime($presensiKaryawan->created_at)) ==
                                             date('H:i:s', strtotime($presensiKaryawan->tanggal_presensi)))
-                                    <h6 class="text-danger">Silahkan lakukan presensi dengan memilih keterangan Anda pada
-                                        kolom Keterangan!
+                                    <h6 class="text-danger">Silahkan lakukan presensi dengan memastikan kehadiran Anda pada
+                                        kolom Keterangan dan Silahkan lakukan Konfirmasi Presensi!
                                     </h6>
                                 @endif
                             </div>
-                            <div class="col-md-6 text-right">
-                                <button class="btn btn-info waves-effect waves-light mt-3 btn-lg" style="width: 250px;"
-                                    id="btnModalKonfirmasiPresensi" data-toggle="modal"
-                                    data-target="#modalKonfirmasiPresensi" keterangan="hadir"
-                                    tanggalHariIni="{{ date('d-m-Y') }}" type="submit">
-                                    Konfirmasi Presensi</button>
-                            </div>
+                            @if (date('H:i:s', strtotime($presensiKaryawan->created_at)) ==
+                                    date('H:i:s', strtotime($presensiKaryawan->tanggal_presensi)) &&
+                                    ($presensiKaryawan->keterangan != 'izin' || $presensiKaryawan->keterangan != 'sakit'))
+                                <div class="col-md-4 text-right">
+                                    <button class="btn btn-info waves-effect waves-light mt-3 btn-lg" style="width: 250px;"
+                                        id="btnModalKonfirmasiPresensi" data-toggle="modal"
+                                        data-target="#modalKonfirmasiPresensi" keterangan="hadir"
+                                        tanggalHariIni="{{ date('d-m-Y') }}" type="submit">
+                                        Konfirmasi Presensi</button>
+                                </div>
+                            @endif
+
                         </div>
                     @else
                         <div class="form-group row">
@@ -68,8 +73,8 @@
                     @if (
                         $presensiKaryawan == null ||
                             count($presensisHariIni) != $jumlahKaryawan ||
-                            (count($presensisHariIni) != $jumlahKaryawan && $presensiKaryawan->keterangan == 'izin') ||
-                            (count($idKaryawanUnikIzin) != $jumlahKaryawan && $presensiKaryawan->keterangan == 'izin'))
+                            (count($presensisHariIni) != $jumlahKaryawan &&
+                                ($presensiKaryawan->keterangan == 'izin' || $presensiKaryawan->keterangan == 'sakit')))
                         <div class="col-xl-12">
                             <div class="card text-white bg-danger text-center">
                                 <div class="card-body">
@@ -91,7 +96,7 @@
                                 <thead>
                                     <tr>
                                         <th>Tanggal Presensi</th>
-                                        @if ($presensiKaryawan->keterangan == 'izin')
+                                        @if ($presensiKaryawan->keterangan == 'izin' || $presensiKaryawan->keterangan == 'sakit')
                                             <th>Waktu Pengajuan Izin</th>
                                         @else
                                             <th>Waktu Buka Presensi</th>
@@ -107,7 +112,7 @@
                                     <tr id="tr_{{ $presensiKaryawan->id }}">
                                         <td>{{ date('d-m-Y', strtotime($presensiKaryawan->tanggal_presensi)) }}</td>
 
-                                        @if ($presensiKaryawan->keterangan == 'izin')
+                                        @if ($presensiKaryawan->keterangan == 'izin' || $presensiKaryawan->keterangan == 'sakit')
                                             <td>
                                                 {{ date('d-m-Y H:i:s', strtotime($presensiKaryawan->created_at)) }}
                                             </td>
@@ -133,6 +138,7 @@
                                                 <form method="POST" id="formKonfirmasiPresensi"
                                                     action="{{ route('karyawans.prosespresensihariinikaryawansalon') }}"
                                                     enctype="multipart/form-data">
+                                                    @csrf
                                                     <div class="btn-group btn-group-toggle border w-100"
                                                         data-toggle="buttons">
                                                         <input type="hidden" name="idPresensiKaryawan"
@@ -145,14 +151,8 @@
                                                                 class="radioKeteranganPresensi" checked>
                                                             Hadir
                                                         </label>
-                                                        <label class="btn waves-effect waves-light" id="lblKeteranganSakit">
-                                                            <input type="radio" value="sakit"
-                                                                name="radioKeteranganPresensi" id="optionKeteranganSakit"
-                                                                class="radioKeteranganPresensi">
-                                                            Sakit
-                                                        </label>
                                                     </div>
-                                                    @csrf
+
                                                 </form>
 
                                             </td>
@@ -169,24 +169,23 @@
                                         @endif
 
 
-                                        @if ($presensiKaryawan->keterangan == 'izin')
+                                        @if ($presensiKaryawan->keterangan == 'izin' || $presensiKaryawan->keterangan == 'sakit')
                                             @if ($presensiKaryawan->status == 'belum')
-                                                <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                        class="badge badge-warning">Belum Dikonfirmasi</span></td>
+                                                <td><span class="text-warning font-weight-bold">Belum
+                                                        Dikonfirmasi</span></td>
                                             @elseif($presensiKaryawan->status == 'konfirmasi')
-                                                <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                        class="badge badge-success">Telah Dikonfirmasi</span></td>
+                                                <td><span class="text-success font-weight-bold">Telah
+                                                        Dikonfirmasi</span></td>
                                             @elseif($presensiKaryawan->status == 'tolak')
-                                                <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                        class="badge badge-danger">Izin Ditolak</span></td>
+                                                <td><span class="text-danger font-weight-bold">Izin Ditolak</span></td>
                                             @endif
                                         @else
                                             @if ($presensiKaryawan->status == 'belum')
-                                                <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                        class="badge badge-warning">Belum Dikonfirmasi</span></td>
+                                                <td><span class="text-warning font-weight-bold">Belum
+                                                        Dikonfirmasi</span></td>
                                             @elseif($presensiKaryawan->status == 'konfirmasi')
-                                                <td><span style="font-size: 1em;padding: 0.5em 1em;"
-                                                        class="badge badge-success">Telah Dikonfirmasi</span></td>
+                                                <td><span class="text-success font-weight-bold">Telah
+                                                        Dikonfirmasi</span></td>
                                             @endif
                                         @endif
 
@@ -240,7 +239,7 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-           
+
         });
 
         $('body').on('click', '#btnModalKonfirmasiPresensi', function() {
