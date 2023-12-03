@@ -35,20 +35,28 @@
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Nama Karyawan</strong></label>
                                 <input type="text" class="form-control" name="namaKaryawan" id="txtNamaKaryawan"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan nama karyawan" required
                                     value="{{ $karyawan->nama }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan nama karyawan disini!</small>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Email</strong></label>
                                 <input type="email" class="form-control" name="emailKaryawan" id="txtEmailKaryawan"
                                     aria-describedby="emailHelp"
                                     placeholder="Silahkan masukkan email karyawan (ferro@gmail.com)" required
                                     value="{{ $karyawan->user->email }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan email karyawan disini!</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleInputEmail1"><strong>Username</strong></label>
+                                <input type="email" class="form-control" name="usernameKaryawan" id="txtEmailKaryawan"
+                                    aria-describedby="emailHelp"
+                                    placeholder="Silahkan masukkan email karyawan (ferro@gmail.com)" readonly
+                                    value="{{ $karyawan->user->username }}">
+                                <small id="emailHelp" class="form-text text-muted">Username dari karyawan!</small>
                             </div>
                         </div>
 

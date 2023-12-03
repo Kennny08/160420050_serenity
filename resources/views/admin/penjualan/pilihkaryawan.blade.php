@@ -47,7 +47,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('penjualan.admin.konfirmasipenjualan') }}"
+                    <form method="POST" action="{{ route('penjualans.admin.konfirmasipenjualan') }}"
                         enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="tanggalPenjualan" value="{{ $tanggalPenjualan }}">
@@ -231,7 +231,7 @@
                                         data-toggle="tooltip" data-placement="right"
                                         title="Pastikan telah memilih karyawan untuk setiap perawatan!"
                                         class="btn btn-primary btn-lg text-center">Konfirmasi
-                                        Reservasi</button>
+                                        Penjualan</button>
                                 </div>
                             @endif
                         </div>

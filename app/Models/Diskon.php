@@ -16,6 +16,6 @@ class Diskon extends Model
 
     public function paket()
     {
-        return $this->hasOne(Paket::class, 'paket_id');
+        return $this->hasOne(Paket::class, 'diskon_id');
     }
 }

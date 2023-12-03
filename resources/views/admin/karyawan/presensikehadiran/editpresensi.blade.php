@@ -80,7 +80,7 @@
                                                     <td>{{ $tanggalPresensiTeks }}</td>
 
 
-                                                    @if ($presensi->keterangan != 'izin' || $presensi->keterangan != 'sakit')
+                                                    @if ($presensi->keterangan != 'izin' && $presensi->keterangan != 'sakit')
                                                         <input type="hidden" value="{{ $presensi->karyawan->id }}"
                                                             name="daftarNamaKaryawan[]">
                                                         <td>

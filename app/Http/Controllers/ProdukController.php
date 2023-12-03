@@ -207,36 +207,39 @@ class ProdukController extends Controller
         $produk->nama = $namaProduk;
         $produk->harga_beli = $hargaBeli;
 
-        if ($hargaJual > $produk->harga_jual) {
-            $selisihPenambahan = $hargaJual - $produk->harga_jual;
-            $daftarPaket = Paket::join("paket_produk", "paket_produk.paket_id", "=", "pakets.id")->where("paket_produk.produk_id", $produk->id)->get();
-            if (count($daftarPaket) > 0) {
-                foreach ($daftarPaket as $paket) {
-                    $kuantitas = $paket->produks->firstWhere("id", $produk->id)->pivot->jumlah;
-                    $paketTerpilih = Paket::find($paket->id);
-                    $paketTerpilih->harga = $paketTerpilih->harga + ($kuantitas * $selisihPenambahan);
-                    $paketTerpilih->updated_at = date("Y-m-d H:i:s");
-                    $paketTerpilih->save();
-                }
-            }
-            $produk->harga_jual = $hargaJual;
+        //Jika harus update harga paket ketika harga produk berubah
+        // if ($hargaJual > $produk->harga_jual) {
+        //     $selisihPenambahan = $hargaJual - $produk->harga_jual;
+        //     $daftarPaket = Paket::join("paket_produk", "paket_produk.paket_id", "=", "pakets.id")->where("paket_produk.produk_id", $produk->id)->get();
+        //     if (count($daftarPaket) > 0) {
+        //         foreach ($daftarPaket as $paket) {
+        //             $kuantitas = $paket->produks->firstWhere("id", $produk->id)->pivot->jumlah;
+        //             $paketTerpilih = Paket::find($paket->id);
+        //             $paketTerpilih->harga = $paketTerpilih->harga + ($kuantitas * $selisihPenambahan);
+        //             $paketTerpilih->updated_at = date("Y-m-d H:i:s");
+        //             $paketTerpilih->save();
+        //         }
+        //     }
+        //     $produk->harga_jual = $hargaJual;
 
-        } else if ($hargaJual < $produk->harga_jual) {
-            $selisihPengurangan = $produk->harga_jual - $hargaJual;
-            $daftarPaket = Paket::join("paket_produk", "paket_produk.paket_id", "=", "pakets.id")->where("paket_produk.produk_id", $produk->id)->get();
-            if (count($daftarPaket) > 0) {
-                foreach ($daftarPaket as $paket) {
-                    $kuantitas = $paket->produks->firstWhere("id", $produk->id)->pivot->jumlah;
-                    $paketTerpilih = Paket::find($paket->id);
-                    $paketTerpilih->harga = $paketTerpilih->harga - ($kuantitas * $selisihPengurangan);
-                    $paketTerpilih->updated_at = date("Y-m-d H:i:s");
-                    $paketTerpilih->save();
-                }
-            }
-            $produk->harga_jual = $hargaJual;
-        } else {
-            $produk->harga_jual = $hargaJual;
-        }
+        // } else if ($hargaJual < $produk->harga_jual) {
+        //     $selisihPengurangan = $produk->harga_jual - $hargaJual;
+        //     $daftarPaket = Paket::join("paket_produk", "paket_produk.paket_id", "=", "pakets.id")->where("paket_produk.produk_id", $produk->id)->get();
+        //     if (count($daftarPaket) > 0) {
+        //         foreach ($daftarPaket as $paket) {
+        //             $kuantitas = $paket->produks->firstWhere("id", $produk->id)->pivot->jumlah;
+        //             $paketTerpilih = Paket::find($paket->id);
+        //             $paketTerpilih->harga = $paketTerpilih->harga - ($kuantitas * $selisihPengurangan);
+        //             $paketTerpilih->updated_at = date("Y-m-d H:i:s");
+        //             $paketTerpilih->save();
+        //         }
+        //     }
+        //     $produk->harga_jual = $hargaJual;
+        // } else {
+        //     $produk->harga_jual = $hargaJual;
+        // }
+
+        $produk->harga_jual = $hargaJual;
 
         $produk->deskripsi = $deskripsiProduk;
         $produk->stok = $stokProduk;

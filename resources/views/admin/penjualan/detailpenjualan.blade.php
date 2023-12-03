@@ -14,7 +14,18 @@
             <div class="card">
                 <div class="card-body">
 
-                    <h3 class="mt-0 header-title">Detail Penjualan</h3>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mt-0 header-title">Detail Penjualan</h3>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <a class="btn btn-lg btn-info waves-effect waves-light mt-0"
+                                href={{ route('penjualans.admin.detailnotapenjualan', $penjualan->id) }}><i
+                                    class="fas fa-file-invoice"></i>
+                                &nbsp;Detail Nota Penjualan</a>
+                        </div>
+                    </div>
                     </p>
                     @if ($errors->any())
                         <div class="alert alert-danger alert-dismissible" role="alert">
@@ -91,11 +102,13 @@
                                         $totalDurasi = 0;
                                     @endphp
                                     <strong class="font-weight-bold  font-16">Total Durasi:</strong><br>
-                                    @foreach ($penjualan->penjualanperawatans as $penjualanPerawatan)
-                                        @php
-                                            $totalDurasi += $penjualanPerawatan->perawatan->durasi;
-                                        @endphp
-                                    @endforeach
+                                    @php
+                                        foreach ($perawatanSlotJamNonKomplemen as $ps) {
+                                            $totalDurasi += $ps['durasi'];
+                                        }
+
+                                        $totalDurasi += $arrKomplemen['durasiterlama'];
+                                    @endphp
                                     {{ $totalDurasi }} Menit
                                 </address>
                             </div>
@@ -103,11 +116,13 @@
                                 <address>
                                     <strong class="font-weight-bold font-16">Status Penjualan:</strong><br>
                                     @if ($penjualan->status_selesai == 'batal')
-                                        <span class="badge badge-danger font-16">{{ $penjualan->status_selesai }}</span>
+                                        <span
+                                            class="text-danger font-16 font-weight-bold">{{ $penjualan->status_selesai }}</span>
                                     @elseif($penjualan->status_selesai == 'selesai')
-                                        <span class="badge badge-success font-16">{{ $penjualan->status_selesai }}</span>
+                                        <span
+                                            class="text-success font-16 font-weight-bold">{{ $penjualan->status_selesai }}</span>
                                     @else
-                                        <span class="badge badge-warning font-16">Menunggu Konfirmasi Salon</span>
+                                        <span class="text-warning font-16 font-weight-bold">Menunggu Konfirmasi Salon</span>
                                     @endif
 
                                 </address>
@@ -147,7 +162,7 @@
 
                                 <!-- Tab panes -->
                                 <div style="border-radius: 5px" class="tab-content shadow">
-                                    <div class="tab-pane active p-3" id="perawatan" role="tabpanel">
+                                    <div class="tab-pane active pt-4 pb-4 pl-4 pr-4" id="perawatan" role="tabpanel">
                                         <div class="mb-2">
                                             <div class="d-inline-block">
                                                 <h3 class="mt-0 header-title">Perawatan Sekuensial/berurutan</h3>
@@ -170,7 +185,7 @@
                                                         <th>Nama Perawatan</th>
                                                         <th>Jam Mulai</th>
                                                         <th>Durasi (Menit)</th>
-                                                        <th>Harga (Rp)</th>
+                                                        {{-- <th>Harga (Rp)</th> --}}
                                                         <th>Karyawan</th>
                                                     </tr>
                                                 </thead>
@@ -191,8 +206,8 @@
                                                             </td>
                                                             <td>{{ $ps['jammulai'] }}</td>
                                                             <td>{{ $ps['durasi'] }}</td>
-                                                            <td>{{ number_format($ps['penjualanperawatannonkomplemen']->harga, 2, ',', '.') }}
-                                                            </td>
+                                                            {{-- <td>{{ number_format($ps['penjualanperawatannonkomplemen']->harga, 2, ',', '.') }}
+                                                            </td> --}}
                                                             <td>{{ $ps['karyawan']->nama }}</td>
                                                         </tr>
                                                     @endforeach
@@ -222,7 +237,7 @@
                                                         <th>Nama Perawatan</th>
                                                         <th>Jam Mulai</th>
                                                         <th>Durasi (Menit)</th>
-                                                        <th>Harga (Rp)</th>
+                                                        {{-- <th>Harga (Rp)</th> --}}
                                                         <th>Karyawan</th>
                                                     </tr>
                                                 </thead>
@@ -252,8 +267,8 @@
                                                                     rowspan="{{ count($arrKomplemen['perawatans']) }}">
                                                                     {{ $arrKomplemen['durasiterlama'] }}
                                                                 </td>
-                                                                <td>{{ number_format($ps['penjualanperawatankomplemen']->harga, 2, ',', '.') }}
-                                                                </td>
+                                                                {{-- <td>{{ number_format($ps['penjualanperawatankomplemen']->harga, 2, ',', '.') }}
+                                                                </td> --}}
                                                                 <td>{{ $ps['karyawan']->nama }}</td>
                                                             </tr>
                                                         @else
@@ -269,8 +284,8 @@
                                                                         </span>
                                                                     @endif
                                                                 </td>
-                                                                <td>{{ number_format($ps['penjualanperawatankomplemen']->harga, 2, ',', '.') }}
-                                                                </td>
+                                                                {{-- <td>{{ number_format($ps['penjualanperawatankomplemen']->harga, 2, ',', '.') }}
+                                                                </td> --}}
                                                                 <td>{{ $ps['karyawan']->nama }}</td>
 
                                                             </tr>
@@ -283,7 +298,7 @@
                                             </table>
                                         </div>
 
-                                        <div class="form-group col-md-12">
+                                        {{-- <div class="form-group col-md-12">
                                             <div class="row">
                                                 <div class="col-12 mt-2 text-right">
                                                     @php
@@ -307,9 +322,9 @@
                                                     </address>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
-                                    <div class="tab-pane p-3" id="produk" role="tabpanel">
+                                    <div class="tab-pane p-4" id="produk" role="tabpanel">
                                         <div class="table-responsive">
                                             <table id="tabelDaftarProduk"
                                                 class="table table-striped table-bordered dt-responsive wrap text-center"
@@ -376,7 +391,7 @@
 
                                                     </address>
                                                 </div>
-                                                <div class="col-6 text-right">
+                                                {{-- <div class="col-6 text-right">
                                                     @php
                                                         $totalHargaProduk = 0;
                                                     @endphp
@@ -392,7 +407,7 @@
                                                                 {{ number_format($totalHargaProduk, 2, ',', '.') }}</strong>
                                                         </h4>
                                                     </address>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -465,8 +480,8 @@
                                                     </div>
                                                     <div class="col-6 text-right">
                                                         <address>
-                                                            <h6 class="mt-3" style="font-weight: normal">Total Potongan:
-                                                            </h6>
+                                                            {{-- <h6 class="mt-3" style="font-weight: normal">Total Potongan:
+                                                            </h6> --}}
                                                             @php
                                                                 $jumlahPotongan = 0;
                                                                 if ($penjualan->diskon != null) {
@@ -477,18 +492,18 @@
                                                                 }
 
                                                             @endphp
-                                                            <h4>
+                                                            {{-- <h4>
                                                                 <strong>
                                                                     Rp. {{ number_format($jumlahPotongan, 2, ',', '.') }}
                                                                 </strong>
-                                                            </h4>
+                                                            </h4> --}}
                                                         </address>
                                                     </div>
                                                 @else
                                                     <div class="col-12 text-right">
                                                         <address>
-                                                            <h6 class="mt-3" style="font-weight: normal">Total Potongan:
-                                                            </h6>
+                                                            {{-- <h6 class="mt-3" style="font-weight: normal">Total Potongan:
+                                                            </h6> --}}
                                                             @php
                                                                 $jumlahPotongan = 0;
                                                                 if ($penjualan->diskon != null) {
@@ -499,11 +514,11 @@
                                                                 }
 
                                                             @endphp
-                                                            <h4>
+                                                            {{-- <h4>
                                                                 <strong>
                                                                     Rp. {{ number_format($jumlahPotongan, 2, ',', '.') }}
                                                                 </strong>
-                                                            </h4>
+                                                            </h4> --}}
                                                         </address>
                                                     </div>
                                                 @endif
@@ -534,6 +549,8 @@
                                                             &nbsp;Daftar Riwayat Penjualan</a>
                                                     @endif
 
+
+
                                                     <button
                                                         class="btn btn-lg btn-danger waves-effect waves-light mt-3 mr-3"
                                                         data-toggle="modal"
@@ -541,13 +558,19 @@
                                                         id="btnKonfirmasiBatalkanPenjualan"
                                                         namaPelanggan = "{{ $penjualan->pelanggan->nama }}"
                                                         nomorNotaPenjualan = "{{ $penjualan->nomor_nota }}">
-                                                        Batalkan Penjualan</button>
+                                                        Batalkan Penjualan
+                                                    </button>
                                                     <button class="btn btn-lg btn-primary waves-effect waves-light mt-3"
                                                         data-toggle="modal" data-target="#modalKonfirmasiSelesaiPenjualan"
                                                         id="btnKonfirmasiSelesaiReservasi"
                                                         namaPelanggan = "{{ $penjualan->pelanggan->nama }}"
                                                         nomorNotaPenjualan = "{{ $penjualan->nomor_nota }}">
-                                                        Selesai Penjualan</button>
+                                                        Selesai Penjualan
+                                                    </button>
+                                                    <a class="btn btn-lg btn-secondary waves-effect waves-light mt-3 mr-3"
+                                                        href={{ route('penjualans.admin.daftarpenjualankeseluruhan') }}><i
+                                                            class="mdi mdi-playlist-edit"></i>
+                                                        &nbsp;Daftar Riwayat Penjualan Keseluruhan</a>
                                                 @else
                                                     @if (date('Y-m-d', strtotime($penjualan->tanggal_penjualan)) >= date('Y-m-d'))
                                                         <a class="btn btn-lg btn-info waves-effect waves-light mt-3 mr-3"
@@ -560,17 +583,21 @@
                                                                 class="mdi mdi-keyboard-backspace"></i>
                                                             &nbsp;Daftar Riwayat Penjualan</a>
                                                     @endif
+                                                    <a class="btn btn-lg btn-secondary waves-effect waves-light mt-3 mr-3"
+                                                        href={{ route('penjualans.admin.daftarpenjualankeseluruhan') }}><i
+                                                            class="mdi mdi-playlist-edit"></i>
+                                                        &nbsp;Daftar Riwayat Penjualan Keseluruhan</a>
                                                 @endif
                                             </address>
                                         </div>
-                                        <div class="col-5 text-right">
+                                        {{-- <div class="col-5 text-right">
                                             <address>
                                                 <h4 style="font-weight: normal;">Total : </h4>
                                                 <h2 class="text-danger fw-bold">Rp.
                                                     {{ number_format($totalHargaProduk + $totalHargaPerawatan - $jumlahPotongan, 2, ',', '.') }}
                                                 </h2>
                                             </address>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </div>
                             </div>

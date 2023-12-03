@@ -322,6 +322,9 @@
                                                 @if (Auth::user()->role == 'admin')
                                                     <li><a href="{{ route('admin.karyawans.indexkomisikaryawan') }}">Komisi
                                                             Karyawan</a></li>
+                                                @else
+                                                    <li><a href="{{ route('karyawans.indexkomisikaryawansalon') }}">Komisi
+                                                            Karyawan</a></li>
                                                 @endif
 
                                             @endif
@@ -343,11 +346,7 @@
                                     </li>
                                 @endif
 
-                                {{-- <li>
-                            <a href="{{ route('pakets.index') }}" class="waves-effect">
-                                <i class="mdi mdi-ticket-percent"></i> <span> Diskon </span>
-                            </a>
-                        </li> --}}
+
                                 <li>
                                     <a href="javascript:void(0);" class="waves-effect"><i
                                             class="mdi mdi-ticket-percent"></i><span>
@@ -428,15 +427,7 @@
                             </ul>
                         </li>
 
-                        @if (Auth::user()->role == 'karyawan')
-                            @if (Auth::user()->karyawan->jenis_karyawan == 'pekerja salon')
-                                <li>
-                                    <a href="{{ route('karyawans.indexkomisikaryawansalon') }}" class="waves-effect">
-                                        <i class="mdi mdi-cash-multiple"></i> <span>Komisi Karyawan</span>
-                                    </a>
-                                </li>
-                            @endif
-                        @endif
+
 
                         @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                             <li>
@@ -448,17 +439,60 @@
                                 <ul class="submenu">
                                     <li>
                                         <a href="{{ route('penjualans.index') }}">
-                                            Daftar Penjualan
+                                            Daftar Penjualan Tanpa Reservasi
                                         </a>
                                     </li>
                                     <li>
                                         <a href="{{ route('penjualans.admin.riwayatpenjualan') }}">
                                             Daftar Riwayat
-                                            Penjualan
+                                            Penjualan Tanpa Reservasi
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('penjualans.admin.daftarpenjualankeseluruhan') }}">
+                                            Daftar Riwayat
+                                            Penjualan Keseluruhan
                                         </a>
                                     </li>
                                 </ul>
                             </li>
+                        @else
+                            <li>
+                                <a href="javascript:void(0);" class="waves-effect"><i
+                                        class="mdi mdi-cash-multiple"></i><span>
+                                        Penjualan <span class="float-right menu-arrow"><i
+                                                class="mdi mdi-chevron-right"></i></span> </span></a>
+
+                                <ul class="submenu">
+                                    <li>
+                                        <a href="{{ route('penjualans.karyawan.index') }}">
+                                            Daftar Penjualan Tanpa Reservasi
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('penjualans.karyawan.riwayatpenjualan') }}">
+                                            Daftar Riwayat
+                                            Penjualan Tanpa Reservasi
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('penjualans.karyawan.daftarpenjualankeseluruhan') }}">
+                                            Daftar Riwayat
+                                            Penjualan Keseluruhan
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endif
+
+                        @if (Auth::user()->role == 'karyawan')
+                            @if (Auth::user()->karyawan->jenis_karyawan == 'pekerja salon')
+                                <li>
+                                    <a href="{{ route('karyawans.indexkomisikaryawansalon') }}" class="waves-effect">
+                                        <i class="mdi mdi-cash-multiple"></i> <span>Komisi Karyawan</span>
+                                    </a>
+                                </li>
+                            @endif
                         @endif
 
                         @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')

@@ -1,6 +1,6 @@
 @extends('layout.adminlayout')
 
-@section('title', 'Admin || Daftar Riwayat Reservasi')
+@section('title', 'Admin || Daftar Riwayat Penjualan')
 
 @section('admincontent')
     <div class="page-title-box">
@@ -12,7 +12,7 @@
             <div class="card">
                 <div class="card-body">
 
-                    <h3 class="mt-0 header-title">Daftar Riwayat Reservasi Perawatan</h3>
+                    <h3 class="mt-0 header-title">Daftar Riwayat Penjualan Keseluruhan</h3>
                     <p class="sub-title">
                     </p>
                     @if (session('status'))
@@ -28,8 +28,8 @@
                         style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                             <tr>
-                                <th>Tanggal Reservasi</th>
-                                <th>Jumlah Reservasi</th>
+                                <th>Tanggal Penjualan</th>
+                                <th>Jumlah Penjualan</th>
                                 <th>Total Penjualan Perawatan(Rp)</th>
                                 <th>Total Penjualan Produk(Rp)</th>
                                 <th>Total Penjualan Paket(Rp)</th>
@@ -40,10 +40,10 @@
                         </thead>
 
                         <tbody>
-                            @foreach ($arrDaftarRiwayatReservasi as $r)
+                            @foreach ($arrDaftarRiwayatPenjualan as $r)
                                 <tr>
-                                    <td>{{ $r['tanggalreservasi'] }}</td>
-                                    <td>{{ $r['jumlahreservasi'] }}</td>
+                                    <td>{{ $r['tanggalpenjualan'] }}</td>
+                                    <td>{{ $r['jumlahpenjualan'] }}</td>
                                     <td>{{ number_format($r['totalpenjualanperawatan'], 2, ',', '.') }}</td>
                                     <td>
                                         {{ number_format($r['totalpenjualanproduk'], 2, ',', '.') }}
@@ -56,7 +56,7 @@
                                     </td>
                                     <td>{{ number_format($r['totalpembayaran'], 2, ',', '.') }}</td>
                                     <td class="text-center"><button data-toggle="modal" data-target="#modalDetailRiwayat"
-                                            tanggal ="{{ $r['tanggal'] }}" tanggalHari = "{{ $r['tanggalreservasi'] }}"
+                                            tanggal ="{{ $r['tanggal'] }}" tanggalHari = "{{ $r['tanggalpenjualan'] }}"
                                             class=" btn btn-info waves-effect waves-light btnDetailRiwayat">Detail</button>
                                     </td>
                                 </tr>
@@ -75,7 +75,7 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
             <div class="modal-content ">
                 <div class="modal-header">
-                    <h5 class="modal-title mt-0" id="modalNamaRiwayat">Detail Riwayat Reservasi</h5>
+                    <h5 class="modal-title mt-0" id="modalNamaRiwayat">Detail Riwayat Penjualan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -104,22 +104,22 @@
             $('#tabelDaftarReservasi').DataTable({
                 ordering: false,
                 language: {
-                    emptyTable: "Tidak terdapat data diskon riwayat reservasi!",
+                    emptyTable: "Tidak terdapat data diskon riwayat penjualan!",
                 }
             });
         });
 
-        $('.btnDetailRiwayat').on('click', function() {
+        $('body').on('click', ".btnDetailRiwayat", function() {
             var tanggal = $(this).attr("tanggal");
             var tanggalHari = $(this).attr("tanggalHari");
             $('#contentDetailRiwayat').html(
                 "<div class='text-center'><div class='spinner-border text-info' role='" +
                 "status'><span class='sr-only'>Loading...</span></div></div>");
 
-            $("#modalNamaRiwayat").text(" Detail Riwayat Reservasi " + tanggalHari);
+            $("#modalNamaRiwayat").text(" Detail Riwayat Penjualan " + tanggalHari);
             $.ajax({
                 type: 'POST',
-                url: '{{ route('admin.getdetailriwayatreservasiperawatan') }}',
+                url: '{{ route('penjualans.admin.detailpenjualankeseluruhan') }}',
                 data: {
                     '_token': '<?php echo csrf_token(); ?>',
                     'tanggal': tanggal,
@@ -127,11 +127,13 @@
                 success: function(data) {
                     $('#contentDetailRiwayat').html(data.msg);
 
-                    $('#tabelDetailDaftarReservasi').DataTable({
+                    $('#tabelDetailDaftarPenjualan').DataTable({
                         order: [
-                            [1, "asc"],
-                            [4, "asc"],
+                            [1, "asc"]
                         ],
+                        language: {
+                            emptyTable: "Tidak terdapat data untuk detail penjualan!",
+                        }
                     });
                 }
             })

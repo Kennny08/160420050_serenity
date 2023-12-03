@@ -557,7 +557,11 @@
                     var hargaPerProduk = parseInt($(this).attr("subTotal")) / stokDiambil;
 
                     $("#kolomStokDiambil_" + idProduk).text(minimalStokDiambil);
-                    $("#kolomSubTotal_" + idProduk).text(hargaPerProduk * minimalStokDiambil);
+                    $("#kolomSubTotal_" + idProduk).text((hargaPerProduk * minimalStokDiambil).toLocaleString(
+                        'id-ID', {
+                            style: 'currency',
+                            currency: 'IDR'
+                        }).replace('Rp', ''));
                     $(this).attr('stokDiambil', minimalStokDiambil);
                     $(this).attr("subTotal", hargaPerProduk * minimalStokDiambil);
 

@@ -72,17 +72,29 @@
                                 <div class="col-md-6">
                                     <label for="exampleInputEmail1"><strong>Minimum Confidence(%)</strong></label>
                                     <input type="number" class="form-control" name="minConfidence" min="1"
-                                        max="100" id="txtMinimumConfidence" aria-describedby="emailHelp" value="{{ $minConfidence }}"
-                                        placeholder="minimum confidence" required>
+                                        max="100" id="txtMinimumConfidence" aria-describedby="emailHelp"
+                                        value="{{ $minConfidence }}" placeholder="minimum confidence" required>
                                     <small id="emailHelp" class="form-text text-muted">Masukkan nilai Minimum Confidence
                                         disini!</small>
                                 </div>
                             </div>
 
-                            <div class="form-group text-right">
-                                <button id="tesbutton" style="width: 200px" type="submit"
-                                    class="btn btn-primary btn-lg waves-effect waves-light">Konfirmasi</button>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button id="tesbutton" type="button" id="InfoRekomendasiProduk" data-toggle="modal"
+                                        data-target="#modalInformasiRekomendasiProduk"
+                                        class="btn btn-info btn-lg waves-effect waves-light"><i
+                                            class="mdi mdi-information-outline"></i>&nbsp; Informasi Pemakaian</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group text-right">
+                                        <button id="tesbutton" type="submit"
+                                            class="btn btn-primary btn-lg waves-effect waves-light">Konfirmasi</button>
+                                    </div>
+                                </div>
                             </div>
+                            <br>
+
 
                             @if (isset($freqItemSets) && isset($assocRules))
                                 <div class="card shadow">
@@ -174,6 +186,91 @@
             </div>
         </div>
         <!-- end col -->
+    </div>
+
+    <div id="modalInformasiRekomendasiProduk" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" style="max-width: 800px;">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h5 class="modal-title mt-0" id="modalInformasiRekomendasiProduk">Informasi Rekomendasi Produk</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body overflow-auto">
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <h5 class="font-weight-normal text-dark">Berikut ini beberapa informasi terkait penggunaan
+                                fitur Rekomendasi Produk:</h5>
+                            <div>
+                                <h5>Support</h5>
+                                <h6 class="font-weight-normal text-dark" style="text-align: justify; color: black">
+                                    * Support adalah jumlah minimum penjualan item penjualan (paket, perawatan, atau produk)
+                                    yang harus terjadi dalam rentang waktu
+                                    tertentu.
+                                    {{-- Nilai ini digunakan untuk melihat seberapa sering item penjualan tersebut
+                                    dibeli oleh
+                                    pelanggan selama periode waktu yang Anda tentukan. --}}
+                                    <br>
+                                    * Misalnya, jika Anda menetapkan Support sebesar 8, maka hanya akan dipertimbangkan
+                                    item penjualan yang terjual setidaknya 8 kali dalam periode waktu yang Anda tentukan.
+                                </h6>
+                                <br>
+
+                                <h5>Confidence</h5>
+                                <h6 class="font-weight-normal text-dark" style="text-align: justify">
+                                    * Confidence digunakan untuk seberapa sering item penjualan A (paket, perawatan, atau
+                                    produk) dibeli bersamaan dengan item penjualan B.
+                                    {{-- Nilai ini membantu untuk mengukur
+                                    kuatnya hubungan
+                                    pelanggan cenderung membeli dua atau lebih item penjualan secara bersamaan. --}}
+                                    <br>
+                                    * Contohnya, jika kita menetapkan Confidence sebesar 80%, maka hanya akan
+                                    direkomendasikan item penjualan B jika pelanggan yang membeli item penjualan A memiliki
+                                    peluang 80% atau
+                                    lebih untuk juga membeli item penjualan B.
+                                </h6>
+                                <br>
+
+                                <h5>Contoh Penggunaan</h5>
+                                <h6 class="font-weight-normal text-dark" style="text-align: justify">
+                                    * Misalnya Anda ingin melihat apakah perawatan gunting wolfcut, menicure, dan produk
+                                    shampo A sering dibeli
+                                    bersamaan. Jika Anda set Minimum Support sebesar 10, maka akan dipertimbangkan kombinasi
+                                    gunting wolfcut, menicure, dan produk shampo A yang terjual minimal 10 kali selama
+                                    periode waktu yang Anda
+                                    pilih.
+                                    <br>
+                                    * Dengan Confidence sebesar 80%, maka akan direkomendasikan shampo A kepada
+                                    pelanggan yang telah melakukan gunting wolfcut dan menicure jika peluangnya lebih dari
+                                    80% bahwa mereka juga
+                                    akan membeli shampo A. Hal ini dapat Anda manfaatkan untuk pertimbangan membuat paket
+                                    dengan harga promo.
+                                </h6>
+                                <br>
+
+                                <h5>Rekomendasi Pemilihan Nilai</h5>
+                                <h6 class="font-weight-normal text-dark" style="text-align: justify">
+                                    * Pilih nilai Support yang menunjukkan frekuensi produk yang umum digunakan di salon
+                                    <br>
+                                    * Pilih nilai Confidence yang memberikan rekomendasi yang relevan dan
+                                    meyakinkan bagi pelanggan.
+                                </h6>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup</button>
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
     </div>
 @endsection
 

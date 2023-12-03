@@ -222,7 +222,6 @@ class PresensiKehadiranController extends Controller
         foreach ($objectUnikKaryawanYangIzinDitolak as $presensiIzinDitolak) {
             array_push($idUnikKaryawanYangIzinDitolak, $presensiIzinDitolak->karyawan_id);
         }
-
         $idPresensiKaryawan = [];
         foreach ($idMaxPresensiPerKaryawan as $presensi) {
             array_push($idPresensiKaryawan, $presensi->id);
@@ -314,7 +313,20 @@ class PresensiKehadiranController extends Controller
             $tanggalPresensiTeks = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y', strtotime($tanggalPresensi));
             return redirect()->route("admin.presensikehadirans.riwayatpresensi")->with("status", "Berhasil mengedit presensi untuk tanggal " . $tanggalPresensiTeks);
         }
+    }
 
+    public function konfirmasiCheckPresensi(Request $request)
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $arrayPresensiKonfirmasi = $request->get("checkKonfirmasi");
+        foreach ($arrayPresensiKonfirmasi as $idPresensi) {
+            $presensiTerpilih = PresensiKehadiran::find($idPresensi);
+            $presensiTerpilih->status = "konfirmasi";
+            $presensiTerpilih->updated_at = date("Y-m-d H:i:s");
+            $presensiTerpilih->save();
+        }
+
+        return redirect()->route("presensikehadirans.index")->with("status", "Berhasil mengkonfirmasi presensi untuk hari ini pada tanggal " . date("d-m-Y"));
 
     }
 
@@ -619,4 +631,6 @@ class PresensiKehadiranController extends Controller
 
         }
     }
+
+
 }

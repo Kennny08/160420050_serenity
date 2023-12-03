@@ -15,4 +15,11 @@ class MailController extends Controller
         // dd($details, $email);
         Mail::to($email)->send(new SendMail('batalreservasiadmin', $details));
     }
+
+    public static function mailUsernamePasswordTambahKaryawan($email, $karyawan, $username, $password)
+    {
+
+        $details = ['karyawan' => $karyawan, 'username' => $username, 'password' => $password ];
+        Mail::to($email)->send(new SendMail('kirimusernamepasswordkaryawan', $details));
+    }
 }

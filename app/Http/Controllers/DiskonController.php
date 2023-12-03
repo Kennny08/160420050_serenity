@@ -250,7 +250,7 @@ class DiskonController extends Controller
         if ($penjualanHargaBaru->reservasi != null) {
             return redirect()->route('reservasi.admin.detailreservasi', $penjualanHargaBaru->reservasi->id)->with('status', 'Berhasil meggunakan diskon ' . $diskon->nama . '!');
         } else {
-            //
+            return redirect()->route('penjualans.admin.detailpenjualan', $penjualanHargaBaru->id)->with('status', 'Berhasil meggunakan diskon ' . $diskon->nama . '!');
         }
     }
 

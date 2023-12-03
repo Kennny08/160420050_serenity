@@ -43,10 +43,24 @@
                     <br>
                     @if ($objectPertamaYangtanpaIzin != null)
                         <div class="form-group row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <h5>Waktu Buka Presensi :
                                     {{ date('H:i', strtotime($objectPertamaYangtanpaIzin->created_at)) }}</h5>
                             </div>
+                            @if (count($presensisHariIni) == $jumlahKaryawan && $presensisHariIni->where('status', 'belum')->count() > 0)
+                                <div class="col-md-6 text-right">
+
+                                    <button class="btn btn-info waves-effect waves-light ml-3" data-toggle="modal"
+                                        data-target="#modalKonfirmasiCheckPresensi" id="btnKonfirmasiCheck" disabled>
+                                        Konfirmasi Check Presensi</button><br>
+                                    <div class="mt-2 d-flex align-items-center justify-content-end">
+                                        <input type="checkbox" id="checkBoxKonfirmasiAll"
+                                            style="width: 1.8em; height: 1.8em;" class="mr-1"><span
+                                            class="font-weight-normal ml-1 h6" style="margin-top: 8px;">Check Semua</span>
+                                    </div>
+
+                                </div>
+                            @endif
                         </div>
                     @endif
                     {{-- @if ($jumlahIzinKehadiran > 0)
@@ -86,167 +100,195 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <div class="form-group col-md-12">
-                                    <table id="tabelDaftarPresensiKaryawanIzin"
-                                        class="table table-bordered dt-responsive nowrap text-center w-100"
-                                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th>Nama Karyawan</th>
-                                                <th>Tanggal Pengajuan Izin</th>
-                                                <th>Waktu Buka Presensi</th>
-                                                <th>Waktu Karyawan Izin</th>
-                                                <th>Keterangan</th>
-                                                <th>Status</th>
-                                                <th>Dikonfirmasi Terakhir Pukul</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            @foreach ($presensiIzinKehadiranHariIni as $p)
-                                                <tr id="tr_{{ $p->id }}">
-                                                    <td>{{ $p->karyawan->nama }}</td>
-                                                    <td>{{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}</td>
-                                                    @if (count($presensisHariIni) != $jumlahKaryawan)
-                                                        <td>Presensi Belum Dibuka</td>
-                                                    @else
-                                                        <td>{{ date('H:i', strtotime($p->tanggal_presensi)) }}</td>
-                                                    @endif
-
-                                                    <td>
-                                                        {{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}
-                                                    </td>
-
-                                                    @if ($p->keterangan == 'hadir')
-                                                        <td class="text-success">HADIR</td>
-                                                    @elseif($p->keterangan == 'absen')
-                                                        <td class="text-danger">ABSEN</td>
-                                                    @elseif($p->keterangan == 'izin')
-                                                        <td class="text-warning">IZIN</td>
-                                                    @elseif($p->keterangan == 'sakit')
-                                                        <td class="text-info">SAKIT</td>
-                                                    @endif
-
-                                                    @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
-                                                        @if ($p->status == 'belum')
-                                                            <td><span class="text-warning font-weight-bold">Belum
-                                                                    Dikonfirmasi</span></td>
-                                                        @elseif($p->status == 'konfirmasi')
-                                                            <td><span class="text-success font-weight-bold">Telah
-                                                                    Dikonfirmasi</span></td>
-                                                        @elseif($p->status == 'tolak')
-                                                            <td><span class="text-danger font-weight-bold">Izin
-                                                                    Ditolak</span></td>
-                                                        @endif
-                                                    @else
-                                                        @if ($p->status == 'belum')
-                                                            <td><span class="text-warning font-weight-bold">Belum
-                                                                    Dikonfirmasi</span></td>
-                                                        @elseif($p->status == 'konfirmasi')
-                                                            <td><span class="text-success font-weight-bold">Telah
-                                                                    Dikonfirmasi</span></td>
-                                                        @endif
-                                                    @endif
-
-                                                    <td>
-                                                        @if ($p->status == 'belum')
-                                                            Menunggu Konfirmasi
-                                                        @else
-                                                            {{ date('H:i', strtotime($p->updated_at)) }}
-                                                        @endif
-                                                    </td>
+                                <div class="table-responsive">
+                                    <div class="form-group col-md-12">
+                                        <table id="tabelDaftarPresensiKaryawanIzin"
+                                            class="table table-bordered dt-responsive nowrap text-center w-100"
+                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nama Karyawan</th>
+                                                    <th>Tanggal Pengajuan Izin</th>
+                                                    <th>Waktu Buka Presensi</th>
+                                                    <th>Waktu Karyawan Izin</th>
+                                                    <th>Keterangan</th>
+                                                    <th>Status</th>
+                                                    <th>Dikonfirmasi Terakhir Pukul</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+
+                                            <tbody>
+                                                @foreach ($presensiIzinKehadiranHariIni as $p)
+                                                    <tr id="tr_{{ $p->id }}">
+                                                        <td>{{ $p->karyawan->nama }}</td>
+                                                        <td>{{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}</td>
+                                                        @if (count($presensisHariIni) != $jumlahKaryawan)
+                                                            <td>Presensi Belum Dibuka</td>
+                                                        @else
+                                                            <td>{{ date('H:i', strtotime($p->tanggal_presensi)) }}</td>
+                                                        @endif
+
+                                                        <td>
+                                                            {{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}
+                                                        </td>
+
+                                                        @if ($p->keterangan == 'hadir')
+                                                            <td class="text-success">HADIR</td>
+                                                        @elseif($p->keterangan == 'absen')
+                                                            <td class="text-danger">ABSEN</td>
+                                                        @elseif($p->keterangan == 'izin')
+                                                            <td class="text-warning">IZIN</td>
+                                                        @elseif($p->keterangan == 'sakit')
+                                                            <td class="text-info">SAKIT</td>
+                                                        @endif
+
+                                                        @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
+                                                            @if ($p->status == 'belum')
+                                                                <td><span class="text-warning font-weight-bold">Belum
+                                                                        Dikonfirmasi</span></td>
+                                                            @elseif($p->status == 'konfirmasi')
+                                                                <td><span class="text-success font-weight-bold">Telah
+                                                                        Dikonfirmasi</span></td>
+                                                            @elseif($p->status == 'tolak')
+                                                                <td><span class="text-danger font-weight-bold">Izin
+                                                                        Ditolak</span></td>
+                                                            @endif
+                                                        @else
+                                                            @if ($p->status == 'belum')
+                                                                <td><span class="text-warning font-weight-bold">Belum
+                                                                        Dikonfirmasi</span></td>
+                                                            @elseif($p->status == 'konfirmasi')
+                                                                <td><span class="text-success font-weight-bold">Telah
+                                                                        Dikonfirmasi</span></td>
+                                                            @endif
+                                                        @endif
+
+                                                        <td>
+                                                            @if ($p->status == 'belum')
+                                                                Menunggu Konfirmasi
+                                                            @else
+                                                                {{ date('H:i', strtotime($p->updated_at)) }}
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
+
                             </div>
                         @endif
                     @else
-                        <div>
-                            <table id="tabelDaftarPresensiKaryawan"
-                                class="table table-bordered dt-responsive nowrap text-center w-100"
-                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>Nama Karyawan</th>
-                                        <th>Tanggal Presensi</th>
-                                        <th>Waktu Pembuatan</th>
-                                        <th>Waktu Karyawan Presensi</th>
-                                        <th>Keterangan</th>
-                                        <th>Status</th>
-                                        <th>Dikonfirmasi Terakhir Pukul</th>
-                                    </tr>
-                                </thead>
+                        <form id="formKonfirmasiCheckPresensi"
+                            action="{{ route('admin.presensikehadirans.konfirmasicheckpresensi') }}" method="POST">
+                            @csrf
+                            <div class="table-responsive">
 
-                                <tbody>
-                                    @foreach ($presensisHariIni as $p)
-                                        <tr id="tr_{{ $p->id }}">
-                                            <td>{{ $p->karyawan->nama }}</td>
-                                            <td>{{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}</td>
+                                <table id="tabelDaftarPresensiKaryawan"
+                                    class="table table-bordered dt-responsive nowrap text-center w-100"
+                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Check Konfirmasi</th>
+                                            <th>Nama Karyawan</th>
+                                            <th>Tanggal Presensi</th>
+                                            <th>Waktu Pembuatan</th>
+                                            <th>Waktu Karyawan Presensi</th>
+                                            <th>Keterangan</th>
+                                            <th>Status</th>
+                                            <th>Dikonfirmasi Terakhir Pukul</th>
+                                        </tr>
+                                    </thead>
 
-                                            <td>
-                                                @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
-                                                    {{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}
-                                                @else
-                                                    {{ date('H:i', strtotime($p->created_at)) }}
-                                                @endif
+                                    <tbody>
 
-                                            </td>
-                                            <td>
-                                                @if (date('H:i:s', strtotime($p->created_at)) == date('H:i:s', strtotime($p->tanggal_presensi)))
-                                                    Menunggu Karyawan Presensi
-                                                @else
+                                        @foreach ($presensisHariIni as $p)
+                                            <tr id="tr_{{ $p->id }}">
+                                                <td class="text-center align-middle">
+                                                    @if ($p->status == 'belum')
+                                                        {{-- <input type="hidden" id="hiddenIdPresensi" name="idPresensi[]"
+                                                            value="{{ $p->id }}" class="hiddenIdPresensi"
+                                                            namaKaryawan = "{{ $p->karyawan->nama }}"
+                                                            keteranganIzin = "{{ $p->keterangan }}"> --}}
+                                                        <input type="checkbox" name="checkKonfirmasi[]"
+                                                            id="checkBoxKonfirmasi_{{ $p->id }}"
+                                                            class="form-control checkBoxKonfirmasiPresensi"
+                                                            value="{{ $p->id }}"
+                                                            namaKaryawan = "{{ $p->karyawan->nama }}"
+                                                            keteranganPresensi = "{{ $p->keterangan }}">
+                                                    @else
+                                                        <strong>Dikonfirmasi</strong>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $p->karyawan->nama }}</td>
+                                                <td>{{ date('d-m-Y', strtotime($p->tanggal_presensi)) }}</td>
+
+                                                <td>
                                                     @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
                                                         {{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}
                                                     @else
-                                                        {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                                                        {{ date('H:i', strtotime($p->created_at)) }}
+                                                    @endif
+
+                                                </td>
+                                                <td>
+                                                    @if (date('H:i:s', strtotime($p->created_at)) == date('H:i:s', strtotime($p->tanggal_presensi)))
+                                                        Menunggu Karyawan Presensi
+                                                    @else
+                                                        @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
+                                                            {{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}
+                                                        @else
+                                                            {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                                                        @endif
+                                                    @endif
+                                                </td>
+
+                                                @if ($p->keterangan == 'hadir')
+                                                    <td class="text-success">HADIR</td>
+                                                @elseif($p->keterangan == 'absen')
+                                                    <td class="text-danger">ABSEN</td>
+                                                @elseif($p->keterangan == 'izin')
+                                                    <td class="text-warning">IZIN</td>
+                                                @elseif($p->keterangan == 'sakit')
+                                                    <td class="text-info">SAKIT</td>
+                                                @endif
+
+                                                @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
+                                                    @if ($p->status == 'belum')
+                                                        <td><span class="text-warning font-weight-bold">Belum
+                                                                Dikonfirmasi</span></td>
+                                                    @elseif($p->status == 'konfirmasi')
+                                                        <td><span class="text-success font-weight-bold">Telah
+                                                                Dikonfirmasi</span></td>
+                                                    @elseif($p->status == 'tolak')
+                                                        <td><span class="text-danger font-weight-bold">Izin Ditolak</span>
+                                                        </td>
+                                                    @endif
+                                                @else
+                                                    @if ($p->status == 'belum')
+                                                        <td><span class="text-warning font-weight-bold">Belum
+                                                                Dikonfirmasi</span></td>
+                                                    @elseif($p->status == 'konfirmasi')
+                                                        <td><span class="text-success font-weight-bold">Telah
+                                                                Dikonfirmasi</span></td>
                                                     @endif
                                                 @endif
-                                            </td>
 
-                                            @if ($p->keterangan == 'hadir')
-                                                <td class="text-success">HADIR</td>
-                                            @elseif($p->keterangan == 'absen')
-                                                <td class="text-danger">ABSEN</td>
-                                            @elseif($p->keterangan == 'izin')
-                                                <td class="text-warning">IZIN</td>
-                                            @elseif($p->keterangan == 'sakit')
-                                                <td class="text-info">SAKIT</td>
-                                            @endif
+                                                <td>
+                                                    @if ($p->status == 'belum')
+                                                        Menunggu Konfirmasi
+                                                    @else
+                                                        {{ date('H:i', strtotime($p->updated_at)) }}
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
 
-                                            @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
-                                                @if ($p->status == 'belum')
-                                                    <td><span class="text-warning font-weight-bold">Belum
-                                                            Dikonfirmasi</span></td>
-                                                @elseif($p->status == 'konfirmasi')
-                                                    <td><span class="text-success font-weight-bold">Telah
-                                                            Dikonfirmasi</span></td>
-                                                @elseif($p->status == 'tolak')
-                                                    <td><span class="text-danger font-weight-bold">Izin Ditolak</span></td>
-                                                @endif
-                                            @else
-                                                @if ($p->status == 'belum')
-                                                    <td><span class="text-warning font-weight-bold">Belum
-                                                            Dikonfirmasi</span></td>
-                                                @elseif($p->status == 'konfirmasi')
-                                                    <td><span class="text-success font-weight-bold">Telah
-                                                            Dikonfirmasi</span></td>
-                                                @endif
-                                            @endif
-
-                                            <td>
-                                                @if ($p->status == 'belum')
-                                                    Menunggu Konfirmasi
-                                                @else
-                                                    {{ date('H:i', strtotime($p->updated_at)) }}
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                            </div>
+                        </form>
                     @endif
 
                 </div>
@@ -255,18 +297,18 @@
         <!-- end col -->
     </div>
 
-    <div id="modalDetailKaryawan" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+    <div id="modalKonfirmasiCheckPresensi" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 600px;">
             <div class="modal-content ">
                 <div class="modal-header">
-                    <h5 class="modal-title mt-0" id="modalNamaKaryawan">Detail Karyawan</h5>
+                    <h5 class="modal-title mt-0" id="modalKonfirmasiCheckPresensi">Konfirmasi Check Presensi</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="contentDetailKaryawan">
-                    <div class="text-center">
+                <div class="modal-body overflow-auto">
+                    <div class=" m-3" id="contentKonfirmasiCheckPresensi">
                         <div class="spinner-border text-info" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
@@ -274,7 +316,9 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Batal</button>
+                    <button type="button" id="btnSubmitFormKonfirmasiCheckPresensi"
+                        class="btn btn-info waves-effect">Konfirmasi</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -287,12 +331,65 @@
     <script>
         $(document).ready(function() {
             $('#tabelDaftarPresensiKaryawan').DataTable({
-
+                order: [
+                    [1, "asc"],
+                ]
             });
 
             $('#tabelDaftarPresensiKaryawanIzin').DataTable({
 
             });
+        });
+
+        $("body").on("change", ".checkBoxKonfirmasiPresensi", function() {
+            var count = 0;
+            $(".checkBoxKonfirmasiPresensi").each(function(index) {
+                if ($(this).prop("checked") == true) {
+                    count += 1;
+                }
+            });
+
+            if (count > 0) {
+                $("#btnKonfirmasiCheck").prop("disabled", false);
+            } else {
+                $("#btnKonfirmasiCheck").prop("disabled", true);
+            }
+        });
+
+        $("body").on("click", "#btnKonfirmasiCheck", function() {
+            $pesanKonfirmasi = "<h6>Berikut daftar karyawan dan keterangan yang akan dikonfirmasi:<br><br><ol >";
+            $(".checkBoxKonfirmasiPresensi").each(function(index) {
+                if ($(this).prop("checked") == true) {
+                    $pesanKonfirmasi += "<span class='text-danger'><li class='mb-2'> " + $(this).attr(
+                            "namaKaryawan") +
+                        " - " + $(this).attr(
+                            "keteranganPresensi") +
+                        "</li></span>";
+                }
+            });
+            $pesanKonfirmasi += "</ol>Apa Anda yakin data yang akan dikonfirmasi sudah benar?</h6>";
+            $("#contentKonfirmasiCheckPresensi").html($pesanKonfirmasi);
+        });
+
+        $("body").on("click", "#btnSubmitFormKonfirmasiCheckPresensi", function() {
+            $("#formKonfirmasiCheckPresensi").submit();
+        });
+
+
+
+        $("body").on("change", "#checkBoxKonfirmasiAll", function() {
+            if ($("#checkBoxKonfirmasiAll").prop("checked") == true) {
+                $(".checkBoxKonfirmasiPresensi").each(function(index) {
+                    $(this).prop("checked", true);
+                    $("#btnKonfirmasiCheck").prop("disabled", false);
+                });
+            } else {
+                $(".checkBoxKonfirmasiPresensi").each(function(index) {
+                    $(this).prop("checked", false);
+                    $("#btnKonfirmasiCheck").prop("disabled", true);
+                });
+            }
+
         });
     </script>
 @endsection

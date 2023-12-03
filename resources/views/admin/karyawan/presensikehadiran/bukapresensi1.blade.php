@@ -545,33 +545,7 @@
         <!-- /.modal-dialog -->
     </div>
 
-    {{-- <div id="modalKonfirmasiDeleteKaryawan" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
-        aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <form id="formDeleteKaryawan" action="{{ route('karyawans.destroy', '1') }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-header">
-                        <h5 id="modalNamaKaryawanDelete" class="modal-title mt-0">Konfirmasi Penghapusan Karyawan</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div id="modalBodyHapusKaryawan" class="modal-body text-center">
-                        <h6>Apakah Anda yakin untuk menghapus karyawan?</h6>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Batal</button>
-                        <button id="btnKonfirmasiHapusKaryawan" type="submit"
-                            class="btn btn-info waves-effect waves-light btnKonfirmasiHapusKaryawan">Hapus</button>
-                    </div>
-                </form>
-            </div>
-
-        </div>
-        <!-- /.modal-dialog -->
-    </div> --}}
+    
 @endsection
 
 @section('javascript')
@@ -583,24 +557,7 @@
 
         });
 
-        // $('.btnDetailKaryawan').on('click', function() {
-        //     var idKaryawan = $(this).attr("idKaryawan");
-        //     var nama = $(this).attr('nama');
-
-        //     $("#modalNamaKaryawan").text(" Detail Karyawan " + nama);
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: '{{ route('admin.getdetailkaryawan') }}',
-        //         data: {
-        //             '_token': '<?php echo csrf_token(); ?>',
-        //             'idKaryawan': idKaryawan,
-        //         },
-        //         success: function(data) {
-        //             $('#contentDetailKaryawan').html(data.msg);
-        //             $('#tabelDaftarKaryawanPerawatan').DataTable({});
-        //         }
-        //     })
-        // });
+        
         $('.btnHapusKaryawan').on('click', function() {
 
             var idKaryawan = $(this).attr("idKaryawan");

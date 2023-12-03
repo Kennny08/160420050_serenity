@@ -95,6 +95,11 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::post('/salon/karyawan/detaildaftarreservasipertanggal', [ReservasiController::class, "detailDaftarReservasiKaryawan"])->name("karyawans.detailreservasiperhari");
         Route::get('/salon/karyawan/riwayatreservasi', [ReservasiController::class, "daftarRiwayatReservasiKaryawan"])->name("karyawans.daftarriwayatreservasi");
 
+        //Penjualan
+        Route::get('/salon/penjualan/karyawan/index', [PenjualanController::class, "index"])->name("penjualans.karyawan.index");
+        Route::get('/salon/penjualan/karyawan/riwayatpenjualan', [PenjualanController::class, "riwayatPenjualan"])->name("penjualans.karyawan.riwayatpenjualan");
+        Route::get('/salon/penjualan/karyawan/penjualankeseluruhan', [PenjualanController::class, "daftarPenjualanKeseluruhan"])->name("penjualans.karyawan.daftarpenjualankeseluruhan");
+
         //Presensi
         Route::get('/salon/karyawan/presensihariini', [PresensiKehadiranController::class, "presensiHariIniKaryawanSalon"])->name("karyawans.presensihariinikaryawansalon");
         Route::post('/salon/karyawan/prosespresensi', [PresensiKehadiranController::class, "prosesPresensiHariIniKaryawanSalon"])->name("karyawans.prosespresensihariinikaryawansalon");
@@ -140,6 +145,8 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::post('/salon/reservasi/admin/batalkan', [ReservasiController::class, "adminBatalkanReservasi"])->name("reservasi.admin.batalkan");
         Route::post('/salon/reservasi/admin/selesai', [ReservasiController::class, "adminSelesaiReservasi"])->name("reservasi.admin.selesai");
 
+        Route::post('/salon/reservasi/admin/editpilihkaryawanreservasi', [ReservasiController::class, "editPilihKaryawanReservasi"])->name("reservasi.admin.editpilihkaryawanperawatan");
+
         //Penjualan
         Route::get('/salon/penjualan/admin/index', [PenjualanController::class, "index"])->name("penjualans.index");
         Route::get('/salon/penjualan/admin/create', [PenjualanController::class, "penjualanAdminCreate"])->name("penjualans.admin.create");
@@ -153,6 +160,12 @@ Route::middleware(['auth', 'salon'])->group(function () {
 
         Route::post('/salon/penjualan/admin/batalkan', [PenjualanController::class, "adminBatalkanPenjualan"])->name("penjualans.admin.batalkan");
         Route::post('/salon/penjualan/admin/selesai', [PenjualanController::class, "adminSelesaiPenjualan"])->name("penjualans.admin.selesai");
+
+        Route::get('/salon/penjualan/admin/penjualankeseluruhan', [PenjualanController::class, "daftarPenjualanKeseluruhan"])->name("penjualans.admin.daftarpenjualankeseluruhan");
+        Route::post('/salon/penjualan/admin/detailpenjualankeseluruhan', [PenjualanController::class, "detailPenjualanKeseluruhan"])->name("penjualans.admin.detailpenjualankeseluruhan");
+
+        Route::get('/salon/penjualan/admin/detailnotareservasi/{idReservasi}', [PenjualanController::class, "detailNotaReservasiPenjualan"])->name("penjualans.admin.detailnotareservasipenjualan");
+        Route::get('/salon/penjualan/admin/detailnotapenjualan/{idPenjualan}', [PenjualanController::class, "detailNotaPenjualan"])->name("penjualans.admin.detailnotapenjualan");
 
         //Karyawan
         Route::get('/salon/karyawan/index', [KaryawanController::class, "index"])->name("karyawans.index");
@@ -214,16 +227,7 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::resource('riwayatpengambilanproduks', RiwayatPengambilanProdukController::class);
         Route::post('/salon/riwayatpengambilanproduk/getdetailpengambilanproduk', [RiwayatPengambilanProdukController::class, 'getDetailRiwayatPengambilanProduk'])->name('admin.riwayatpengambilanproduks.getdetailriwayatpengambilanproduk');
 
-        //Presensi Kehadiran
-        Route::resource("presensikehadirans", PresensiKehadiranController::class);
-        Route::get('/salon/presensi/editpresensi/{tanggalPresensi}', [PresensiKehadiranController::class, "editPresensiKehadiran"])->name("admin.presensikehadirans.editpresensi");
-        Route::post('/salon/presensi/updatepresensi', [PresensiKehadiranController::class, "updatePresensiKehadiran"])->name("admin.presensikehadirans.updatepresensikehadiran");
-        Route::get('/salon/presensi/riwayatpresensi', [PresensiKehadiranController::class, "riwayatPresensiKaryawan"])->name("admin.presensikehadirans.riwayatpresensi");
-        Route::post('/salon/presensi/detailriwayatpresensi', [PresensiKehadiranController::class, "getDetailRiwayatPresensi"])->name("admin.getdetailriwayatpresensi");
-        Route::get('/salon/presensi/riwayatizinkehadiran', [PresensiKehadiranController::class, "riwayatIzinKehadiran"])->name("admin.presensikehadirans.riwayatizinkehadiran");
-        Route::post('/salon/presensi/detailriwayatizinkehadiran', [PresensiKehadiranController::class, "getDetailIzinKehadiran"])->name("admin.getdetailizinkehadiran");
-        Route::post('/salon/presensi/updatestatusizinkehadrian', [PresensiKehadiranController::class, "updateStatusIzin"])->name("admin.updatestatusizin");
-
+        
         //Paket 
         Route::get('/salon/paket/create', [PaketController::class, "create"])->name("pakets.create");
         Route::post('/salon/paket/store', [PaketController::class, "store"])->name("pakets.store");
@@ -253,6 +257,21 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::get('/salon/admin/karyawan/{idKaryawan}/edit', [KaryawanController::class, "edit"])->name("karyawans.edit");
         Route::put('/salon/admin/karyawan/{idKaryawan}/udpate', [KaryawanController::class, "update"])->name("karyawans.update");
         Route::delete('/salon/admin/karyawan/{idKaryawan}/destroy', [KaryawanController::class, "destroy"])->name("karyawans.destroy");
+
+        //Presensi Karyawan
+        Route::resource("presensikehadirans", PresensiKehadiranController::class);
+        Route::get('/salon/presensi/editpresensi/{tanggalPresensi}', [PresensiKehadiranController::class, "editPresensiKehadiran"])->name("admin.presensikehadirans.editpresensi");
+        Route::post('/salon/presensi/updatepresensi', [PresensiKehadiranController::class, "updatePresensiKehadiran"])->name("admin.presensikehadirans.updatepresensikehadiran");
+        Route::get('/salon/presensi/riwayatpresensi', [PresensiKehadiranController::class, "riwayatPresensiKaryawan"])->name("admin.presensikehadirans.riwayatpresensi");
+        Route::post('/salon/presensi/detailriwayatpresensi', [PresensiKehadiranController::class, "getDetailRiwayatPresensi"])->name("admin.getdetailriwayatpresensi");
+        Route::get('/salon/presensi/riwayatizinkehadiran', [PresensiKehadiranController::class, "riwayatIzinKehadiran"])->name("admin.presensikehadirans.riwayatizinkehadiran");
+        Route::post('/salon/presensi/detailriwayatizinkehadiran', [PresensiKehadiranController::class, "getDetailIzinKehadiran"])->name("admin.getdetailizinkehadiran");
+        Route::post('/salon/presensi/updatestatusizinkehadrian', [PresensiKehadiranController::class, "updateStatusIzin"])->name("admin.updatestatusizin");
+        
+        Route::post('/salon/presensi/konfirmasicheckpresensi', [PresensiKehadiranController::class, "konfirmasiCheckPresensi"])->name("admin.presensikehadirans.konfirmasicheckpresensi");
+
+        //Penjualan
+
     });
 });
 

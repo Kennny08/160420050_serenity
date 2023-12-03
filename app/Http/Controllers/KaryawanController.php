@@ -79,10 +79,29 @@ class KaryawanController extends Controller
         $tanggalLahirKaryawan = $request->get('tanggalLahir');
 
 
+        // MailController::mailUsernamePasswordTambahKaryawan($emailKaryawan, $namaKaryawan, "kenny12345", "123654");
+
+        // dd("berhasil");
+
+        $usernameUnik = str_replace(" ", "", strtolower($namaKaryawan)) . date("d") . date("H") . date("i") . date("s");
+        $checkUsernameKaryawanUnik = false;
+        while ($checkUsernameKaryawanUnik == false) {
+            $cariUsername = User::where("username", $usernameUnik)->where("role", "karyawan")->first();
+            if ($cariUsername == null) {
+                $checkUsernameKaryawanUnik = true;
+            }else{
+                $usernameUnik = str_replace(" ", "", strtolower($namaKaryawan)) . date("d") . date("H") . date("i") . date("s");
+            }
+        }
+
+        $passwordKaryawan = "";
+        for ($i=0; $i < 9; $i++) { 
+            $passwordKaryawan .= random_int(1,9);
+        }
         $newUser = User::create([
-            'username' => str_replace(" ", "", $namaKaryawan) . "12345",
+            'username' => $usernameUnik,
             'email' => $emailKaryawan,
-            'password' => Hash::make("12345678"),
+            'password' => Hash::make($passwordKaryawan),
             'role' => 'karyawan',
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
@@ -103,6 +122,8 @@ class KaryawanController extends Controller
         foreach ($arrayperawatanid as $idPerawatan) {
             $newKaryawan->perawatans()->attach($idPerawatan);
         }
+
+        MailController::mailUsernamePasswordTambahKaryawan($emailKaryawan, $namaKaryawan, $usernameUnik, $passwordKaryawan);
 
         return redirect()->route('karyawans.index')->with('status', 'Berhasil menambah karyawan ' . $namaKaryawan . '!');
 
@@ -158,8 +179,9 @@ class KaryawanController extends Controller
         if ($request->get('emailKaryawan') != $karyawan->user->email || $request->get('nomor_telepon') != $karyawan->nomor_telepon) {
             //Mengecek apakah ada pergantian email
             if ($request->get('emailKaryawan') != $karyawan->user->email) {
-                //Menegecek apakah ada pergantian email dan nomor telepon
+                //Mengecek apakah ada pergantian email dan nomor telepon
                 if ($request->get('nomor_telepon') != $karyawan->nomor_telepon) {
+                    
                     $validatedData = $request->validate(
                         [
                             'namaKaryawan' => 'required|max:255',

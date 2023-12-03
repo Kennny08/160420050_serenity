@@ -34,8 +34,13 @@ class PaketController extends Controller
         $tanggalHariIni = date("Y-m-d");
         $perawatanAktif = Perawatan::where("status", "aktif")->orderBy("nama")->get();
         $produkAktif = Produk::where("status", "aktif")->where("status_jual", "aktif")->orderBy("nama")->get();
-        $diskonAktif = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->orderBy("nama")->get();
-
+        $arrDiskonAktif = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->orderBy("nama")->get();
+        $diskonAktif = [];
+        foreach ($arrDiskonAktif as $diskon) {
+            if ($diskon->paket == null) {
+               array_push($diskonAktif, $diskon);
+            }
+        }
         return view("admin.paket.tambahpaket", compact("perawatanAktif", "produkAktif", "diskonAktif"));
     }
 
