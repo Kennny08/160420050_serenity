@@ -8,7 +8,7 @@
     <title>@yield('title')</title>
     <meta content="Responsive admin theme build on top of Bootstrap 4" name="description" />
     <meta content="Themesdesign" name="author" />
-    <link rel="shortcut icon" href="{{ asset('assets_admin/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('assets_admin/images/logo-serenity/serenity-logo-no-background.png') }}">
 
     <link href="{{ asset('assets_admin/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}"
         rel="stylesheet">
@@ -53,10 +53,10 @@
             <!-- LOGO -->
             <div class="topbar-left">
                 <a href="index.html" class="logo">
-                    <img src="{{ asset('assets_admin/images/logo-light.png') }}" class="logo-lg" alt=""
-                        height="22">
-                    <img src="{{ asset('assets_admin/images/logo-sm.png') }}" class="logo-sm" alt=""
-                        height="24">
+                    <img src="{{ asset('assets_admin/images/logo-serenity/serenity.png') }}" class="logo-lg mt-3" alt=""
+                        height="80">
+                    <img src="{{ asset('assets_admin/images/logo-serenity/serenity.png') }}" class="logo-sm" alt=""
+                        height="50">
                 </a>
             </div>
 
@@ -236,7 +236,7 @@
             <div class="slimscroll-menu" id="remove-scroll">
 
                 <!--- Sidemenu -->
-                <div id="sidebar-menu">
+                <div id="sidebar-menu" class="mt-4">
                     <!-- Left Menu Start -->
                     <ul class="metismenu" id="side-menu">
                         <li class="menu-title">Menu</li>

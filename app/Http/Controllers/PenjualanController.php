@@ -2310,7 +2310,10 @@ class PenjualanController extends Controller
                     array_push($idPaketPerawatan, $perawatan->id);
                 }
                 foreach ($paket->produks as $produk) {
-                    array_push($idPaketProduk, $produk->id);
+                    if (!in_array($produk->id, $idPaketProduk)) {
+                        array_push($idPaketProduk, $produk->id);
+                    }
+
                 }
             }
         }
@@ -2324,10 +2327,10 @@ class PenjualanController extends Controller
         foreach ($reservasi->penjualan->produks as $p) {
             if (!in_array($p->id, $idPaketProduk)) {
                 $produkSementara = [];
-                $produk["object"] = $p;
-                $produk["kuantitas"] = $p->pivot->kuantitas;
-                $produk["harga"] = $p->pivot->harga;
-                $produk["subtotal"] = $p->pivot->kuantitas * $p->pivot->harga;
+                $produkSementara["object"] = $p;
+                $produkSementara["kuantitas"] = $p->pivot->kuantitas;
+                $produkSementara["harga"] = $p->pivot->harga;
+                $produkSementara["subtotal"] = $p->pivot->kuantitas * $p->pivot->harga;
                 array_push($arrProduk, $produkSementara);
             } else {
                 $totalKeseluruhan = $p->pivot->kuantitas;
@@ -2341,10 +2344,10 @@ class PenjualanController extends Controller
                 if ($totalKeseluruhan > $totalDariPaket) {
                     $jumlahSisaDiluarPaket = $totalKeseluruhan - $totalDariPaket;
                     $produkSementara = [];
-                    $produk["object"] = $p;
-                    $produk["kuantitas"] = $jumlahSisaDiluarPaket;
-                    $produk["harga"] = $p->pivot->harga;
-                    $produk["subtotal"] = $jumlahSisaDiluarPaket * $p->pivot->harga;
+                    $produkSementara["object"] = $p;
+                    $produkSementara["kuantitas"] = $jumlahSisaDiluarPaket;
+                    $produkSementara["harga"] = $p->pivot->harga;
+                    $produkSementara["subtotal"] = $jumlahSisaDiluarPaket * $p->pivot->harga;
                     array_push($arrProduk, $produkSementara);
                 }
             }

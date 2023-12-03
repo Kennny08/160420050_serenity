@@ -14,12 +14,14 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12">
-                            <div class="invoice-title">
-                                <h4 class="float-right font-16"><strong>{{ $penjualan->nomor_nota }}</strong></h4>
+                            <div class="invoice-title d-flex justify-content-between align-items-center">
                                 <h3 class="mt-0">
-                                    <img src="{{ asset('assets_admin/images/logo-dark.png') }}" alt="logo"
-                                        height="24" />
+                                    <img src="{{ asset('assets_admin/images/logo-serenity/serenity-logo-no-background.png') }}"
+                                        alt="logo" height="80" />
                                 </h3>
+                                <h3 class="float-right font-20"><strong>{{ $penjualan->nomor_nota }}</strong>
+                                </h3>
+
                             </div>
                             <hr>
                             <div class="form-group col-md-12">
@@ -39,7 +41,7 @@
                                             <strong class="font-weight-bold font-16">Salon:</strong><br>
                                             Serenity Salon <br>
                                             Jl. Bahari Jaya No.08 <br>
-                                            082188888888 
+                                            082188888888
                                         </address>
                                     </div>
                                 </div>
@@ -117,7 +119,8 @@
                                                 <span
                                                     class="text-success font-16 font-weight-bold">{{ $penjualan->status_selesai }}</span>
                                             @else
-                                                <span class="text-warning font-16 font-weight-bold">Menunggu Konfirmasi Salon</span>
+                                                <span class="text-warning font-16 font-weight-bold">Menunggu Konfirmasi
+                                                    Salon</span>
                                             @endif
 
                                         </address>
