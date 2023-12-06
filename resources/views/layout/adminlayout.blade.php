@@ -53,10 +53,10 @@
             <!-- LOGO -->
             <div class="topbar-left">
                 <a href="index.html" class="logo">
-                    <img src="{{ asset('assets_admin/images/logo-serenity/serenity.png') }}" class="logo-lg mt-3" alt=""
-                        height="80">
-                    <img src="{{ asset('assets_admin/images/logo-serenity/serenity.png') }}" class="logo-sm" alt=""
-                        height="50">
+                    <img src="{{ asset('assets_admin/images/logo-serenity/serenity.png') }}" class="logo-lg mt-3"
+                        alt="" height="80">
+                    <img src="{{ asset('assets_admin/images/logo-serenity/serenity.png') }}" class="logo-sm"
+                        alt="" height="50">
                 </a>
             </div>
 
@@ -365,10 +365,9 @@
 
                         @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                             <li>
-                                <a href="javascript:void(0);" class="waves-effect"><i
-                                        class="mdi mdi-inbox"></i><span>
-                                        Pembelian </span></a>
-
+                                <a href="{{ route('pembelians.index') }}" class="waves-effect">
+                                    <i class="mdi mdi-inbox"></i> <span>Pembelian</span>
+                                </a>
                             </li>
                         @endif
 
@@ -543,8 +542,8 @@
             <!-- content -->
 
             <footer class="footer">
-                © 2019 Zegva <span class="d-none d-sm-inline-block"> - Crafted with <i
-                        class="mdi mdi-heart text-danger"></i> by Themesdesign</span>.
+                © 2023 Serenity <span class="d-none d-sm-inline-block"> - Crafted with <i
+                        class="mdi mdi-heart text-danger"></i> by K</span>.
             </footer>
 
         </div>

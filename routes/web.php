@@ -146,6 +146,7 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::post('/salon/reservasi/admin/selesai', [ReservasiController::class, "adminSelesaiReservasi"])->name("reservasi.admin.selesai");
 
         Route::post('/salon/reservasi/admin/editpilihkaryawanreservasi', [ReservasiController::class, "editPilihKaryawanReservasi"])->name("reservasi.admin.editpilihkaryawanperawatan");
+        Route::post('/salon/reservasi/admin/konfirmasieditpilihkaryawanreservasi', [ReservasiController::class, "konfirmasiEditPilihKaryawanReservasi"])->name("reservasi.admin.konfirmasieditpilihkaryawan");
 
         //Penjualan
         Route::get('/salon/penjualan/admin/index', [PenjualanController::class, "index"])->name("penjualans.index");
@@ -166,6 +167,9 @@ Route::middleware(['auth', 'salon'])->group(function () {
 
         Route::get('/salon/penjualan/admin/detailnotareservasi/{idReservasi}', [PenjualanController::class, "detailNotaReservasiPenjualan"])->name("penjualans.admin.detailnotareservasipenjualan");
         Route::get('/salon/penjualan/admin/detailnotapenjualan/{idPenjualan}', [PenjualanController::class, "detailNotaPenjualan"])->name("penjualans.admin.detailnotapenjualan");
+
+        Route::post('/salon/penjualan/admin/editpilihkaryawanpenjualan', [PenjualanController::class, "editPilihKaryawanPenjualan"])->name("penjualans.admin.editpilihkaryawanperawatan");
+        Route::post('/salon/penjualan/admin/konfirmasieditpilihkaryawanpenjualan', [PenjualanController::class, "konfirmasiEditPilihKaryawanPenjualan"])->name("penjualans.admin.konfirmasieditpilihkaryawan");
 
         //Karyawan
         Route::get('/salon/karyawan/index', [KaryawanController::class, "index"])->name("karyawans.index");
@@ -202,6 +206,7 @@ Route::middleware(['auth', 'salon'])->group(function () {
         //Rekomendasi Produk
         Route::get('/salon/rekomendasiproduk', [AprioriController::class, "settingApriori"])->name("admin.settingrekomendasiproduk");
         Route::post('/salon/rekomendasiproduk/proses', [AprioriController::class, "prosesApriori"])->name("admin.prosesrekomendasiproduk");
+        Route::post('/salon/rekomendasiproduk/detailpenjualan', [AprioriController::class, "getDetailPenjualan"])->name("admin.rekomendasiproduk.detailpenjualan");
 
         //Perawatan
         Route::get('/salon/perawatan/create', [PerawatanController::class, "create"])->name("perawatans.create");

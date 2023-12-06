@@ -285,7 +285,8 @@
                                                             <td>{{ $perawatanTerpilih->durasi }} </td>
                                                             <td> - </td>
                                                             <td>{{ $perawatanTerpilih->deskripsi }}</td>
-                                                            <td>{{ $perawatanTerpilih->harga }} </td>
+                                                            <td>{{ number_format($perawatanTerpilih->harga, 2, ',', '.') }}
+                                                            </td>
                                                             <td><button type='button'
                                                                     class='deletePerawatan btn btn-danger waves-effect waves-light'
                                                                     idPerawatan="{{ $perawatanTerpilih->id }}"

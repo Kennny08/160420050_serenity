@@ -9,7 +9,7 @@
     <meta content="Responsive admin theme build on top of Bootstrap 4" name="description" />
     <meta content="Themesdesign" name="author" />
 
-    <link rel="shortcut icon" href="{{ asset('assets_admin/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('assets_admin/images/logo-serenity/serenity-logo-no-background.png') }}">
 
     <link href="{{ asset('assets_admin/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}"
         rel="stylesheet">
@@ -38,8 +38,8 @@
                         <div class="card-body">
                             <div class="text-center mt-0 mb-3">
                                 <a href="{{ route("login") }}" class="logo logo-admin">
-                                    <img src="{{ asset('assets_admin/images/logo-dark.png') }}" class="mt-3"
-                                        alt="" height="26"></a>
+                                    <img src="{{ asset('assets_admin/images/logo-serenity/serenity-logo-no-background.png') }}" class="logo-lg mt-3"
+                                        alt="" height="100"></a>
                                 <p class="text-muted w-75 mx-auto mb-4 mt-4">Masukkan Username dan Password Anda yang
                                     telah terdaftar!</p>
                             </div>
@@ -89,7 +89,7 @@
 
                                 <div class="form-group text-center mt-3">
                                     <div class="col-12">
-                                        <button class="btn btn-primary btn-block waves-effect waves-light"
+                                        <button class="btn btn-info btn-block waves-effect waves-light"
                                             type="submit">Log In</button>
                                     </div>
                                 </div>

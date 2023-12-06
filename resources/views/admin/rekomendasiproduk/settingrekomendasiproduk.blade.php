@@ -39,9 +39,11 @@
                             <div class="form-group row">
                                 <div class="col-md-6">
                                     <label for="exampleInputEmail1"><strong>Tanggal Mulai Riwayat Penjualan</strong></label>
-                                    <input type="date" class="form-control" name="tanggalMulai" min="{{ $tanggalMulai }}"
-                                        max="{{ $tanggalAkhir }}" id="tanggalMulaiPenjualan" aria-describedby="emailHelp"
-                                        placeholder="Silahkan Pilih Tanggal Reservasi" required value="{{ $tanggalMulai }}">
+                                    <input type="date" class="form-control" name="tanggalMulai"
+                                        min="{{ $batasTanggalMulai }}" max="{{ $batasTanggalAkhir }}"
+                                        id="tanggalMulaiPenjualan" aria-describedby="emailHelp"
+                                        placeholder="Silahkan Pilih Tanggal Reservasi" required
+                                        value="{{ date('Y-m-d', strtotime($tanggalMulai)) }}">
                                     <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Mulai Riwayat
                                         Penjualan Anda
                                         disini!</small>
@@ -50,8 +52,9 @@
 
                                 <div class="col-md-6">
                                     <label for="exampleInputEmail1"><strong>Tanggal Akhir Riwayat Penjualan</strong></label>
-                                    <input type="date" class="form-control" name="tanggalAkhir" min="{{ $tanggalMulai }}"
-                                        max="{{ $tanggalAkhir }}" id="tanggalAkhirPenjualan" aria-describedby="emailHelp"
+                                    <input type="date" class="form-control" name="tanggalAkhir"
+                                        min="{{ $batasTanggalMulai }}" max="{{ $batasTanggalAkhir }}"
+                                        id="tanggalAkhirPenjualan" aria-describedby="emailHelp"
                                         placeholder="Silahkan Pilih Tanggal Reservasi" required value="{{ $tanggalAkhir }}">
                                     <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Akhir Riwayat Penjualan
                                         Anda
@@ -81,11 +84,18 @@
 
                             <div class="row">
                                 <div class="col-md-6">
-                                    <button id="tesbutton" type="button" id="InfoRekomendasiProduk" data-toggle="modal"
+                                    <button type="button" id="InfoRekomendasiProduk" data-toggle="modal"
                                         data-target="#modalInformasiRekomendasiProduk"
                                         class="btn btn-info btn-lg waves-effect waves-light"><i
-                                            class="mdi mdi-information-outline"></i>&nbsp; Informasi Pemakaian</button>
+                                            class="mdi mdi-information-outline"></i>&nbsp; Informasi Pemakaian
+                                    </button>
+                                    <button type="button" id="infoDetailPenjualan" data-toggle="modal"
+                                        data-target="#modalInfoDetailPenjualan"
+                                        class="btn btn-warning btn-lg waves-effect waves-light ml-2"><i
+                                            class="mdi mdi-playlist-edit"></i>&nbsp; Detail Penjualan
+                                    </button>
                                 </div>
+
                                 <div class="col-md-6">
                                     <div class="form-group text-right">
                                         <button id="tesbutton" type="submit"
@@ -272,6 +282,34 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+
+    <div id="modalInfoDetailPenjualan" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h5 class="modal-title mt-0" id="modalNamaInfoDetailPenjualan">Informasi Detail Penjualan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body overflow-auto" id="contentInfoDetailPenjualan">
+                    <div class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Tutup</button>
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @endsection
 
 @section('javascript')
@@ -280,10 +318,58 @@
             $('#tableHasilAssociationRules').DataTable({
                 order: [
                     [2, "desc"],
-                ]
+                ],
+                language: {
+                    emptyTable: "Tidak terdapat data Rekomendasi Produk!",
+                }
             });
+        });
 
+        $('body').on('click', "#infoDetailPenjualan", function() {
+            var tanggalMulai = $("#tanggalMulaiPenjualan").val();
+            var tanggalAkhir = $("#tanggalAkhirPenjualan").val();
+            $('#contentInfoDetailPenjualan').html(
+                "<div class='text-center'><div class='spinner-border text-info' role='" +
+                "status'><span class='sr-only'>Loading...</span></div></div>");
 
+            var dateMulai = new Date(tanggalMulai);
+            var dateAkhir = new Date(tanggalAkhir);
+
+            var dayMulai = dateMulai.getDate().toString().padStart(2, '0');
+            var monthMulai = (dateMulai.getMonth() + 1).toString().padStart(2, '0');
+            var yearMulai = dateMulai.getFullYear();
+            var formatDateMulai = dayMulai + '-' + monthMulai + '-' + yearMulai;
+
+            var dateAkhir = new Date(tanggalAkhir);
+
+            var dayAkhir = dateAkhir.getDate().toString().padStart(2, '0');
+            var monthAkhir = (dateAkhir.getMonth() + 1).toString().padStart(2, '0');
+            var yearAkhir = dateAkhir.getFullYear();
+            var formatDateAkhir = dayAkhir + '-' + monthAkhir + '-' + yearAkhir;
+
+            $("#modalNamaInfoDetailPenjualan").text("Informasi Detail Penjualan " + formatDateMulai + " - " +
+                formatDateAkhir);
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('admin.rekomendasiproduk.detailpenjualan') }}',
+                data: {
+                    '_token': '<?php echo csrf_token(); ?>',
+                    'tanggalMulai': tanggalMulai,
+                    'tanggalAkhir': tanggalAkhir,
+                },
+                success: function(data) {
+                    $('#contentInfoDetailPenjualan').html(data.msg);
+
+                    $('#tabelInformasiDetailPenjualan').DataTable({
+                        order: [
+                            [0, "asc"],
+                        ],
+                        language: {
+                            emptyTable: "Tidak terdapat informasi detail penjualan untuk rentang tanggal yang dipilih!",
+                        }
+                    });
+                }
+            })
         });
     </script>
 @endsection

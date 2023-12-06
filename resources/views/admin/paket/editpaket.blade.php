@@ -74,8 +74,8 @@
                                 <label for="exampleInputEmail1"><strong>Harga Paket(Rp)</strong></label>
                                 <input type="number" class="form-control" name="hargaPaket" id="numHargaPaket"
                                     min="1" aria-describedby="emailHelp"
-                                    placeholder="Silahkan masukkan harga layanan paket" required value="{{ $paket->harga }}"
-                                    readonly>
+                                    placeholder="Silahkan masukkan harga layanan paket" required
+                                    value="{{ $paket->harga }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan harga paket
                                     disini!</small>
                             </div>

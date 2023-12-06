@@ -30,6 +30,7 @@
                             <tr>
                                 <th>Tanggal Penjualan</th>
                                 <th>Jumlah Penjualan</th>
+                                <th>Jumlah Penjualan Selesai</th>
                                 <th>Total Penjualan Perawatan(Rp)</th>
                                 <th>Total Penjualan Produk(Rp)</th>
                                 <th>Total Penjualan Paket(Rp)</th>
@@ -44,6 +45,7 @@
                                 <tr>
                                     <td>{{ $r['tanggalpenjualan'] }}</td>
                                     <td>{{ $r['jumlahpenjualan'] }}</td>
+                                    <td>{{ $r['jumlahpenjualanselesai'] }}</td>
                                     <td>{{ number_format($r['totalpenjualanperawatan'], 2, ',', '.') }}</td>
                                     <td>
                                         {{ number_format($r['totalpenjualanproduk'], 2, ',', '.') }}
@@ -129,7 +131,7 @@
 
                     $('#tabelDetailDaftarPenjualan').DataTable({
                         order: [
-                            [1, "asc"]
+                            [2, "asc"]
                         ],
                         language: {
                             emptyTable: "Tidak terdapat data untuk detail penjualan!",

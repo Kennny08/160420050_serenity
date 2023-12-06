@@ -129,7 +129,7 @@
 
                     $('#tabelDetailDaftarPenjualan').DataTable({
                         order: [
-                            [1, "asc"]
+                            [2, "asc"]
                         ],
                         language: {
                             emptyTable: "Tidak terdapat data untuk detail penjualan!",

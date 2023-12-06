@@ -6,6 +6,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Waktu Pembuatan Penjualan</th>
+                    <th>Jam Mulai</th>
                     <th>Status</th>
                     <th>Pelanggan</th>
                     <th>No. Nota Penjualan</th>
@@ -18,6 +19,9 @@
                     <tr id="tr_{{ $penjualan->id }}">
                         <td>{{ $penjualan->id }}</td>
                         <td>{{ date('H:i:s', strtotime($penjualan->created_at)) }}
+                        </td>
+                        <td>
+                            {{ $penjualan->penjualanperawatans()->orderBy('id')->first()->slotjams()->orderBy('slot_jam_id')->first()->jam }}
                         </td>
                         <td>
                             @if ($penjualan->status_selesai == 'batal')

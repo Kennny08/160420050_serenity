@@ -3411,11 +3411,13 @@ table.focus-on tbody tr.focused td {
 }
 
 .accountbg {
-  background: url("../images/bg-1.png");
-  position: absolute;
+  background: url("../images/logo-serenity/backgroundmoon.jpg");
   background-position: center center;
-  height: 100%;
-  width: 100%;
+  background-repeat: no-repeat;
+  background-size: cover; /* Menyusuaikan gambar agar selalu sesuai dengan elemen tanpa merubah rasio aspek */
+  position: absolute;
+  height: 100vh; /* 100% tinggi dari viewport (layar) */
+  width: 100%; /* 100% lebar dari elemen parent */
   top: 0;
 }
 
