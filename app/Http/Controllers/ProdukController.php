@@ -9,6 +9,7 @@ use App\Models\Paket;
 use App\Models\Penjualan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProdukController extends Controller
 {
@@ -80,7 +81,7 @@ class ProdukController extends Controller
                 'minimumStok.min' => 'Minimum Stok produk adalah 1!',
             ]
         );
-        
+
         $namaProduk = $request->get("namaProduk");
         $kodeProduk = $request->get("kode_produk");
         $hargaJual = $request->get("hargaJual");
@@ -302,4 +303,31 @@ class ProdukController extends Controller
         }
 
     }
+
+    public function penjualanTambahProdukPelanggan($id)
+    {
+        $idPenjualan = $id;
+        $penjualan = Penjualan::find($idPenjualan);
+        if ($penjualan == null) {
+            return redirect()->route('pelanggans.index');
+        } else {
+            if ($penjualan->pelanggan->id == Auth::user()->pelanggan->id) {
+                if ($penjualan->status_selesai == "belum") {
+                    $produks = Produk::where('status_jual', 'aktif')->where('status', 'aktif')->get();
+                    return view('pelanggan.penjualanproduk.tambahbeliproduk', compact('produks', 'penjualan'));
+                } else {
+                    if ($penjualan->reservasi != null) {
+                        return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id);
+                    }
+
+                }
+            } else {
+                return redirect()->route('pelanggans.index');
+            }
+
+        }
+
+    }
+
+
 }

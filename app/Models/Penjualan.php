@@ -18,6 +18,10 @@ class Penjualan extends Model
     {
         return $this->hasOne(Reservasi::class, 'penjualan_id');
     }
+    public function ulasan()
+    {
+        return $this->hasOne(Ulasan::class, 'penjualan_id');
+    }
 
     public function pelanggan()
     {

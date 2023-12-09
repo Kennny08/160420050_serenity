@@ -39,7 +39,7 @@ class LoginController extends Controller
                 return '/salon/karyawan/daftarreservasi'; 
             }
         } else if ($role == 'pelanggan') {
-            return '/pelanggan';
+            return '/pelanggan/beranda';
         } 
         // else if ($role == 'superadmin' || $role == 'admin') {
         //     if (tenant('tenant_status') != 'nonaktif') {

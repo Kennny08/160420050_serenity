@@ -404,6 +404,292 @@ class PenjualanController extends Controller
             }
         }
     }
+    public function konfirmasiPenambahanProdukPelanggan(Request $request)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $arrayIdProduk = $request->get('arrayproduk');
+        $arrayStokProduk = $request->get('arraystokproduk');
+        $idPenjualan = $request->get('idPenjualan');
+        $penjualan = Penjualan::find($idPenjualan);
+
+
+        //Mengecek penjualan tersebut punya penjualan produk atau tidak
+        if (count($penjualan->produks) > 0) {
+            // Jika ya maka dicek lagi, apakah array id produk dan stok produk dari form berisi null atau tidak karena kalau null artinya dia ingin menghapus semua detail penjualan produk(sebelum penjualan dikonfirmasi selesai)
+            if ($arrayIdProduk == null && $arrayStokProduk == null) {
+                //Menghapus/detach semua produk dari detail penjualan produk
+
+                $totalPenguranganPembayaran = 0;
+                foreach ($penjualan->produks as $p) {
+                    $totalPenguranganPembayaran += $p->pivot->kuantitas * $p->pivot->harga;
+                    $produkTerpilih = Produk::find($p->id);
+                    $produkTerpilih->stok = $produkTerpilih->stok + $p->pivot->kuantitas;
+                    $produkTerpilih->save();
+                    $penjualan->produks()->detach($p);
+                }
+
+                $penjualanBaru = Penjualan::find($idPenjualan);
+
+                //Lepas Diskon karena ada perubahan produk
+                $totalPembayaranSekarang = $penjualanBaru->total_pembayaran;
+                if ($penjualanBaru->diskon_id != null) {
+                    $diskonTerpakai = $penjualanBaru->diskon;
+                    $hargaSebelumDiskon = $totalPembayaranSekarang / ((100 - $diskonTerpakai->jumlah_potongan) / 100);
+                    $selisihPotongan = $hargaSebelumDiskon - $totalPembayaranSekarang;
+                    if ($selisihPotongan > $diskonTerpakai->maksimum_potongan) {
+                        $selisihPotongan = $diskonTerpakai->maksimum_potongan;
+                    }
+                    $penjualanBaru->total_pembayaran = $penjualanBaru->total_pembayaran + $selisihPotongan;
+                    $penjualanBaru->diskon_id = null;
+                    $penjualanBaru->updated_at = date("Y-m-d H:i:s");
+                    $penjualanBaru->save();
+                }
+
+                $penjualanBaru->total_pembayaran = $penjualanBaru->total_pembayaran - $totalPenguranganPembayaran;
+                $penjualanBaru->updated_at = date("Y-m-d H:i:s");
+                $penjualanBaru->save();
+
+                if ($penjualan->reservasi != null) {
+                    return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with('status', ["message" => ['Berhasil menambah atau mengubah produk yang ingin dibeli!', 'Silahkan mengatur ulang diskon jika tersedia!']]);
+                } 
+            } else {
+                //mengecek ketersediaan stok prouk jika ada produk yang sama seperti sebelumnya namun diubah kuantitasnya
+                $arrayIdProdukDalamDetailPenjualan = [];
+                foreach ($penjualan->produks as $p) {
+                    array_push($arrayIdProdukDalamDetailPenjualan, $p->id);
+                }
+                // untuk cek produk yang ada dalam detail penjualan
+                for ($i = 0; $i < count($arrayIdProduk); $i++) {
+                    foreach ($penjualan->produks as $produkPenjualan) {
+                        if ($arrayIdProduk[$i] == $produkPenjualan->id) {
+                            $nilaiSementara = $produkPenjualan->stok + $produkPenjualan->pivot->kuantitas;
+                            if ($nilaiSementara < $arrayStokProduk[$i]) {
+                                return redirect()->back()->withErrors('Terdapat perubahan stok produk! Silahkan periksa kembali stok produk yang tersedia!');
+                            } else {
+                                break;
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+
+                }
+
+                //untuk cek produk yang ada diluar detail penjualan
+                for ($i = 0; $i < count($arrayIdProduk); $i++) {
+                    if (!in_array($arrayIdProduk[$i], $arrayIdProdukDalamDetailPenjualan)) {
+                        $produk = Produk::find($arrayIdProduk[$i]);
+                        if ($produk->stok < $arrayStokProduk[$i]) {
+                            return redirect()->back()->withErrors('Terdapat perubahan stok produk! Silahkan periksa kembali stok produk yang tersedia!');
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+
+                $totalPenguranganPembayaran = 0;
+                $arrProdukSebelumPengurangan = $penjualan->produks;
+
+                $idPaketProduk = [];
+
+                if (count($penjualan->pakets) > 0) {
+                    foreach ($penjualan->pakets as $paket) {
+                        foreach ($paket->produks as $produk) {
+                            array_push($idPaketProduk, $produk->id);
+                        }
+                    }
+                }
+
+                //Menghapus detail penjualan produk dan mengembalikan stok
+
+
+                foreach ($penjualan->produks as $p) {
+                    if (!in_array($p->id, $idPaketProduk)) {
+                        $totalPenguranganPembayaran += $p->pivot->kuantitas * $p->pivot->harga;
+                        $produkTerpilih = Produk::find($p->id);
+                        $produkTerpilih->stok = $produkTerpilih->stok + $p->pivot->kuantitas;
+                        $produkTerpilih->save();
+                        $penjualan->produks()->detach($p);
+                    } else {
+                        $totalKeseluruhan = $p->pivot->kuantitas;
+                        $totalDariPaket = 0;
+                        foreach ($penjualan->pakets as $paket) {
+                            if ($paket->produks->firstWhere("id", $p->id) != null) {
+                                $totalDariPaket += $paket->produks->firstWhere("id", $p->id)->pivot->jumlah;
+                            }
+                        }
+                        if ($totalKeseluruhan > $totalDariPaket) {
+                            $totalPenguranganPembayaran += ($totalKeseluruhan - $totalDariPaket) * $p->pivot->harga;
+                            $produkTerpilih = Produk::find($p->id);
+                            $produkTerpilih->stok = $produkTerpilih->stok + ($totalKeseluruhan - $totalDariPaket);
+                            $produkTerpilih->save();
+                        }
+
+
+                        $penjualan->produks()->updateExistingPivot($p->id, ["kuantitas" => $totalDariPaket]);
+
+                        // if ($totalKeseluruhan > $totalDariPaket) {
+                        //     // $totalProdukDiluarPaket = $totalKeseluruhan - $totalDariPaket;
+                        //     // $penjualan->produks()->updateExistingPivot($p->id, ["kuantitas" => $totalDariPaket]);
+                        // }
+                    }
+                }
+
+
+
+
+                //Menambah detail penjualan produk dan mengurangi stok
+                for ($i = 0; $i < count($arrayIdProduk); $i++) {
+
+                    if (!in_array($arrayIdProduk[$i], $idPaketProduk)) {
+                        $produkTerpilih = Produk::find($arrayIdProduk[$i]);
+                        $penjualan->produks()->attach($arrayIdProduk[$i], ['kuantitas' => $arrayStokProduk[$i], 'harga' => $produkTerpilih->harga_jual]);
+                        $produkTerpilih->stok = $produkTerpilih->stok - $arrayStokProduk[$i];
+                        $produkTerpilih->save();
+                    } else {
+                        $produkTerpilih = Produk::find($arrayIdProduk[$i]);
+                        $penjualan = Penjualan::find($idPenjualan);
+                        $totalKeseluruhan = $arrayStokProduk[$i];
+                        $totalDariPaket = 0;
+                        foreach ($penjualan->pakets as $paket) {
+                            if ($paket->produks->firstWhere("id", $arrayIdProduk[$i]) != null) {
+                                $totalDariPaket += $paket->produks->firstWhere("id", $arrayIdProduk[$i])->pivot->jumlah;
+                            }
+                        }
+
+                        $penjualan->produks()->updateExistingPivot($produkTerpilih->id, ["kuantitas" => $totalKeseluruhan, "harga" => $produkTerpilih->harga_jual]);
+
+                        if ($totalKeseluruhan > $totalDariPaket) {
+                            // $totalPenguranganPembayaran += ($totalKeseluruhan - $totalDariPaket) * $produkTerpilih->harga_jual;
+                            // $produkTerpilih = Produk::find($p->id);
+                            $produkTerpilih->stok = $produkTerpilih->stok - ($totalKeseluruhan - $totalDariPaket);
+                            $produkTerpilih->save();
+                        }
+                    }
+                }
+
+                $penjualanBaru = Penjualan::find($idPenjualan);
+                $totalSubtotalProduk = 0;
+
+                $idPaketProduk = [];
+
+                if (count($penjualanBaru->pakets) > 0) {
+                    foreach ($penjualanBaru->pakets as $paket) {
+                        foreach ($paket->produks as $produk) {
+                            array_push($idPaketProduk, $produk->id);
+                        }
+                    }
+                }
+
+
+                foreach ($penjualanBaru->produks as $p) {
+                    if (!in_array($p->id, $idPaketProduk)) {
+                        $totalSubtotalProduk += $p->pivot->kuantitas * $p->pivot->harga;
+                    } else {
+                        $totalKeseluruhan = $p->pivot->kuantitas;
+                        $totalDariPaket = 0;
+                        foreach ($penjualanBaru->pakets as $paket) {
+                            if ($paket->produks->firstWhere("id", $p->id) != null) {
+                                $totalDariPaket += $paket->produks->firstWhere("id", $p->id)->pivot->jumlah;
+                            }
+                        }
+
+                        if ($totalKeseluruhan > $totalDariPaket) {
+                            $sisaJumlahDiluarPaket = $totalKeseluruhan - $totalDariPaket;
+                            $totalSubtotalProduk += $sisaJumlahDiluarPaket * $p->pivot->harga;
+                        }
+                    }
+                }
+
+                // foreach ($penjualanBaru->produks as $produk) {
+                //     $totalSubtotalProduk += $produk->pivot->kuantitas * $produk->pivot->harga;
+                // }
+
+                //Lepas Diskon karena ada perubahan produk
+                $totalPembayaranSekarang = $penjualanBaru->total_pembayaran;
+                if ($penjualanBaru->diskon_id != null) {
+                    $diskonTerpakai = $penjualanBaru->diskon;
+                    $hargaSebelumDiskon = $totalPembayaranSekarang / ((100 - $diskonTerpakai->jumlah_potongan) / 100);
+                    $selisihPotongan = $hargaSebelumDiskon - $totalPembayaranSekarang;
+                    if ($selisihPotongan > $diskonTerpakai->maksimum_potongan) {
+                        $selisihPotongan = $diskonTerpakai->maksimum_potongan;
+                    }
+                    $penjualanBaru->total_pembayaran = $penjualanBaru->total_pembayaran + $selisihPotongan;
+                    $penjualanBaru->diskon_id = null;
+                    $penjualanBaru->updated_at = date("Y-m-d H:i:s");
+                    $penjualanBaru->save();
+                }
+
+                $penjualanBaru->total_pembayaran = $penjualanBaru->total_pembayaran - $totalPenguranganPembayaran + $totalSubtotalProduk;
+                $penjualanBaru->updated_at = date("Y-m-d H:i:s");
+                $penjualanBaru->save();
+
+                if ($penjualan->reservasi != null) {
+                    return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with('status', ["message" => ['Berhasil menambah atau mengubah produk yang ingin dibeli!', 'Silahkan mengatur ulang diskon jika tersedia!']]);
+                } 
+            }
+        } else {
+
+            if ($arrayIdProduk == null && $arrayStokProduk == null) {
+                if ($penjualan->reservasi != null) {
+                    return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with('status', ["message" => ['Berhasil menambah atau mengubah produk yang ingin dibeli!', 'Silahkan mengecek diskon jika tersedia!']]);
+                } 
+            } else {
+
+                for ($i = 0; $i < count($arrayIdProduk); $i++) {
+                    $produk = Produk::find($arrayIdProduk[$i]);
+                    if ($produk->stok < $arrayStokProduk[$i]) {
+                        return redirect()->back()->withErrors('Terdapat perubahan stok produk! Silahkan periksa kembali stok produk yang tersedia!');
+                    } else {
+                        continue;
+                    }
+                }
+
+                for ($i = 0; $i < count($arrayIdProduk); $i++) {
+                    $produkTerpilih = Produk::find($arrayIdProduk[$i]);
+                    $penjualan->produks()->attach($arrayIdProduk[$i], ['kuantitas' => $arrayStokProduk[$i], 'harga' => $produkTerpilih->harga_jual]);
+                    $produkTerpilih->stok = $produkTerpilih->stok - $arrayStokProduk[$i];
+                    $produkTerpilih->save();
+                }
+
+
+
+                $penjualanBaru = Penjualan::find($idPenjualan);
+                $totalSubtotalProduk = 0;
+                foreach ($penjualanBaru->produks as $produk) {
+                    $totalSubtotalProduk += $produk->pivot->kuantitas * $produk->pivot->harga;
+                }
+
+                //Lepas Diskon karena ada perubahan produk
+                $totalPembayaranSekarang = $penjualanBaru->total_pembayaran;
+                if ($penjualanBaru->diskon_id != null) {
+                    $diskonTerpakai = $penjualanBaru->diskon;
+                    $hargaSebelumDiskon = $totalPembayaranSekarang / ((100 - $diskonTerpakai->jumlah_potongan) / 100);
+                    $selisihPotongan = $hargaSebelumDiskon - $totalPembayaranSekarang;
+                    if ($selisihPotongan > $diskonTerpakai->maksimum_potongan) {
+                        $selisihPotongan = $diskonTerpakai->maksimum_potongan;
+                    }
+                    $penjualanBaru->total_pembayaran = $penjualanBaru->total_pembayaran + $selisihPotongan;
+                    $penjualanBaru->diskon_id = null;
+                    $penjualanBaru->updated_at = date("Y-m-d H:i:s");
+                    $penjualanBaru->save();
+                }
+
+                $totalPembayaranSaatIni = $penjualan->total_pembayaran;
+                $totalPembayaranBaru = $totalPembayaranSaatIni + $totalSubtotalProduk;
+                $penjualanBaru->total_pembayaran = $totalPembayaranBaru;
+                $penjualanBaru->updated_at = date("Y-m-d H:i:s");
+                $penjualanBaru->save();
+
+
+                if ($penjualan->reservasi != null) {
+                    return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with('status', ["message" => ['Berhasil menambah atau mengubah produk yang ingin dibeli!', 'Silahkan mengatur ulang diskon jika tersedia!']]);
+                } 
+            }
+        }
+    }
 
     public function penjualanAdminCreate()
     {

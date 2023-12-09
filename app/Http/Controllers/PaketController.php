@@ -273,12 +273,27 @@ class PaketController extends Controller
         return response()->json(array('msg' => view('admin.reservasi.detailpaket', compact('paket'))->render()), 200);
     }
 
+    public function getDetailPaketReservasiPelanggan()
+    {
+        $idPaket = $_POST['idPaket'];
+        $paket = Paket::find($idPaket);
+        return response()->json(array('msg' => view('pelanggan.reservasi.detailpaket', compact('paket'))->render()), 200);
+    }
+
     public function addPaketToListReservasi()
     {
         $idPaket = $_POST['idPaket'];
         $paket = Paket::find($idPaket);
         $perawatans = $paket->perawatans;
         return response()->json(array('msg' => view('admin.reservasi.adddetailpaket', compact('paket'))->render(), "perawatans" => $perawatans), 200);
+    }
+
+    public function addPaketToListReservasiPelanggan()
+    {
+        $idPaket = $_POST['idPaket'];
+        $paket = Paket::find($idPaket);
+        $perawatans = $paket->perawatans;
+        return response()->json(array('msg' => view('pelanggan.reservasi.adddetailpaket', compact('paket'))->render(), "perawatans" => $perawatans), 200);
     }
 
     public function updatePerawatanAfterDeletePaket()
@@ -289,7 +304,43 @@ class PaketController extends Controller
         return response()->json(array("perawatans" => $perawatans), 200);
     }
 
+    public function updatePerawatanAfterDeletePaketPelanggan()
+    {
+        $idPaket = $_POST['idPaket'];
+        $paket = Paket::find($idPaket);
+        $perawatans = $paket->perawatans;
+        return response()->json(array("perawatans" => $perawatans), 200);
+    }
+
     public function checkPaketIsiSama()
+    {
+        $idPaket = $_POST["idPaket"];
+        $daftarPaket = explode(",", $_POST["daftarPaketDiambil"]);
+
+
+
+        $arrIdPerawatanYangSudahAda = [];
+        $arrDaftarPaket = Paket::whereIn("kode_paket", $daftarPaket)->get();
+        foreach ($arrDaftarPaket as $paketTertambah) {
+            foreach ($paketTertambah->perawatans as $perawatanPaketTertambah) {
+                array_push($arrIdPerawatanYangSudahAda, $perawatanPaketTertambah->id);
+            }
+        }
+
+        $objPaket = Paket::find($idPaket);
+        $arrPerawatanObjPaket = [];
+
+        foreach ($objPaket->perawatans as $perawatan) {
+            if (in_array($perawatan->id, $arrIdPerawatanYangSudahAda)) {
+                array_push($arrPerawatanObjPaket, $perawatan);
+            }
+        }
+
+        return response()->json(array("arrPerawatanObjPaket" => $arrPerawatanObjPaket), 200);
+
+    }
+
+    public function checkPaketIsiSamaPelanggan()
     {
         $idPaket = $_POST["idPaket"];
         $daftarPaket = explode(",", $_POST["daftarPaketDiambil"]);

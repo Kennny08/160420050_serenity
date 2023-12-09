@@ -7,6 +7,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KondisiController;
 use App\Http\Controllers\MerekController;
 use App\Http\Controllers\PaketController;
+use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PerawatanController;
@@ -44,10 +45,9 @@ Route::get('/', function () {
                 return redirect()->route('reservasis.karyawan.daftarreservasi');
             }
 
+        } else if (Auth::user()->role === 'pelanggan') {
+            return redirect()->route('pelanggans.index');
         }
-        // else if (Auth::user()->role === 'pelanggan') {
-        //     return redirect()->route('pelanggan.reservasis.index');
-        // }
     }
 });
 
@@ -136,7 +136,7 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::post('/salon/reservasi/admin/updateperawatanafterdeletepaket', [PaketController::class, "updatePerawatanAfterDeletePaket"])->name("reservasi.admin.updatecbperawatanafterdeletepaket");
         Route::post('/salon/reservasi/admin/checkisipaketsama', [PaketController::class, "checkPaketIsiSama"])->name("reservasi.admin.checkpaketisisama");
 
-        Route::post('/salon/reservasi/admin/store', [ReservasiController::class, "reservasiAdminStore"])->name("reservasi.admin.store");
+        //Route::post('/salon/reservasi/admin/store', [ReservasiController::class, "reservasiAdminStore"])->name("reservasi.admin.store");
         Route::post('/salon/reservasi/admin/konfirmasipilihkaryawan', [ReservasiController::class, "reservasiAdminKonfirmasi"])->name("reservasi.admin.konfirmasireservasi");
 
         Route::get('/salon/penjualan/admin/tambahproduk/{id}', [ProdukController::class, "penjualanTambahProduk"])->name("penjualan.admin.penjualantambahproduk");
@@ -232,7 +232,7 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::resource('riwayatpengambilanproduks', RiwayatPengambilanProdukController::class);
         Route::post('/salon/riwayatpengambilanproduk/getdetailpengambilanproduk', [RiwayatPengambilanProdukController::class, 'getDetailRiwayatPengambilanProduk'])->name('admin.riwayatpengambilanproduks.getdetailriwayatpengambilanproduk');
 
-        
+
         //Paket 
         Route::get('/salon/paket/create', [PaketController::class, "create"])->name("pakets.create");
         Route::post('/salon/paket/store', [PaketController::class, "store"])->name("pakets.store");
@@ -272,12 +272,41 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::get('/salon/presensi/riwayatizinkehadiran', [PresensiKehadiranController::class, "riwayatIzinKehadiran"])->name("admin.presensikehadirans.riwayatizinkehadiran");
         Route::post('/salon/presensi/detailriwayatizinkehadiran', [PresensiKehadiranController::class, "getDetailIzinKehadiran"])->name("admin.getdetailizinkehadiran");
         Route::post('/salon/presensi/updatestatusizinkehadrian', [PresensiKehadiranController::class, "updateStatusIzin"])->name("admin.updatestatusizin");
-        
+
         Route::post('/salon/presensi/konfirmasicheckpresensi', [PresensiKehadiranController::class, "konfirmasiCheckPresensi"])->name("admin.presensikehadirans.konfirmasicheckpresensi");
 
         //Penjualan
 
     });
+});
+
+Route::middleware(['auth', 'pelanggan'])->group(function () {
+
+    //Beranda
+    Route::get('/pelanggan/beranda', [PelangganController::class, "index"])->name("pelanggans.index");
+
+    //Reservasi
+    Route::get('/pelanggan/reservasi/create', [ReservasiController::class, "reservasiPelangganCreate"])->name("reservasis.pelanggan.create");
+    Route::get('/pelanggan/reservasi/riwayatreservasiperawatan', [ReservasiController::class, "riwayatReservasiPerawatanPelanggan"])->name("reservasis.riwayatreservasispelanggan.index");
+    Route::post('/pelanggan/reservasi/selectstaf', [ReservasiController::class, "reservasiPelangganPilihKaryawanNew"])->name("reservasis.pelanggan.pilihkaryawan");
+    
+    Route::post('/pelanggan/reservasi/checkreservasihariini', [ReservasiController::class, "checkReservasiHariIni"])->name("reservasis.pelanggan.checkreservasiharini");
+
+    Route::post('/pelanggan/reservasi/konfirmasipilihkaryawan', [ReservasiController::class, "reservasiPelangganKonfirmasi"])->name("reservasis.pelanggan.konfirmasireservasi");
+    Route::get('/pelanggan/tambahprodukpembelian/{id}', [ProdukController::class, "penjualanTambahProdukPelanggan"])->name("penjualans.pelanggan.penjualantambahproduk");
+    Route::post('/pelanggan/tambahprodukpembelian/konfirmasiproduk', [PenjualanController::class, "konfirmasiPenambahanProdukPelanggan"])->name("penjualans.pelanggan.konfirmasipenambahanproduk");
+    Route::get('/pelanggan/reservasi/detailreservasi/{idReservasi}', [ReservasiController::class, "detailReservasiPelanggan"])->name("reservasis.pelanggan.detailreservasi");
+    Route::post('/pelanggan/reservasi/editpilihkaryawanreservasi', [ReservasiController::class, "editPilihKaryawanReservasiPelanggan"])->name("reservasis.pelanggan.editpilihkaryawanperawatan");
+    Route::post('/pelanggan/reservasi/konfirmasieditpilihkaryawanreservasi', [ReservasiController::class, "konfirmasiEditPilihKaryawanReservasiPelanggan"])->name("reservasis.pelanggan.konfirmasieditpilihkaryawan");
+    Route::get('/pelanggan/detailnotareservasi/{idReservasi}', [PenjualanController::class, "detailNotaReservasiPenjualanPelanggan"])->name("penjualans.admin.detailnotareservasipenjualan");
+
+    Route::post('/pelanggan/reservasi/getslotjamaktif', [SlotJamController::class, "getSlotJamAktifPelanggan"])->name("reservasis.pelanggan.getslotjamaktif");
+    Route::post('/pelanggan/reservasi/getdetailperawatan', [PerawatanController::class, "getDetailPerawatanPelanggan"])->name("reservasis.pelanggan.getdetailperawatan");
+    Route::post('/pelanggan/reservasi/getdetailpaketreservasi', [PaketController::class, "getDetailPaketReservasiPelanggan"])->name("reservasis.pelanggan.getdetailpaketreservasi");
+    Route::post('/pelanggan/reservasi/addpaketreservasitolist', [PaketController::class, "addPaketToListReservasiPelanggan"])->name("reservasis.pelanggan.addpaketreservasitolist");
+    Route::post('/pelanggan/reservasi/updateperawatanafterdeletepaket', [PaketController::class, "updatePerawatanAfterDeletePaketPelanggan"])->name("reservasis.pelanggan.updatecbperawatanafterdeletepaket");
+    Route::post('/pelanggan/reservasi/checkisipaketsama', [PaketController::class, "checkPaketIsiSamaPelanggan"])->name("reservasis.pelanggan.checkpaketisisama");
+
 });
 
 

@@ -115,6 +115,29 @@ class SlotJamController extends Controller
         return response()->json(array('status' => $status, 'msg' => view('admin.reservasi.optionslotjam', compact('slotJams'))->render()), 200);
     }
 
+    public function getSlotJamAktifPelanggan()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $tanggal = $_POST['tanggal'];
+        $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+
+        $nomorHariDalamMingguan = date("w", strtotime($tanggal));
+        if ($tanggal == date("Y-m-d")) {
+            $slotJams = SlotJam::where('hari', $hariIndonesia[$nomorHariDalamMingguan])->where('jam', ">=", date("H.i"))->get();
+        } else {
+            $slotJams = SlotJam::where('hari', $hariIndonesia[$nomorHariDalamMingguan])->get();
+        }
+
+
+        $status = "";
+        if (count($slotJams) == 0) {
+            $status = "no";
+        } else {
+            $status = "ok";
+        }
+        return response()->json(array('status' => $status, 'msg' => view('pelanggan.reservasi.optionslotjam', compact('slotJams'))->render()), 200);
+    }
+
     public function editStatusSlotJam()
     {
         date_default_timezone_set('Asia/Jakarta');

@@ -339,6 +339,15 @@ class PerawatanController extends Controller
         return response()->json(array('msg' => view('admin.reservasi.detailperawatan', compact('perawatan'))->render()), 200);
     }
 
+    public function getDetailPerawatanPelanggan()
+    {
+        $idPerawatan = $_POST['idPerawatan'];
+        $perawatan = Perawatan::find($idPerawatan);
+        return response()->json(array('msg' => view('pelanggan.reservasi.detailperawatan', compact('perawatan'))->render()), 200);
+    }
+
+
+
     public function getDetailPerawatanList()
     {
 
