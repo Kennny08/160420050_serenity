@@ -28,29 +28,30 @@
                         </div>
                     @endif
 
-                    <form id="formStorePerawatan" method="POST" action="{{ route('perawatans.update', $perawatan->id) }}">
+                    <form id="formStorePerawatan" method="POST" action="{{ route('perawatans.update', $perawatan->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="form-group col-md-12">
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <label for="exampleInputEmail1"><strong>Nama Perawatan</strong></label>
                                 <input type="text" class="form-control" name="namaPerawatan" id="txtNamaPerawatan"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan nama perawatan" required
                                     value="{{ $perawatan->nama }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan nama perawatan disini!</small>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="exampleInputEmail1"><strong>Kode Perawatan</strong></label>
                                 <input type="text" class="form-control" name="kode_perawatan" id="txtKodePerawatan"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan kode perawatan" required
                                     value="{{ $perawatan->kode_perawatan }}" readonly>
                                 <small id="emailHelp" class="form-text text-muted">Kode Perawatan</small>
                             </div>
+                        </div>
+                        <div class="form-group row">
+                            
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Harga Layanan Perawatan(Rp)</strong></label>
                                 <input type="number" class="form-control" name="hargaPerawatan" id="numHargaPerawatan"
@@ -66,6 +67,13 @@
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan durasi perawatan" required
                                     value="{{ $perawatan->durasi }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan durasi perawatan
+                                    disini!</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleInputEmail1"><strong>Gambar Perawatan</strong></label>
+                                <input type="file" class="form-control" name="gambarPerawatan" id="fileUpload"
+                                    aria-describedby="emailHelp" value="{{ old('gambarPerawatan') }}" accept="image/*">
+                                <small id="emailHelp" class="form-text text-muted">Upload file gambar perawatan
                                     disini!</small>
                             </div>
                         </div>

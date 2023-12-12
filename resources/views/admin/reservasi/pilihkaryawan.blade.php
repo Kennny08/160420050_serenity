@@ -219,10 +219,10 @@
                                 {{-- <a id="btnPilihPerawatan" style="width: 200px" href="{{ route('reservasi.admin.create') }}"
                                     class="btn btn-primary btn-lg btn-danger">Pilih
                                     Perawatan</a> --}}
-                                <button id="btnPilihPerawatan" style="width: 200px" onclick="goBack()" type="button"
+                                <a id="btnPilihPerawatan" style="width: 200px" href="{{ route("reservasi.admin.create") }}" type="button"
                                     class="btn btn-primary btn-lg btn-danger"><i class="mdi mdi-keyboard-backspace"></i>
                                     &nbsp; Pilih
-                                    Perawatan</button>
+                                    Perawatan</a>
                             </div>
 
                             @if ($keteranganNull == 0)

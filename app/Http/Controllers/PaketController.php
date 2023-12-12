@@ -7,6 +7,7 @@ use App\Models\Paket;
 use App\Models\Perawatan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PaketController extends Controller
 {
@@ -38,7 +39,7 @@ class PaketController extends Controller
         $diskonAktif = [];
         foreach ($arrDiskonAktif as $diskon) {
             if ($diskon->paket == null) {
-               array_push($diskonAktif, $diskon);
+                array_push($diskonAktif, $diskon);
             }
         }
         return view("admin.paket.tambahpaket", compact("perawatanAktif", "produkAktif", "diskonAktif"));
@@ -60,6 +61,7 @@ class PaketController extends Controller
                 'kode_paket' => 'required|unique:pakets|starts_with:m',
                 'hargaPaket' => 'required|numeric|min:1',
                 'arrayperawatanid' => 'required|array|min:2',
+                "gambarPaket" => 'required|file',
             ],
             [
                 'namaPaket.required' => 'Nama paket tidak boleh kosong!',
@@ -71,7 +73,9 @@ class PaketController extends Controller
 
                 'hargaPaket.min' => 'Harga Paket Paket minimal Rp. 1!',
                 'arrayperawatanid.required' => 'Perawatan Paket tidak boleh kosong!',
-                'arrayperawatanid.min' => 'Minimal terdapat 2 perawatan dalam satu Paket!'
+                'arrayperawatanid.min' => 'Minimal terdapat 2 perawatan dalam satu Paket!',
+
+                'gambarPaket.required' => 'Mohon pilih file gambar untuk gambar paket!',
             ]
         );
 
@@ -84,6 +88,7 @@ class PaketController extends Controller
         $statusPaket = $request->get("radioStatusPaket");
         $deskripsiPaket = $request->get("deskripsiPaket");
         $idDiskon = $request->get("idDiskon");
+        $gambarPaket = $request->file("gambarPaket");
 
         $newPaket = new Paket();
         $newPaket->nama = $namaPaket;
@@ -100,8 +105,17 @@ class PaketController extends Controller
         $newPaket->updated_at = date("Y-m-d H:i:s");
         $newPaket->save();
 
+        $extensionImage = $gambarPaket->getClientOriginalExtension();
+        $namaImage = "paket_" . $newPaket->id . "." . $extensionImage;
+        $gambarPaket->move(public_path('assets_admin/images/paket'), $namaImage);
+        $newPaket->gambar = $namaImage;
+        $newPaket->updated_at = date("Y-m-d H:i:s");
+        $newPaket->save();
+
+        $urutanPerawatan = 1;
         foreach ($arrPerawatanId as $idPerawatan) {
-            $newPaket->perawatans()->attach($idPerawatan);
+            $newPaket->perawatans()->attach($idPerawatan, ['urutan' => $urutanPerawatan]);
+            $urutanPerawatan += 1;
         }
 
         if ($arrProdukId != null) {
@@ -199,6 +213,16 @@ class PaketController extends Controller
         $paket->status = $statusPaket;
         $paket->updated_at = date("Y-m-d H:i:s");
         $paket->save();
+
+        if ($request->hasFile("gambarPaket")) {
+            $gambar = $request->file("gambarPaket");
+            $extensionImage = $gambar->getClientOriginalExtension();
+            $namaImage = "paket_" . $paket->id . "." . $extensionImage;
+            $gambar->move(public_path('assets_admin/images/paket'), $namaImage);
+            $paket->gambar = $namaImage;
+            $paket->updated_at = date("Y-m-d H:i:s");
+            $paket->save();
+        }
 
         // foreach ($paket->perawatans as $perawatan) {
         //     $paket->perawatans()->detach($perawatan);
@@ -366,6 +390,67 @@ class PaketController extends Controller
 
         return response()->json(array("arrPerawatanObjPaket" => $arrPerawatanObjPaket), 200);
 
+    }
+
+    public function daftarPaketAllUser()
+    {
+        $paketsAktif = Paket::where("status", "aktif")->get();
+        $totalPaket = Paket::where("status", "aktif")->count();
+        $urutanTerpilih = "Semua";
+        $kataKunci = "";
+
+        return view("alluser.daftarpaket", compact("paketsAktif", "urutanTerpilih", "kataKunci", "totalPaket"));
+    }
+
+    public function daftarPaketFilterAllUser(Request $request)
+    {
+        $paketsAktif = Paket::where("status", "aktif")->get();
+        $totalPaket = Paket::where("status", "aktif")->count();
+
+
+        if ($request->get("urutan") == null) {
+            $urutanTerpilih = "Semua";
+        } else {
+            $urutanTerpilih = $request->get("urutan");
+        }
+
+        if ($request->get("kataKunci") == null) {
+            $kataKunci = "";
+        } else {
+            $kataKunci = $request->get("kataKunci");
+        }
+
+        if ($urutanTerpilih == "Semua") {
+            $paketsAktif = Paket::where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->get();
+        } else {
+            if ($urutanTerpilih == "namaAtoZ") {
+                $paketsAktif = Paket::where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("nama", "asc")->get();
+            } elseif ($urutanTerpilih == "namaZtoA") {
+                $paketsAktif = Paket::where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("nama", "desc")->get();
+            } elseif ($urutanTerpilih == "hargaRendahTinggi") {
+                $paketsAktif = Paket::where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("harga", "asc")->get();
+            } elseif ($urutanTerpilih == "hargaTinggiRendah") {
+                $paketsAktif = Paket::where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("harga", "desc")->get();
+            }
+        }
+
+
+        return view("alluser.daftarpaket", compact("paketsAktif", "urutanTerpilih", "kataKunci", "totalPaket"));
+    }
+
+    public function detailPaketAllUser($idPaket)
+    {
+        $paket = Paket::find($idPaket);
+
+        if ($paket == null) {
+            if (Auth::check()) {
+                return redirect()->route('pakets.daftarpaketalluser');
+            } else {
+                return redirect()->route('users.halamanutama');
+            }
+        } else {
+            return view("alluser.detailpaket", compact("paket"));
+        }
     }
 
 }

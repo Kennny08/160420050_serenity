@@ -78,7 +78,7 @@
                                                 {{ $r->penjualan->penjualanperawatans()->orderBy('id')->first()->slotjams()->orderBy('slot_jam_id')->first()->jam }}
                                             </td>
                                             <td>
-                                                @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan')
+                                                @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan' || $r->status == 'tidak hadir')
                                                     <span class="badge badge-danger font-16">{{ $r->status }}</span>
                                                 @elseif($r->status == 'selesai')
                                                     <span class="badge badge-success font-16">{{ $r->status }}</span>
@@ -148,7 +148,7 @@
                                                 {{ $r->penjualan->penjualanperawatans()->orderBy('id')->first()->slotjams()->orderBy('slot_jam_id')->first()->jam }}
                                             </td>
                                             <td>
-                                                @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan')
+                                                @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan' || $r->status == 'tidak hadir')
                                                     <span class="badge badge-danger font-16">{{ $r->status }}</span>
                                                 @elseif($r->status == 'selesai')
                                                     <span class="badge badge-success font-16">{{ $r->status }}</span>

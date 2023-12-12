@@ -8,7 +8,7 @@
             <div>
                 <div class="card-body">
 
-                    <h4 class="mt-0 header-title">Buat Jadwal Reservasi</h4>
+                    <h4 class="mt-0 header-title  fw-bold">Buat Jadwal Reservasi</h4>
                     <p class="sub-title">
                     </p>
                     @if ($errors->any())
@@ -1044,7 +1044,6 @@
         });
 
         $('body').on('click', '#btnTidakPilihKaryawan', function() {
-
             $("#inputPilihKaryawan").val("tidak");
             $("#modalKonfirmasiPerawatan").modal("hide");
             $("#formPilihPerawatan").submit();
@@ -1056,22 +1055,34 @@
                 url: '{{ route('reservasis.pelanggan.checkreservasiharini') }}',
                 data: {
                     '_token': '<?php echo csrf_token(); ?>',
-
                 },
                 success: function(data) {
-                    if (data.hasilReservasi.length > 0) {
+                    if (data.status == "blacklist") {
                         var nomorNota = [];
+
                         $.each(data.hasilReservasi, function(index, item) {
-                            nomorNota.push(item.nomor_nota);
+                            nomorNota.push(item.penjualan.nomor_nota);
                         });
                         $('#bodyModalPemberitahuanTelahReservasi').html(
-                            "<h5>Batas melakukan reservasi adalah satu kali sehari. Anda hari ini telah melakukan reservasi dengan nomor nota <span class='text-danger'>" +
-                            nomorNota.join(", ") + "</span></h5>");
+                            "<h5>Anda tidak dapat melakukan reservasi karena pernah tidak hadir pada reservasi yang telah Anda buat dalam jangka waktu 2 Minggu ini. Berikut nomor nota dari reservasi tersebut <span class='text-danger'>" +
+                            nomorNota.join(", ") +
+                            "</span></h5><br><h6><span class='text-danger'>* Silahkan menghubungi salon untuk informasi lebih lanjut</span></h6>"
+                            );
                         $("#modalPemberitahuanTelahReservasi").modal("show");
                     } else {
-                        $("#modalKonfirmasiPerawatan").modal("show");
+                        if (data.hasilReservasi.length > 0) {
+                            var nomorNota = [];
+                            $.each(data.hasilReservasi, function(index, item) {
+                                nomorNota.push(item.nomor_nota);
+                            });
+                            $('#bodyModalPemberitahuanTelahReservasi').html(
+                                "<h5>Batas melakukan reservasi adalah satu kali sehari. Anda hari ini telah melakukan reservasi dengan nomor nota <span class='text-danger'>" +
+                                nomorNota.join(", ") + "</span></h5>");
+                            $("#modalPemberitahuanTelahReservasi").modal("show");
+                        } else {
+                            $("#modalKonfirmasiPerawatan").modal("show");
+                        }
                     }
-
                 }
             })
         });

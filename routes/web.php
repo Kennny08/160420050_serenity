@@ -17,6 +17,8 @@ use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\RiwayatPengambilanProdukController;
 use App\Http\Controllers\SlotJamController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UlasanController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,9 +34,11 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
+
+
 Route::get('/', function () {
     if (!Auth::check()) {
-        return redirect()->route('login');
+        return redirect()->route('users.halamanutama');
     } else {
         if (Auth::user()->role === 'admin' || Auth::user()->role === 'karyawan') {
 
@@ -42,7 +46,7 @@ Route::get('/', function () {
                 return redirect()->route('reservasis.index');
             } else {
                 //Route untuk ke halaman reservasi untuk karyawan salon tersebut saja
-                return redirect()->route('reservasis.karyawan.daftarreservasi');
+                return redirect()->route('karyawans.daftarreservasi');
             }
 
         } else if (Auth::user()->role === 'pelanggan') {
@@ -50,6 +54,28 @@ Route::get('/', function () {
         }
     }
 });
+
+Route::get('/serenity', [UserController::class, "halamanUtama"])->name("users.halamanutama");
+Route::get('/serenity/daftarproduk', [ProdukController::class, "daftarProdukAllUser"])->name("produks.daftarprodukalluser");
+Route::post('/serenity/daftarproduk/filter', [ProdukController::class, "daftarProdukFilterAllUser"])->name("produks.daftarprodukfilteralluser");
+Route::get('/serenity/detailproduk/{idProduk}', [ProdukController::class, "detailProdukAllUser"])->name("produks.detailprodukalluser");
+
+Route::get('/serenity/daftarperawatan', [PerawatanController::class, "daftarPerawatanAllUser"])->name("perawatans.daftarperawatanalluser");
+Route::post('/serenity/daftarperawatan/filter', [PerawatanController::class, "daftarPerawatanFilterAllUser"])->name("perawatans.daftarperawatanfilteralluser");
+Route::get('/serenity/detailperawatan/{idPerawatan}', [PerawatanController::class, "detailPerawatanAllUser"])->name("perawatans.detailperawatanalluser");
+
+Route::get('/serenity/daftarpaket', [PaketController::class, "daftarPaketAllUser"])->name("pakets.daftarpaketalluser");
+Route::post('/serenity/daftarpaket/filter', [PaketController::class, "daftarPaketFilterAllUser"])->name("pakets.daftarpaketfilteralluser");
+Route::get('/serenity/detailpaket/{idPaket}', [PaketController::class, "detailPaketAllUser"])->name("pakets.detailpaketalluser");
+
+
+Route::get('/serenity/tentangkami', function () {
+    return view("alluser.tentangkami");
+})->name("users.tentangkami");
+
+//REGISTER
+Route::get('/pelanggan/register', [PelangganController::class, "bukaRegisterAkun"])->name("pelanggans.bukaregister");
+Route::post('/pelanggan/prosesregister', [PelangganController::class, "registerAkun"])->name("pelanggans.register");
 
 //ADMIN
 Route::middleware(['auth', 'salon'])->group(function () {
@@ -298,7 +324,7 @@ Route::middleware(['auth', 'pelanggan'])->group(function () {
     Route::get('/pelanggan/reservasi/detailreservasi/{idReservasi}', [ReservasiController::class, "detailReservasiPelanggan"])->name("reservasis.pelanggan.detailreservasi");
     Route::post('/pelanggan/reservasi/editpilihkaryawanreservasi', [ReservasiController::class, "editPilihKaryawanReservasiPelanggan"])->name("reservasis.pelanggan.editpilihkaryawanperawatan");
     Route::post('/pelanggan/reservasi/konfirmasieditpilihkaryawanreservasi', [ReservasiController::class, "konfirmasiEditPilihKaryawanReservasiPelanggan"])->name("reservasis.pelanggan.konfirmasieditpilihkaryawan");
-    Route::get('/pelanggan/detailnotareservasi/{idReservasi}', [PenjualanController::class, "detailNotaReservasiPenjualanPelanggan"])->name("penjualans.admin.detailnotareservasipenjualan");
+    Route::get('/pelanggan/detailnotareservasi/{idReservasi}', [PenjualanController::class, "detailNotaReservasiPenjualanPelanggan"])->name("penjualans.pelanggan.detailnotareservasipenjualan");
 
     Route::post('/pelanggan/reservasi/getslotjamaktif', [SlotJamController::class, "getSlotJamAktifPelanggan"])->name("reservasis.pelanggan.getslotjamaktif");
     Route::post('/pelanggan/reservasi/getdetailperawatan', [PerawatanController::class, "getDetailPerawatanPelanggan"])->name("reservasis.pelanggan.getdetailperawatan");
@@ -306,6 +332,14 @@ Route::middleware(['auth', 'pelanggan'])->group(function () {
     Route::post('/pelanggan/reservasi/addpaketreservasitolist', [PaketController::class, "addPaketToListReservasiPelanggan"])->name("reservasis.pelanggan.addpaketreservasitolist");
     Route::post('/pelanggan/reservasi/updateperawatanafterdeletepaket', [PaketController::class, "updatePerawatanAfterDeletePaketPelanggan"])->name("reservasis.pelanggan.updatecbperawatanafterdeletepaket");
     Route::post('/pelanggan/reservasi/checkisipaketsama', [PaketController::class, "checkPaketIsiSamaPelanggan"])->name("reservasis.pelanggan.checkpaketisisama");
+
+    Route::get('/pelanggan/diskon/pilihdiskon/{idPenjualan}', [DiskonController::class, 'pilihDiskonPelanggan'])->name('diskons.pelanggan.pilihdiskon');
+    Route::post('/pelanggan/diskon/prosespemakaiandiskon', [DiskonController::class, 'prosesPemakaianDiskonPelanggan'])->name('diskons.pelanggan.prosespemakaiandiskon');
+
+    Route::post('/pelanggan/reservasi/batalkan', [ReservasiController::class, "pelangganBatalkanReservasi"])->name("reservasis.pelanggan.batalkan");
+
+    Route::post('/pelanggan/reservasi/simpanulasan', [UlasanController::class, "pelangganSimpanUlasan"])->name("reservasis.ulasan.store");
+
 
 });
 

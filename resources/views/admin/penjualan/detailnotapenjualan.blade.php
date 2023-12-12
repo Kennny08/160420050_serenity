@@ -193,7 +193,7 @@
                                                                 <br>
                                                                 Perawatan:
                                                                 <ul>
-                                                                    @foreach ($paket->perawatans as $perawatan)
+                                                                    @foreach ($paket->perawatans()->withPivot("urutan")->orderBy("urutan")->get() as $perawatan)
                                                                         <li>
                                                                             <span class="">
                                                                                 {{ $perawatan->nama }}

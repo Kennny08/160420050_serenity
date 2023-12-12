@@ -1,4 +1,9 @@
 <div class="form-group row text-center">
+    <div class="form-group col-md-12">
+        <img src="{{ asset('assets_admin/images/paket/') }}/{{ $paket->gambar }}" alt="gambarPaket" style="max-height: 500px;" class="img-fluid">
+    </div>
+</div>
+<div class="form-group row text-center">
     <div class="form-group col-md-6">
         <h6>Tanggal Pembuatan</h6>
         <p>{{ date('d-m-Y H:i:s', strtotime($paket->created_at)) }}</p>
@@ -32,7 +37,7 @@
                 </tr>
             </thead>
             <tbody id="bodyListPerawatanProduk">
-                @foreach ($paket->perawatans as $p)
+                @foreach ($paket->perawatans()->withPivot("urutan")->orderBy("urutan")->get() as $p)
                     <tr>
                         <td>
                             {{ $p->nama }}

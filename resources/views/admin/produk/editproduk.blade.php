@@ -28,7 +28,7 @@
                         </div>
                     @endif
 
-                    <form id="formUpdateProduk" method="POST" action="{{ route('produks.update', $produk->id) }}">
+                    <form id="formUpdateProduk" method="POST" action="{{ route('produks.update', $produk->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="form-group col-md-12">
@@ -81,7 +81,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Stok Produk</strong></label>
                                 <input type="number" class="form-control" name="stokProduk" id="numStok" min="1"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan jumlah stok produk" required
@@ -89,13 +89,20 @@
                                 <small id="emailHelp" class="form-text text-muted">Masukkan jumlah stok produk
                                     disini!</small>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Minimum Stok Produk</strong></label>
                                 <input type="number" class="form-control" name="minimumStok" id="numMinimumStok"
                                     min="1" aria-describedby="emailHelp"
                                     placeholder="Silahkan masukkan harga jual produk" required
                                     value="{{ $produk->minimum_stok }}">
-                                <small id="emailHelp" class="form-text text-muted">Masukkan harga jual produk
+                                <small id="emailHelp" class="form-text text-muted">Masukkan minimum stok produk
+                                    disini!</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleInputEmail1"><strong>Gambar Produk</strong></label>
+                                <input type="file" class="form-control" name="gambarProduk" id="fileUpload"
+                                    aria-describedby="emailHelp" value="{{ old('gambarProduk') }}" accept="image/*">
+                                <small id="emailHelp" class="form-text text-muted">Upload file gambar produk
                                     disini!</small>
                             </div>
                         </div>

@@ -6,6 +6,7 @@ use App\Models\Diskon;
 use App\Models\Paket;
 use App\Models\Penjualan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DiskonController extends Controller
 {
@@ -199,31 +200,55 @@ class DiskonController extends Controller
     {
         date_default_timezone_set("Asia/Jakarta");
         $penjualan = Penjualan::find($idPenjualan);
-
-        $idDiskonUnikYangSudahPernahDipakai = Penjualan::select("diskon_id")->distinct()->where("pelanggan_id", $penjualan->pelanggan_id)->where("diskon_id", "!=", null)->get();
-        $tanggalHariIni = date("Y-m-d");
-
-        $diskonAktifBerlaku = [];
-        $daftarPenjualanPaket = $penjualan->pakets;
-        if (count($daftarPenjualanPaket) == 0) {
-            $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
-            $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
-            $diskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $penjualan->total_pembayaran)->get();
+        if ($penjualan == null) {
+            return redirect()->route("riwayatreservasis.index");
         } else {
-            $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
-            $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
-            $arrDiskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $penjualan->total_pembayaran)->get();
-            foreach ($arrDiskonAktifBerlaku as $value) {
-                array_push($diskonAktifBerlaku, $value);
+            if ($penjualan->status_selesai != "belum") {
+
+                if ($penjualan->reservasi != null) {
+                    return redirect()->route('reservasi.admin.detailreservasi', $penjualan->reservasi->id)->withErrors("Gagal memilih diskon karena reservasi telah " . $penjualan->reservasi->status . "!");
+                } else {
+                    return redirect()->route('penjualans.admin.detailpenjualan', $penjualan->id)->withErrors("Gagal memilih diskon karena pada penjualan telah " . $penjualan->status_selesai . "!");
+                }
+            } else {
+                if ($penjualan->diskon_id != null) {
+                    if ($penjualan->reservasi != null) {
+                        return redirect()->route('reservasi.admin.detailreservasi', $penjualan->reservasi->id)->withErrors("Gagal memilih diskon karena pada reservasi ini sudah terdapat diskon yang digunakan");
+                    } else {
+                        return redirect()->route('penjualans.admin.detailpenjualan', $penjualan->id)->withErrors("Gagal memilih diskon karena pada penjualan ini sudah terdapat diskon yang digunakan");
+                    }
+                } else {
+                    $idDiskonUnikYangSudahPernahDipakai = Penjualan::select("diskon_id")->distinct()->where("pelanggan_id", $penjualan->pelanggan_id)->where("diskon_id", "!=", null)->get();
+                    $tanggalHariIni = date("Y-m-d");
+
+                    $diskonAktifBerlaku = [];
+                    $daftarPenjualanPaket = $penjualan->pakets;
+                    if (count($daftarPenjualanPaket) == 0) {
+                        $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
+                        $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
+                        $diskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $penjualan->total_pembayaran)->get();
+                    } else {
+                        $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
+                        $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
+                        $arrDiskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $penjualan->total_pembayaran)->get();
+                        foreach ($arrDiskonAktifBerlaku as $value) {
+                            array_push($diskonAktifBerlaku, $value);
+                        }
+                        $idDiskonDariPaketsPenjualan = $daftarPenjualanPaket->where("diskon_id", "!=", null)->pluck("diskon_id")->unique();
+                        foreach ($idDiskonDariPaketsPenjualan as $value) {
+                            $diskon = Diskon::find($value);
+                            array_push($diskonAktifBerlaku, $diskon);
+                        }
+                    }
+
+                    return view("admin.diskon.pilihdiskon", compact("diskonAktifBerlaku", "penjualan"));
+                }
+
             }
-            $idDiskonDariPaketsPenjualan = $daftarPenjualanPaket->where("diskon_id", "!=", null)->pluck("diskon_id")->unique();
-            foreach ($idDiskonDariPaketsPenjualan as $value) {
-                $diskon = Diskon::find($value);
-                array_push($diskonAktifBerlaku, $diskon);
-            }
+
         }
 
-        return view("admin.diskon.pilihdiskon", compact("diskonAktifBerlaku", "penjualan"));
+
     }
 
     public function prosesPemakaianDiskon(Request $request)
@@ -285,6 +310,80 @@ class DiskonController extends Controller
         }
 
         return response()->json(array('msg' => view('admin.diskon.detaildiskon', compact('penjualanDiskons'))->render()), 200);
+    }
+
+    //PELANGGAN
+
+    public function pilihDiskonPelanggan($idPenjualan)
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $penjualan = Penjualan::find($idPenjualan);
+
+        if ($penjualan == null) {
+            return redirect()->route("pelanggans.index");
+        } else {
+            if ($penjualan->pelanggan->id == Auth::user()->pelanggan->id) {
+                if ($penjualan->status_selesai != "belum") {
+                    return redirect()->route('reservasi.admin.detailreservasi', $penjualan->reservasi->id)->withErrors("Gagal memilih diskon karena reservasi telah " . $penjualan->reservasi->status . "!");
+                } else {
+                    if ($penjualan->diskon_id != null) {
+                        return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->withErrors("Anda sudah menggunakan Diskon untuk Reservasi Ini!");
+                    } else {
+                        $idDiskonUnikYangSudahPernahDipakai = Penjualan::select("diskon_id")->distinct()->where("pelanggan_id", $penjualan->pelanggan_id)->where("diskon_id", "!=", null)->get();
+                        $tanggalHariIni = date("Y-m-d");
+
+                        $diskonAktifBerlaku = [];
+                        $daftarPenjualanPaket = $penjualan->pakets;
+                        if (count($daftarPenjualanPaket) == 0) {
+                            $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
+                            $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
+                            $diskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $penjualan->total_pembayaran)->get();
+                        } else {
+                            $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
+                            $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
+                            $arrDiskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $penjualan->total_pembayaran)->get();
+                            foreach ($arrDiskonAktifBerlaku as $value) {
+                                array_push($diskonAktifBerlaku, $value);
+                            }
+                            $idDiskonDariPaketsPenjualan = $daftarPenjualanPaket->where("diskon_id", "!=", null)->pluck("diskon_id")->unique();
+                            foreach ($idDiskonDariPaketsPenjualan as $value) {
+                                $diskon = Diskon::find($value);
+                                array_push($diskonAktifBerlaku, $diskon);
+                            }
+                        }
+
+                        return view("pelanggan.diskon.pilihdiskon", compact("diskonAktifBerlaku", "penjualan"));
+                    }
+
+                }
+            } else {
+                return redirect()->route('pelanggans.index');
+            }
+        }
+    }
+
+    public function prosesPemakaianDiskonPelanggan(Request $request)
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $idPenjualan = $request->get("idPenjualan");
+        $idDiskon = $request->get("idDiskon");
+
+        $penjualan = Penjualan::find($idPenjualan);
+        $diskon = Diskon::find($idDiskon);
+
+        $jumlahPotongan = ($penjualan->total_pembayaran * $diskon->jumlah_potongan) / 100;
+
+        if ($jumlahPotongan >= $diskon->maksimum_potongan) {
+            $jumlahPotongan = $diskon->maksimum_potongan;
+        }
+
+        $penjualanHargaBaru = Penjualan::find($idPenjualan);
+        $penjualanHargaBaru->total_pembayaran = $penjualan->total_pembayaran - $jumlahPotongan;
+        $penjualanHargaBaru->diskon_id = $diskon->id;
+        $penjualanHargaBaru->updated_at = date("Y-m-d H:i:s");
+        $penjualanHargaBaru->save();
+
+        return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualanHargaBaru->reservasi->id)->with('status', 'Berhasil meggunakan diskon ' . $diskon->nama . '!');
     }
 
 }

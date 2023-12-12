@@ -10,8 +10,11 @@ use App\Models\PenjualanPerawatan;
 use App\Models\Perawatan;
 use App\Models\Produk;
 use App\Models\Ulasan;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class PelangganController extends Controller
 {
@@ -144,5 +147,76 @@ class PelangganController extends Controller
     public function destroy(Pelanggan $pelanggan)
     {
         //
+    }
+
+    public function bukaRegisterAkun(){
+        return view("auth.register");
+    }
+
+    public function registerAkun(Request $request){
+        
+
+        date_default_timezone_set("Asia/Jakarta");
+        $validatedData = $request->validate(
+            [
+                'nama' => 'required|max:255',
+                'email' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'pelanggan')],
+                'tanggallahir' => 'required',
+                'gender' => 'required',
+                'alamat' => 'required',
+                'password' => 'required|min:8',
+                'username' => ['required', Rule::unique('users', 'username')],
+                'nomor_telepon' => "required|unique:pelanggans|min:11",
+            ],
+            [
+                'nama.required' => 'Nama karyawan tidak boleh kosong!',
+                'email.required' => 'Email tidak boleh kosong!',
+                'email.email' => 'Mohon masukkan email dengan format yang benar!',
+                'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
+                'tanggallahir.required' => 'Tanggal lahir tidak boleh kosong!',
+                'gender.required' => 'Harap pilih gender Anda!',
+                'alamat.required' => 'Alamat tidak boleh kosong!',
+                'username.required' => 'Username tidak boleh kosong',
+                'nomor_telepon.required' => 'Nomor telepon tidak boleh kosong',
+                'nomor_telepon.min' => 'Minimal nomor telepon ada 11 digit',
+                'email.unique' => 'Email telah terpakai, mohon gunakan email Anda yang lain!',
+                'username.unique' => 'Username telah terpakai, mohon gunakan username Anda yang lain!',
+                'nomor_telepon.unique' => 'Nomor telepon telah terpakai, mohon gunakan nomor telepon Anda yang lain!',
+                "password.required" => "Password tidak boleh kosong",
+                "password.min" => "Minimal password ada 8 digit",
+
+            ]
+        );
+
+        $namaPelanggan = $request->get("nama");
+        $email = $request->get("email");
+        $tanggalLahir = $request->get("tanggallahir");
+        $gender = $request->get("gender");
+        $alamat = $request->get("alamat");
+        $password = $request->get("password");
+        $username = $request->get("username");
+        $nomorTelepon = $request->get("nomor_telepon");
+
+        $newUser = User::create([
+            'username' => $username,
+            'email' => $email,
+            'password' => Hash::make($password),
+            'role' => 'pelanggan',
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $newPelanggan = new Pelanggan();
+        $newPelanggan->user_id = $newUser->id;
+        $newPelanggan->nama = $namaPelanggan;
+        $newPelanggan->tanggal_lahir = $tanggalLahir;
+        $newPelanggan->nomor_telepon = $nomorTelepon;
+        $newPelanggan->gender = $gender;
+        $newPelanggan->alamat = $alamat;
+        $newPelanggan->created_at = date("Y-m-d H:i:s");
+        $newPelanggan->updated_at = date("Y-m-d H:i:s");
+        $newPelanggan->save();
+
+        return redirect()->route("login")->with("status", "Berhasil melakukan regitrasi akun. Silahkan melakukan Login!");
     }
 }

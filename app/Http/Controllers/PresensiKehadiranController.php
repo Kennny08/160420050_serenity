@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Karyawan;
+use App\Models\Pelanggan;
+use App\Models\Penjualan;
+use App\Models\PenjualanPerawatan;
 use App\Models\PresensiKehadiran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -131,14 +134,22 @@ class PresensiKehadiranController extends Controller
             }
         }
 
-        for ($i = 0; $i < count($daftarNamaKaryawan); $i++) {
 
+        $karyawanYangIzinSakitDikonfirmasi = [];
+        for ($i = 0; $i < count($daftarNamaKaryawan); $i++) {
             if ($keteranganPresensi[$i] == "izin" || $keteranganPresensi[$i] == "sakit") {
                 $presensiIzinTerpilih = PresensiKehadiran::where('karyawan_id', $daftarNamaKaryawan[$i])->where('status', 'belum')->whereRaw("DATE(tanggal_presensi) = '" . $tanggalHariIni . "'")->first();
                 if ($presensiIzinTerpilih != null) {
                     $presensiIzinTerpilih->status = $statusPresensi[$i];
                     $presensiIzinTerpilih->updated_at = date("Y-m-d H:i:s");
                     $presensiIzinTerpilih->save();
+
+                    if ($statusPresensi[$i] == "konfirmasi") {
+                        if (!in_array($daftarNamaKaryawan[$i], $karyawanYangIzinSakitDikonfirmasi)) {
+                            array_push($karyawanYangIzinSakitDikonfirmasi, $daftarNamaKaryawan[$i]);
+                        }
+                    }
+
                 } else {
                     $newPresensiKehadiran = new PresensiKehadiran();
                     $newPresensiKehadiran->keterangan = $keteranganPresensi[$i];
@@ -148,6 +159,12 @@ class PresensiKehadiranController extends Controller
                     $newPresensiKehadiran->created_at = date("Y-m-d H:i:s", strtotime($tanggalHariIni . " " . $waktuBukaPresensi . ":00"));
                     $newPresensiKehadiran->updated_at = date("Y-m-d H:i:s");
                     $newPresensiKehadiran->save();
+
+                    if ($statusPresensi[$i] == "konfirmasi") {
+                        if (!in_array($daftarNamaKaryawan[$i], $karyawanYangIzinSakitDikonfirmasi)) {
+                            array_push($karyawanYangIzinSakitDikonfirmasi, $daftarNamaKaryawan[$i]);
+                        }
+                    }
                 }
             } else {
                 $newPresensiKehadiran = new PresensiKehadiran();
@@ -161,6 +178,42 @@ class PresensiKehadiranController extends Controller
             }
 
         }
+
+
+        $daftarPenjualanBelumHariIni = Penjualan::where("status_selesai", "belum")->whereRaw("DATE(tanggal_penjualan) = '" . $tanggalHariIni . "'")->get();
+
+        if (count($daftarPenjualanBelumHariIni) > 0) {
+
+            $idPelangganUnik = $daftarPenjualanBelumHariIni->pluck("pelanggan_id")->unique();
+
+            foreach ($idPelangganUnik as $idPelanggan) {
+                $pelanggan = Pelanggan::find($idPelanggan);
+
+                $nomorNota = [];
+
+                $penjualanPelangganTerpilih = Penjualan::where("pelanggan_id", $idPelanggan)->where("status_selesai", "belum")->whereRaw("DATE(tanggal_penjualan) = '" . $tanggalHariIni . "'")->whereHas("penjualanperawatans", function ($query) use ($karyawanYangIzinSakitDikonfirmasi) {
+                    $query->whereIn("karyawan_id", $karyawanYangIzinSakitDikonfirmasi);
+                })->get();
+
+                $penjualanReservasiPelangganTerpilih = [];
+                foreach ($penjualanPelangganTerpilih as $penjualanTerpilih) {
+                    if ($penjualanTerpilih->reservasi != null) {
+                        array_push($penjualanReservasiPelangganTerpilih, $penjualanTerpilih);
+                    }
+                }
+
+
+                foreach ($penjualanReservasiPelangganTerpilih as $penjualanPelanggan) {
+
+                    array_push($nomorNota, $penjualanPelanggan->nomor_nota);
+                }
+
+                $stringNomorNota = implode(", ", $nomorNota);
+
+                MailController::mailPemberitahuanKaryawanIzinSakit($pelanggan->user->email, $stringNomorNota);
+            }
+        }
+
         return redirect()->route('presensikehadirans.index')->with('status', 'Berhasil membuka presensi untuk hari ini');
     }
 
@@ -257,6 +310,8 @@ class PresensiKehadiranController extends Controller
         $daftarIdKaryawan = $request->get("daftarNamaKaryawan");
         $keteranganPresensi = $request->get("keteranganPresensi");
         $statusPresensi = $request->get("statusPresensi");
+
+        $karyawanYangIzinSakitDikonfirmasi = [];
         for ($i = 0; $i < count($daftarIdKaryawan); $i++) {
             $idMaxPresensiKaryawan = PresensiKehadiran::whereRaw("DATE(tanggal_presensi) = '" . $tanggalPresensi . "'")->where("karyawan_id", $daftarIdKaryawan[$i])->max("id");
             $presensiKaryawanMax = PresensiKehadiran::find($idMaxPresensiKaryawan);
@@ -272,6 +327,12 @@ class PresensiKehadiranController extends Controller
                         $newPresensi->created_at = date("Y-m-d H:i:s", strtotime($presensiKaryawanMax->created_at));
                         $newPresensi->updated_at = date("Y-m-d H:i:s");
                         $newPresensi->save();
+
+                        if ($statusPresensi[$i] == "konfirmasi" && ($keteranganPresensi[$i] == "izin" || $keteranganPresensi[$i] == "sakit")) {
+                            if (!in_array($daftarIdKaryawan[$i], $karyawanYangIzinSakitDikonfirmasi)) {
+                                array_push($karyawanYangIzinSakitDikonfirmasi, $daftarIdKaryawan[$i]);
+                            }
+                        }
                     } else {
                         $presensiKaryawanMax->keterangan = $keteranganPresensi[$i];
                         $presensiKaryawanMax->status = $statusPresensi[$i];
@@ -282,6 +343,12 @@ class PresensiKehadiranController extends Controller
                             $presensiKaryawanMax->updated_at = $tanggalSementara;
                         }
                         $presensiKaryawanMax->save();
+
+                        if ($statusPresensi[$i] == "konfirmasi" && ($keteranganPresensi[$i] == "izin" || $keteranganPresensi[$i] == "sakit")) {
+                            if (!in_array($daftarIdKaryawan[$i], $karyawanYangIzinSakitDikonfirmasi)) {
+                                array_push($karyawanYangIzinSakitDikonfirmasi, $daftarIdKaryawan[$i]);
+                            }
+                        }
                     }
 
 
@@ -289,6 +356,12 @@ class PresensiKehadiranController extends Controller
                     $presensiKaryawanMax->keterangan = $keteranganPresensi[$i];
                     $presensiKaryawanMax->updated_at = date("Y-m-d H:i:s", strtotime($presensiKaryawanMax->updated_at));
                     $presensiKaryawanMax->save();
+
+                    if ($statusPresensi[$i] == "konfirmasi" && ($keteranganPresensi[$i] == "izin" || $keteranganPresensi[$i] == "sakit")) {
+                        if (!in_array($daftarIdKaryawan[$i], $karyawanYangIzinSakitDikonfirmasi)) {
+                            array_push($karyawanYangIzinSakitDikonfirmasi, $daftarIdKaryawan[$i]);
+                        }
+                    }
                 }
             } else {
                 if ($statusPresensi[$i] != $presensiKaryawanMax->status) {
@@ -299,9 +372,57 @@ class PresensiKehadiranController extends Controller
                         $presensiKaryawanMax->updated_at = date("Y-m-d H:i:s", strtotime($presensiKaryawanMax->updated_at));
                     }
                     $presensiKaryawanMax->save();
+
+                    if ($statusPresensi[$i] == "konfirmasi" && ($keteranganPresensi[$i] == "izin" || $keteranganPresensi[$i] == "sakit")) {
+                        if (!in_array($daftarIdKaryawan[$i], $karyawanYangIzinSakitDikonfirmasi)) {
+                            array_push($karyawanYangIzinSakitDikonfirmasi, $daftarIdKaryawan[$i]);
+                        }
+                    }
                 }
             }
         }
+
+        $strtotimeTanggalHariIni = strtotime(date("Y-m-d"));
+        $strtotimeTanggalEditPresensi = strtotime($tanggalPresensi);
+
+        if ($strtotimeTanggalEditPresensi >= $strtotimeTanggalHariIni) {
+            $daftarPenjualanBelumHariIni = Penjualan::where("status_selesai", "belum")->whereRaw("DATE(tanggal_penjualan) = '" . $tanggalPresensi . "'")->get();
+
+            if (count($daftarPenjualanBelumHariIni) > 0) {
+
+                $idPelangganUnik = $daftarPenjualanBelumHariIni->pluck("pelanggan_id")->unique();
+
+                foreach ($idPelangganUnik as $idPelanggan) {
+                    $pelanggan = Pelanggan::find($idPelanggan);
+
+                    $nomorNota = [];
+
+                    $penjualanPelangganTerpilih = Penjualan::where("pelanggan_id", $idPelanggan)->where("status_selesai", "belum")->whereRaw("DATE(tanggal_penjualan) = '" . $tanggalPresensi . "'")->whereHas("penjualanperawatans", function ($query) use ($karyawanYangIzinSakitDikonfirmasi) {
+                        $query->whereIn("karyawan_id", $karyawanYangIzinSakitDikonfirmasi);
+                    })->get();
+
+                    $penjualanReservasiPelangganTerpilih = [];
+                    foreach ($penjualanPelangganTerpilih as $penjualanTerpilih) {
+                        if ($penjualanTerpilih->reservasi != null) {
+                            array_push($penjualanReservasiPelangganTerpilih, $penjualanTerpilih);
+                        }
+                    }
+
+
+                    foreach ($penjualanReservasiPelangganTerpilih as $penjualanPelanggan) {
+
+                        array_push($nomorNota, $penjualanPelanggan->nomor_nota);
+                    }
+
+                    $stringNomorNota = implode(", ", $nomorNota);
+
+                    MailController::mailPemberitahuanKaryawanIzinSakit($pelanggan->user->email, $stringNomorNota);
+                }
+            }
+        }
+
+
+
         $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
 
         if ($tanggalPresensi == $tanggalHariIni) {
@@ -319,11 +440,54 @@ class PresensiKehadiranController extends Controller
     {
         date_default_timezone_set("Asia/Jakarta");
         $arrayPresensiKonfirmasi = $request->get("checkKonfirmasi");
+        $tanggalHariIni = date("Y-m-d");
+
+        $karyawanYangIzinSakitDikonfirmasi = [];
         foreach ($arrayPresensiKonfirmasi as $idPresensi) {
             $presensiTerpilih = PresensiKehadiran::find($idPresensi);
             $presensiTerpilih->status = "konfirmasi";
             $presensiTerpilih->updated_at = date("Y-m-d H:i:s");
             $presensiTerpilih->save();
+
+            if (($presensiTerpilih->keterangan == "izin" || $presensiTerpilih->keterangan == "sakit")) {
+                if (!in_array($presensiTerpilih->karyawan->id, $karyawanYangIzinSakitDikonfirmasi)) {
+                    array_push($karyawanYangIzinSakitDikonfirmasi, $presensiTerpilih->karyawan->id);
+                }
+            }
+        }
+
+        $daftarPenjualanBelumHariIni = Penjualan::where("status_selesai", "belum")->whereRaw("DATE(tanggal_penjualan) = '" . $tanggalHariIni . "'")->get();
+
+        if (count($daftarPenjualanBelumHariIni) > 0) {
+
+            $idPelangganUnik = $daftarPenjualanBelumHariIni->pluck("pelanggan_id")->unique();
+
+            foreach ($idPelangganUnik as $idPelanggan) {
+                $pelanggan = Pelanggan::find($idPelanggan);
+
+                $nomorNota = [];
+
+                $penjualanPelangganTerpilih = Penjualan::where("pelanggan_id", $idPelanggan)->where("status_selesai", "belum")->whereRaw("DATE(tanggal_penjualan) = '" . $tanggalHariIni . "'")->whereHas("penjualanperawatans", function ($query) use ($karyawanYangIzinSakitDikonfirmasi) {
+                    $query->whereIn("karyawan_id", $karyawanYangIzinSakitDikonfirmasi);
+                })->get();
+
+                $penjualanReservasiPelangganTerpilih = [];
+                foreach ($penjualanPelangganTerpilih as $penjualanTerpilih) {
+                    if ($penjualanTerpilih->reservasi != null) {
+                        array_push($penjualanReservasiPelangganTerpilih, $penjualanTerpilih);
+                    }
+                }
+
+
+                foreach ($penjualanReservasiPelangganTerpilih as $penjualanPelanggan) {
+
+                    array_push($nomorNota, $penjualanPelanggan->nomor_nota);
+                }
+
+                $stringNomorNota = implode(", ", $nomorNota);
+
+                MailController::mailPemberitahuanKaryawanIzinSakit($pelanggan->user->email, $stringNomorNota);
+            }
         }
 
         return redirect()->route("presensikehadirans.index")->with("status", "Berhasil mengkonfirmasi presensi untuk hari ini pada tanggal " . date("d-m-Y"));
@@ -449,6 +613,42 @@ class PresensiKehadiranController extends Controller
         $tanggalPresensiYangDiupdate = date('Y-m-d', strtotime($objPresensi->tanggal_presensi));
 
         if (strtotime($tanggalPresensiYangDiupdate) >= strtotime($tanggalHariIni)) {
+
+            //email pemberitahuan ke pelanggan yang karyawannya diizinkan untu izin tertentu
+            $daftarPenjualanBelumHariIni = Penjualan::where("status_selesai", "belum")->whereRaw("DATE(tanggal_penjualan) = '" . $tanggalPresensiYangDiupdate . "'")->get();
+
+            if (count($daftarPenjualanBelumHariIni) > 0) {
+
+                $idPelangganUnik = $daftarPenjualanBelumHariIni->pluck("pelanggan_id")->unique();
+
+                foreach ($idPelangganUnik as $idPelanggan) {
+                    $pelanggan = Pelanggan::find($idPelanggan);
+
+                    $nomorNota = [];
+
+                    $penjualanPelangganTerpilih = Penjualan::where("pelanggan_id", $idPelanggan)->where("status_selesai", "belum")->whereRaw("DATE(tanggal_penjualan) = '" . $tanggalPresensiYangDiupdate . "'")->whereHas("penjualanperawatans", function ($query) use ($objPresensi) {
+                        $query->where("karyawan_id", $objPresensi->karyawan->id);
+                    })->get();
+
+                    $penjualanReservasiPelangganTerpilih = [];
+                    foreach ($penjualanPelangganTerpilih as $penjualanTerpilih) {
+                        if ($penjualanTerpilih->reservasi != null) {
+                            array_push($penjualanReservasiPelangganTerpilih, $penjualanTerpilih);
+                        }
+                    }
+
+
+                    foreach ($penjualanReservasiPelangganTerpilih as $penjualanPelanggan) {
+
+                        array_push($nomorNota, $penjualanPelanggan->nomor_nota);
+                    }
+
+                    $stringNomorNota = implode(", ", $nomorNota);
+
+                    MailController::mailPemberitahuanKaryawanIzinSakit($pelanggan->user->email, $stringNomorNota);
+                }
+            }
+
             $tanggalUnikIzinHariIniKedepan = PresensiKehadiran::selectRaw("distinct DATE(tanggal_presensi) as tanggal_presensi")->whereRaw("DATE(tanggal_presensi) >= '" . $tanggalHariIni . "'")->where(function ($query) {
                 $query->where('keterangan', 'sakit')
                     ->orWhere('keterangan', 'izin');

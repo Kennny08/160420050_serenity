@@ -135,7 +135,7 @@
                                         <div class="col-6 text-right">
                                             <address>
                                                 <strong class="font-weight-bold font-16">Status Reservasi:</strong><br>
-                                                @if ($reservasi->status == 'dibatalkan salon' || $reservasi->status == 'dibatalkan pelanggan')
+                                                @if ($reservasi->status == 'dibatalkan salon' || $reservasi->status == 'dibatalkan pelanggan' || $reservasi->status == 'tidak hadir')
                                                     <span
                                                         class="text-danger font-16 font-weight-bold">{{ $reservasi->status }}</span>
                                                 @elseif($reservasi->status == 'selesai')
@@ -187,7 +187,7 @@
                                                                 <br>
                                                                 Perawatan:
                                                                 <ul>
-                                                                    @foreach ($paket->perawatans as $perawatan)
+                                                                    @foreach ($paket->perawatans()->withPivot("urutan")->orderBy("urutan")->get() as $perawatan)
                                                                         <li>
                                                                             <span class="">
                                                                                 {{ $perawatan->nama }}

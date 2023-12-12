@@ -124,7 +124,9 @@
                                             deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
                                             createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
                                             updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
-                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
+                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk"
+                                            namaImage="{{ asset('assets_admin/images/produk/') }}/{{ $p->gambar }}"
+                                            >Detail</button>
                                     </td>
                                     @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                                         <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
@@ -171,6 +173,7 @@
                                             deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
                                             createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
                                             updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
+                                            namaImage="{{ asset('assets_admin/images/produk/') }}/{{ $p->gambar }}"
                                             class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
                                     </td>
                                     @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
@@ -268,7 +271,9 @@
                                             deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
                                             createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
                                             updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
-                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
+                                            namaImage="{{ asset('assets_admin/images/produk/') }}/{{ $p->gambar }}"
+                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk"
+                                            namaImage="{{ asset('assets_admin/images/produk/') }}/{{ $p->gambar }}">Detail</button>
                                     </td>
                                     @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                                         <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
@@ -295,7 +300,7 @@
 
     <div id="modalDetailProduk" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title mt-0" id="modalNamaProduk">Detail Produk</h5>
@@ -303,7 +308,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="contentDetailProduk">
+                <div class="modal-body" id="contentDetailProduk" style="overflow: auto;">
                     <div class="text-center">
                         <div class="spinner-border text-info" role="status">
                             <span class="sr-only">Loading...</span>
@@ -371,9 +376,10 @@
             var namaProduk = $(this).attr('namaProduk');
             var createdAt = $(this).attr('createdAt');
             var updatedAt = $(this).attr('updatedAt');
+            var namaImage = $(this).attr("namaImage");
             $("#modalNamaProduk").text(" Detail Produk " + namaProduk);
             $("#contentDetailProduk").html(
-                "<div class='form-group row text-center'><div class='form-group col-md-6'><h6>Tanggal Pembuatan</h6><p>" +
+                "<div class='form-group row text-center'><div class='form-group col-md-12'><img style='max-height:500px;' class='img-fluid' src='" + namaImage + "' alt='gambarProduk'></div> <div class='form-group col-md-6'><h6>Tanggal Pembuatan</h6><p>" +
                 createdAt + "</p></div><div class='form-group col-md-6'><h6>Tanggal Terakhir Diubah</h6><p>" +
                 updatedAt +
                 "</p></div></div><div class='form-group row text-center'><div class='form-group col-md-12'><h6>Deskripsi Produk</h6><p>" +

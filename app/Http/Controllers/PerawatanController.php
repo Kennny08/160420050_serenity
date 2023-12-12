@@ -6,6 +6,7 @@ use App\Models\Paket;
 use App\Models\Perawatan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PerawatanController extends Controller
 {
@@ -49,6 +50,7 @@ class PerawatanController extends Controller
                 'hargaPerawatan' => 'required|numeric|min:1',
                 'durasi' => 'required|numeric|min:30|multiple_of:30',
                 'komisiKaryawan' => 'required|numeric|min:1|max:100',
+                'gambarPerawatan' => 'required|file',
             ],
             [
                 'namaPerawatan.required' => 'Nama perawatan tidak boleh kosong!',
@@ -66,6 +68,7 @@ class PerawatanController extends Controller
                 'komisiKaryawan.numeric' => 'Stok produk harus berupa angka',
                 'komisiKaryawan.min' => 'Minimal komisi karyawan adalah 1%!',
                 'komisiKaryawan.max' => 'Maksimal komisi karyawan adalah 100%!',
+                'gambarPerawatan.required' => 'Mohon pilih file gambar untuk gambar perawatan!'
             ]
         );
 
@@ -78,6 +81,7 @@ class PerawatanController extends Controller
         $statusKeaktifan = $request->get('radioStatusPerawatan');
         $statusKomplemen = $request->get('radioStatusKomplemenPerawatan');
         $arrayIdProduk = $request->get('arrayprodukid');
+        $gambarPerawatan = $request->file("gambarPerawatan");
 
         $newPerawatan = new Perawatan();
         $newPerawatan->nama = $namaPerawatan;
@@ -90,6 +94,13 @@ class PerawatanController extends Controller
         $newPerawatan->komisi = $komisiKaryawan;
         $newPerawatan->created_at = date('Y-m-d H:i:s');
         $newPerawatan->updated_at = date('Y-m-d H:i:s');
+        $newPerawatan->save();
+
+        $extensionImage = $gambarPerawatan->getClientOriginalExtension();
+        $namaImage = "perawatan_" . $newPerawatan->id . "." . $extensionImage;
+        $gambarPerawatan->move(public_path('assets_admin/images/perawatan'), $namaImage);
+        $newPerawatan->gambar = $namaImage;
+        $newPerawatan->updated_at = date("Y-m-d H:i:s");
         $newPerawatan->save();
 
         if ($arrayIdProduk != null) {
@@ -216,6 +227,16 @@ class PerawatanController extends Controller
             $perawatan->updated_at = date('Y-m-d H:i:s');
             $perawatan->save();
 
+            if ($request->hasFile("gambarPerawatan")) {
+                $gambar = $request->file("gambarPerawatan");
+                $extensionImage = $gambar->getClientOriginalExtension();
+                $namaImage = "perawatan_" . $perawatan->id . "." . $extensionImage;
+                $gambar->move(public_path('assets_admin/images/perawatan'), $namaImage);
+                $perawatan->gambar = $namaImage;
+                $perawatan->updated_at = date("Y-m-d H:i:s");
+                $perawatan->save();
+            }
+
             if ($arrayIdProduk != null) {
                 foreach ($perawatan->produks as $produk) {
                     $perawatan->produks()->detach($produk);
@@ -256,7 +277,7 @@ class PerawatanController extends Controller
             );
 
             $perawatan->nama = $namaPerawatan;
-            
+
             if ($hargaPerawatan > $perawatan->harga) {
                 $selisihPenambahan = $hargaPerawatan - $perawatan->harga;
                 $daftarPaket = Paket::join("paket_perawatan", "paket_perawatan.paket_id", "=", "pakets.id")->where("paket_perawatan.perawatan_id", $perawatan->id)->get();
@@ -294,6 +315,16 @@ class PerawatanController extends Controller
             $perawatan->komisi = $komisiKaryawan;
             $perawatan->updated_at = date('Y-m-d H:i:s');
             $perawatan->save();
+
+            if ($request->hasFile("gambarPerawatan")) {
+                $gambar = $request->file("gambarPerawatan");
+                $extensionImage = $gambar->getClientOriginalExtension();
+                $namaImage = "perawatan_" . $perawatan->id . "." . $extensionImage;
+                $gambar->move(public_path('assets_admin/images/perawatan'), $namaImage);
+                $perawatan->gambar = $namaImage;
+                $perawatan->updated_at = date("Y-m-d H:i:s");
+                $perawatan->save();
+            }
 
             if ($arrayIdProduk != null) {
                 foreach ($perawatan->produks as $produk) {
@@ -369,5 +400,66 @@ class PerawatanController extends Controller
         $perawatan['jmlh_reservasi'] = $jmlhReservasi;
         $perawatan['jmlh_tanpa_reservasi'] = $jmlTanpaReservasi;
         return response()->json(array('msg' => view('admin.perawatan.detailperawatan', compact('perawatan'))->render()), 200);
+    }
+
+    public function daftarPerawatanAllUser()
+    {
+        $perawatansAktif = Perawatan::where("status", "aktif")->get();
+        $totalPerawatan = Perawatan::where("status", "aktif")->count();
+        $urutanTerpilih = "Semua";
+        $kataKunci = "";
+
+        return view("alluser.daftarperawatan", compact("perawatansAktif", "urutanTerpilih", "kataKunci", "totalPerawatan"));
+    }
+
+    public function daftarPerawatanFilterAllUser(Request $request)
+    {
+        $perawatansAktif = Perawatan::where("status", "aktif")->get();
+        $totalPerawatan = Perawatan::where("status", "aktif")->count();
+
+
+        if ($request->get("urutan") == null) {
+            $urutanTerpilih = "Semua";
+        } else {
+            $urutanTerpilih = $request->get("urutan");
+        }
+
+        if ($request->get("kataKunci") == null) {
+            $kataKunci = "";
+        } else {
+            $kataKunci = $request->get("kataKunci");
+        }
+
+        if ($urutanTerpilih == "Semua") {
+            $perawatansAktif = Perawatan::where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->get();
+        } else {
+            if ($urutanTerpilih == "namaAtoZ") {
+                $perawatansAktif = Perawatan::where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("nama", "asc")->get();
+            } elseif ($urutanTerpilih == "namaZtoA") {
+                $perawatansAktif = Perawatan::where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("nama", "desc")->get();
+            } elseif ($urutanTerpilih == "hargaRendahTinggi") {
+                $perawatansAktif = Perawatan::where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("harga", "asc")->get();
+            } elseif ($urutanTerpilih == "hargaTinggiRendah") {
+                $perawatansAktif = Perawatan::where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("harga", "desc")->get();
+            }
+        }
+
+
+        return view("alluser.daftarperawatan", compact("perawatansAktif", "urutanTerpilih", "kataKunci", "totalPerawatan"));
+    }
+
+    public function detailPerawatanAllUser($idPerawatan)
+    {
+        $perawatan = Perawatan::find($idPerawatan);
+
+        if ($perawatan == null) {
+            if (Auth::check()) {
+                return redirect()->route('perawatans.daftarperawatanalluser');
+            } else {
+                return redirect()->route('users.halamanutama');
+            }
+        } else {
+            return view("alluser.detailperawatan", compact("perawatan"));
+        }
     }
 }

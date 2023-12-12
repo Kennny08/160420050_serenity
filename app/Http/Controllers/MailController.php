@@ -22,4 +22,11 @@ class MailController extends Controller
         $details = ['karyawan' => $karyawan, 'username' => $username, 'password' => $password ];
         Mail::to($email)->send(new SendMail('kirimusernamepasswordkaryawan', $details));
     }
+
+    public static function mailPemberitahuanKaryawanIzinSakit($email, $nomorNota)
+    {
+
+        $details = ['nomor_nota' => $nomorNota];
+        Mail::to($email)->send(new SendMail('kirimpesankaryawansakitizin', $details));
+    }
 }

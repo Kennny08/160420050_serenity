@@ -28,26 +28,33 @@
                         </div>
                     @endif
 
-                    <form id="formUpdatePaket" method="POST" action="{{ route('pakets.update', $paket->id) }}">
+                    <form id="formUpdatePaket" method="POST" action="{{ route('pakets.update', $paket->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="form-group col-md-12">
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Nama Paket</strong></label>
                                 <input type="text" class="form-control" name="namaPaket" id="txtNamaPaket"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan nama paket" required
                                     value="{{ $paket->nama }}">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan nama paket disini!</small>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Kode Paket</strong></label>
                                 <input type="text" class="form-control" name="kode_paket" id="txtKodePaket"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan kode paket" required
                                     value="{{ $paket->kode_paket }}" readonly>
                                 <small id="emailHelp" class="form-text text-muted">Masukkan jumlah kode disini!</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleInputEmail1"><strong>Gambar Paket</strong></label>
+                                <input type="file" class="form-control" name="gambarPaket" id="fileUpload"
+                                    aria-describedby="emailHelp" value="{{ old('gambarPaket') }}" accept="image/*">
+                                <small id="emailHelp" class="form-text text-muted">Upload file gambar paket
+                                    disini!</small>
                             </div>
                         </div>
 

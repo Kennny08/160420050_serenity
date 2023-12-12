@@ -22,7 +22,7 @@
             <div>
                 <div class="card-body">
 
-                    <h3 class="mt-0 header-title">Pembelian Tambahan Produk</h3>
+                    <h3 class="mt-0 header-title fw-bold">Pembelian Tambahan Produk</h3>
                     <p class="sub-title">
                     </p>
 
@@ -39,7 +39,7 @@
 
                                 <a class="add-cart " type="button"
                                     href="{{ route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id) }}"
-                                    style="margin: 0px;">
+                                    style="margin: 0px; text-align: center;">
                                     <span>
                                         Batal Tambah Produk
                                     </span>
@@ -73,66 +73,72 @@
 
                     <div class="billing-info-wrap">
                         <div class="billing-select">
-                            <table id="tabelDaftarProduk"
-                                class="table border table-striped table-bordered dt-responsive wrap text-center"
-                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                <thead class="">
-                                    <tr>
-                                        <th class="align-middle">Kode Produk</th>
-                                        <th class="align-middle">Nama</th>
-                                        <th class="align-middle">Merek</th>
-                                        <th class="align-middle">Harga(Rp)</th>
-                                        <th class="align-middle">Stok</th>
-                                        <th class="align-middle">Kategori</th>
-                                        <th class="align-middle">Kondisi</th>
-                                        <th class="align-middle">Deskripsi</th>
-                                        <th class="align-middle">Tambah ke Keranjang</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    @foreach ($produks as $p)
-                                        <tr id="tr_{{ $p->id }}" class="align-middle">
-                                            <td>{{ $p->kode_produk }}</td>
-                                            <td>{{ $p->nama }}</td>
-                                            <td>{{ $p->merek->nama }}</td>
-                                            <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                            <td>{{ $p->stok }}</td>
-                                            <td>{{ $p->kategori->nama }}</td>
-                                            <td class="text-left">
-                                                <ul>
-                                                    @foreach ($p->kondisis as $kondisi)
-                                                        <li>{{ $kondisi->keterangan }}</li>
-                                                    @endforeach
-                                                </ul>
-
-                                            </td>
-
-                                            <td>{{ $p->deskripsi }}</td>
-                                            <td class='product-wishlist-cart'>
-                                                @if ($p->stok > 0)
-                                                    <button id="btnTambahKeranjang_{{ $p->id }}"
-                                                        style='width:100%;height:30px; border-radius:3px;font-weight: normal; padding-right: 10px; padding-left: 10px;'
-                                                        class="btn btnTambahClass text-white waves-effect waves-light btnTambahKeranjang"
-                                                        idProduk='{{ $p->id }}' namaProduk='{{ $p->nama }}'
-                                                        hargaProduk='{{ $p->harga_jual }}'
-                                                        stokProduk='{{ $p->stok }}'
-                                                        minimumStokProduk='{{ $p->minimum_stok }}'>Tambah</button>
-                                                @else
-                                                    <button id="btnTambahKeranjang_{{ $p->id }}"
-                                                        style='width:100%;height:30px; border-radius:3px;font-weight: normal; padding-right: 10px; padding-left: 10px;'
-                                                        class="btn btn-danger waves-effect waves-light btnTambahKeranjang"
-                                                        idProduk='{{ $p->id }}' namaProduk='{{ $p->nama }}'
-                                                        hargaProduk='{{ $p->harga_jual }}'
-                                                        stokProduk='{{ $p->stok }}'
-                                                        minimumStokProduk='{{ $p->minimum_stok }}' disabled>Habis</button>
-                                                @endif
-                                            </td>
-
+                            <div class="table-responsive table_page">
+                                <table id="tabelDaftarProduk"
+                                    class="table border table-striped table-bordered dt-responsive wrap text-center"
+                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead class="">
+                                        <tr>
+                                            <th class="align-middle">Kode Produk</th>
+                                            <th class="align-middle">Nama</th>
+                                            <th class="align-middle">Merek</th>
+                                            <th class="align-middle">Harga(Rp)</th>
+                                            <th class="align-middle">Stok</th>
+                                            <th class="align-middle">Kategori</th>
+                                            <th class="align-middle">Kondisi</th>
+                                            <th class="align-middle">Deskripsi</th>
+                                            <th class="align-middle">Tambah ke Keranjang</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+
+                                    <tbody>
+                                        @foreach ($produks as $p)
+                                            <tr id="tr_{{ $p->id }}" class="align-middle">
+                                                <td>{{ $p->kode_produk }}</td>
+                                                <td>{{ $p->nama }}</td>
+                                                <td>{{ $p->merek->nama }}</td>
+                                                <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                                <td>{{ $p->stok }}</td>
+                                                <td>{{ $p->kategori->nama }}</td>
+                                                <td class="text-left">
+                                                    <ul>
+                                                        @foreach ($p->kondisis as $kondisi)
+                                                            <li>{{ $kondisi->keterangan }}</li>
+                                                        @endforeach
+                                                    </ul>
+
+                                                </td>
+
+                                                <td>{{ $p->deskripsi }}</td>
+                                                <td class='product-wishlist-cart'>
+                                                    @if ($p->stok > 0)
+                                                        <button id="btnTambahKeranjang_{{ $p->id }}"
+                                                            style='width:100%;height:30px; border-radius:3px;font-weight: normal; padding-right: 10px; padding-left: 10px;'
+                                                            class="btn btnTambahClass text-white waves-effect waves-light btnTambahKeranjang"
+                                                            idProduk='{{ $p->id }}'
+                                                            namaProduk='{{ $p->nama }}'
+                                                            hargaProduk='{{ $p->harga_jual }}'
+                                                            stokProduk='{{ $p->stok }}'
+                                                            minimumStokProduk='{{ $p->minimum_stok }}'>Tambah</button>
+                                                    @else
+                                                        <button id="btnTambahKeranjang_{{ $p->id }}"
+                                                            style='width:100%;height:30px; border-radius:3px;font-weight: normal; padding-right: 10px; padding-left: 10px;'
+                                                            class="btn btn-danger waves-effect waves-light btnTambahKeranjang"
+                                                            idProduk='{{ $p->id }}'
+                                                            namaProduk='{{ $p->nama }}'
+                                                            hargaProduk='{{ $p->harga_jual }}'
+                                                            stokProduk='{{ $p->stok }}'
+                                                            minimumStokProduk='{{ $p->minimum_stok }}'
+                                                            disabled>Habis</button>
+                                                    @endif
+                                                </td>
+
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+
                         </div>
                     </div>
 
@@ -213,7 +219,8 @@
                                     <div class=" pro-details-quality" style="padding: 0px;margin: 0px;">
                                         <div class="pro-details-cart ml-auto" style="width: 100%; ">
                                             <div style="padding-left: 5px;">
-                                                <button type="button" style="margin: 0px; width: 100%; font-size: 30px; background-color: #273ED4; "
+                                                <button type="button"
+                                                    style="margin: 0px; width: 100%; font-size: 30px; background-color: #273ED4; "
                                                     class="add-cart btnMinJumlah">-</button>
                                             </div>
 
@@ -271,7 +278,7 @@
 
     <div id="modalKeranjang" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl"  style="max-width: 900px;">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 900px;">
             <div class="modal-content">
                 <form action="{{ route('penjualans.pelanggan.konfirmasipenambahanproduk') }}" method="POST">
                     @csrf

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Penjualan;
 use App\Models\Ulasan;
 use Illuminate\Http\Request;
 
@@ -81,5 +82,26 @@ class UlasanController extends Controller
     public function destroy(Ulasan $ulasan)
     {
         //
+    }
+
+    public function pelangganSimpanUlasan(Request $request)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $idPenjualan = $request->get("hiddenIdPenjualanReservasi");
+        $penjualan = Penjualan::find($idPenjualan);
+        $ulasan = $request->get("ulasan");
+
+        if (trim($ulasan) == "") {
+            return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->withErrors("Mohon untuk tidak mengosongkan kotak ulasan jika ingin memberikan ulasan!");
+        } else {
+            $newUlasan = new Ulasan();
+            $newUlasan->penjualan_id = $penjualan->id;
+            $newUlasan->ulasan = $ulasan;
+            $newUlasan->created_at = date("Y-m-d H:i:s");
+            $newUlasan->updated_at = date("Y-m-d H:i:s");
+            $newUlasan->save();
+
+            return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with("status", "Berhasil memberikan ulasan untuk reservasi ini!");
+        }
     }
 }

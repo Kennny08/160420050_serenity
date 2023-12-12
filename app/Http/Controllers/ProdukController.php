@@ -49,6 +49,7 @@ class ProdukController extends Controller
     public function store(Request $request)
     {
 
+
         date_default_timezone_set("Asia/Jakarta");
         $validatedData = $request->validate(
             [
@@ -58,7 +59,8 @@ class ProdukController extends Controller
                 'hargaBeli' => 'required|numeric|min:1',
                 'stokProduk' => 'required|numeric|min:1',
                 'minimumStok' => 'required|numeric|min:1',
-                'arraykondisiid' => 'required|min:1'
+                'arraykondisiid' => 'required|min:1',
+                'gambarProduk' => 'required|file',
             ],
             [
                 'namaProduk.required' => 'Nama produk tidak boleh kosong!',
@@ -79,6 +81,7 @@ class ProdukController extends Controller
                 'hargaBeli.min' => 'Harga Beli produk harus lebih dari Rp. 0!',
                 'stokProduk.min' => 'Stok produk minimal 1!',
                 'minimumStok.min' => 'Minimum Stok produk adalah 1!',
+                'gambarProduk.required' => 'Mohon pilih file gambar untuk gambar produk!'
             ]
         );
 
@@ -94,6 +97,7 @@ class ProdukController extends Controller
         $kategoriProduk = $request->get("kategoriProduk");
         $merekProduk = $request->get("merekProduk");
         $arrayKondisi = $request->get("arraykondisiid");
+        $gambarProduk = $request->file("gambarProduk");
 
         $newProduk = new Produk();
         $newProduk->nama = $namaProduk;
@@ -107,9 +111,18 @@ class ProdukController extends Controller
         $newProduk->minimum_stok = $minimumStokProduk;
         $newProduk->kategori_id = $kategoriProduk;
         $newProduk->merek_id = $merekProduk;
+
         $newProduk->created_at = date("Y-m-d H:i:s");
         $newProduk->updated_at = date("Y-m-d H:i:s");
         $newProduk->save();
+
+        $extensionImage = $gambarProduk->getClientOriginalExtension();
+        $namaImage = "produk_" . $newProduk->id . "." . $extensionImage;
+        $gambarProduk->move(public_path('assets_admin/images/produk'), $namaImage);
+        $newProduk->gambar = $namaImage;
+        $newProduk->updated_at = date("Y-m-d H:i:s");
+        $newProduk->save();
+
         foreach ($arrayKondisi as $kondisi) {
             $newProduk->kondisis()->attach($kondisi);
         }
@@ -253,6 +266,16 @@ class ProdukController extends Controller
         $produk->updated_at = date("Y-m-d H:i:s");
         $produk->save();
 
+        if ($request->hasFile("gambarProduk")) {
+            $gambar = $request->file("gambarProduk");
+            $extensionImage = $gambar->getClientOriginalExtension();
+            $namaImage = "produk_" . $produk->id . "." . $extensionImage;
+            $gambar->move(public_path('assets_admin/images/produk'), $namaImage);
+            $produk->gambar = $namaImage;
+            $produk->updated_at = date("Y-m-d H:i:s");
+            $produk->save();
+        }
+
         foreach ($produk->kondisis as $kondisi) {
             $produk->kondisis()->detach($kondisi);
         }
@@ -280,6 +303,96 @@ class ProdukController extends Controller
             $msg = "Data Gagal dihapus. Pastikan kembali tidak ada data yang berelasi sebelum dihapus";
             return redirect()->route('produks.index')->with('status', $msg);
         }
+    }
+
+    public function daftarProdukAllUser()
+    {
+        $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->get();
+        $totalProduk = Produk::where("status_jual", "aktif")->where("status", "aktif")->count();
+        $allKategoris = Kategori::all();
+        $kategoris = [];
+        foreach ($allKategoris as $k) {
+            if ($k->produks->where("status_jual", "aktif")->count() > 0) {
+                array_push($kategoris, $k);
+            }
+        }
+        $kategoriTerpilih = "";
+        $urutanTerpilih = "Semua";
+        $kataKunci = "";
+
+        return view("alluser.daftarproduk", compact("produksJualAktif", "kategoris", "kategoriTerpilih", "urutanTerpilih", "kataKunci", "totalProduk"));
+
+    }
+
+    public function daftarProdukFilterAllUser(Request $request)
+    {
+        $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->get();
+        $totalProduk = Produk::where("status_jual", "aktif")->where("status", "aktif")->count();
+        $allKategoris = Kategori::all();
+        $kategoris = [];
+        foreach ($allKategoris as $k) {
+            if ($k->produks->where("status_jual", "aktif")->count() > 0) {
+                array_push($kategoris, $k);
+            }
+        }
+
+        if ($request->get("kategoriProduk") == null) {
+            $kategoriTerpilih = "";
+        } else {
+            $kategoriTerpilih = $request->get("kategoriProduk");
+        }
+
+        if ($request->get("urutan") == null) {
+            $urutanTerpilih = "Semua";
+        } else {
+            $urutanTerpilih = $request->get("urutan");
+        }
+
+        if ($request->get("kataKunci") == null) {
+            $kataKunci = "";
+        } else {
+            $kataKunci = $request->get("kataKunci");
+        }
+
+        if ($urutanTerpilih == "Semua") {
+            if ($kategoriTerpilih == "") {
+                $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->get();
+            } else {
+                $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->where("kategori_id", $kategoriTerpilih)->get();
+            }
+        } else {
+            if ($urutanTerpilih == "namaAtoZ") {
+                if ($kategoriTerpilih == "") {
+                    $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("nama", "asc")->get();
+                } else {
+                    $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->where("kategori_id", $kategoriTerpilih)->orderBy("nama", "asc")->get();
+                }
+            } elseif ($urutanTerpilih == "namaZtoA") {
+                if ($kategoriTerpilih == "") {
+                    $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("nama", "desc")->get();
+                } else {
+                    $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->where("kategori_id", $kategoriTerpilih)->orderBy("nama", "desc")->get();
+                }
+            } elseif ($urutanTerpilih == "hargaRendahTinggi") {
+                if ($kategoriTerpilih == "") {
+                    $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("harga_jual", "asc")->get();
+                } else {
+                    $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->where("kategori_id", $kategoriTerpilih)->orderBy("harga_jual", "asc")->get();
+                }
+            } elseif ($urutanTerpilih == "hargaTinggiRendah") {
+                if ($kategoriTerpilih == "") {
+                    $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->orderBy("harga_jual", "desc")->get();
+                } else {
+                    $produksJualAktif = Produk::where("status_jual", "aktif")->where("status", "aktif")->where('nama', 'like', '%' . $kataKunci . '%')->where("kategori_id", $kategoriTerpilih)->orderBy("harga_jual", "desc")->get();
+                }
+            }
+        }
+
+        //dd($urutanTerpilih);
+
+
+        return view("alluser.daftarproduk", compact("produksJualAktif", "kategoris", "kategoriTerpilih", "urutanTerpilih", "kataKunci", "totalProduk"));
+
     }
 
     public function penjualanTambahProduk($id)
@@ -327,6 +440,21 @@ class ProdukController extends Controller
 
         }
 
+    }
+
+    public function detailProdukAllUser($idProduk)
+    {
+        $produk = Produk::find($idProduk);
+
+        if ($produk == null) {
+            if (Auth::check()) {
+                return redirect()->route('produks.daftarprodukalluser');
+            } else {
+                return redirect()->route('users.halamanutama');
+            }
+        } else {
+            return view("alluser.detailproduk", compact("produk"));
+        }
     }
 
 

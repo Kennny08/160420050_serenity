@@ -24,6 +24,18 @@
                         </div>
                     @endif
 
+                    @if ($errors->any())
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close text-danger" data-dismiss="alert" aria-label="Close">
+                                <span class="text-danger" aria-hidden="true">&times;</span>
+                            </button>
+                            <p class="mb-0"><strong>Maaf, terjadi kesalahan!</strong></p>
+                            @foreach ($errors->all() as $error)
+                                <p class="mt-0 mb-1">- {{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <table id="tabelDaftarReservasi" class="table table-bordered dt-responsive wrap text-center"
                         style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>

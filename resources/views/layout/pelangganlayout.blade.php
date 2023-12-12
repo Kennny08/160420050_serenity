@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="robots" content="index, follow" />
-    <title>
+    <title id="titletitle">
         @yield('title')
     </title>
     <meta name="description" content="Jesco - Fashoin eCommerce HTML Template" />
@@ -43,7 +43,7 @@
     <link rel="stylesheet" href="{{ asset('assets_pelanggan/css/style.min.css') }}" type="text/css"> --}}
 
     <!-- Main Style -->
-    <link rel="stylesheet" href="{{ asset('assets_pelanggan/css/style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets_pelanggan/css/style.css') }}" />
 
 </head>
 
@@ -77,22 +77,18 @@
                                     <ul class="sub-menu">
                                         <li><a href="{{ route('reservasis.pelanggan.create') }}">Buat Reservasi</a>
                                         </li>
-                                        <li><a href="blog-grid-left-sidebar.html">Riwayat Reservasi</a></li>
+                                        <li><a href="{{ route('reservasis.riwayatreservasispelanggan.index') }}">Riwayat Reservasi</a></li>
                                     </ul>
                                 </li>
                                 <li class="dropdown "><a href="#">Informasi Salon <i
                                             class="pe-7s-angle-down"></i></a>
                                     <ul class="sub-menu">
-                                        <li><a href="blog-grid.html">Perawatan</a></li>
-                                        <li><a href="blog-grid-left-sidebar.html">Produk</a></li>
-                                        <li><a href="blog-grid-left-sidebar.html">Paket</a></li>
-                                        <li><a href="blog-grid-left-sidebar.html">Kategori</a></li>
-                                        <li><a href="blog-grid-left-sidebar.html">Merek</a></li>
-                                        <li><a href="blog-grid-left-sidebar.html">Diskon</a></li>
+                                        <li><a href="{{ route('perawatans.daftarperawatanalluser') }}">Perawatan</a></li>
+                                        <li><a href="{{ route("produks.daftarprodukalluser") }}">Produk</a></li>
+                                        <li><a href=" {{ route('pakets.daftarpaketalluser') }}">Paket</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="about.html">Tentang Kami</a></li>
-                                <li><a href="contact.html">Kontak</a></li>
+                                <li><a href="{{ route("users.tentangkami") }}">Tentang Kami</a></li>
                             </ul>
                         </div>
                     </div>
@@ -138,106 +134,6 @@
     <!-- Header Area End -->
     <div class="offcanvas-overlay"></div>
 
-    <!-- OffCanvas Wishlist Start -->
-    <div id="offcanvas-wishlist" class="offcanvas offcanvas-wishlist">
-        <div class="inner">
-            <div class="head">
-                <span class="title">Wishlist</span>
-                <button class="offcanvas-close">x</button>
-            </div>
-            <div class="body customScroll">
-                <ul class="minicart-product-list">
-                    <li>
-                        <a href="single-product.html" class="image"><img
-                                src="{{ asset('assets_pelanggan/images/product-image/1.jpg') }}"
-                                alt="Cart product Image"></a>
-                        <div class="content">
-                            <a href="single-product.html" class="title">Women's Elizabeth Coat</a>
-                            <span class="quantity-price">1 x <span class="amount">$21.86</span></span>
-                            <a href="#" class="remove">x</a>
-                        </div>
-                    </li>
-                    <li>
-                        <a href="single-product.html" class="image"><img
-                                src="{{ asset('assets_pelanggan/images/product-image/2.jpg') }}"
-                                alt="Cart product Image"></a>
-                        <div class="content">
-                            <a href="single-product.html" class="title">Long sleeve knee length</a>
-                            <span class="quantity-price">1 x <span class="amount">$13.28</span></span>
-                            <a href="#" class="remove">x</a>
-                        </div>
-                    </li>
-                    <li>
-                        <a href="single-product.html" class="image"><img
-                                src="{{ asset('assets_pelanggan/images/product-image/3.jpg') }}"
-                                alt="Cart product Image"></a>
-                        <div class="content">
-                            <a href="single-product.html" class="title">Cool Man Wearing Leather</a>
-                            <span class="quantity-price">1 x <span class="amount">$17.34</span></span>
-                            <a href="#" class="remove">x</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="foot">
-                <div class="buttons">
-                    <a href="wishlist.html" class="btn btn-dark btn-hover-primary mt-30px">view wishlist</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- OffCanvas Wishlist End -->
-    <!-- OffCanvas Cart Start -->
-    <div id="offcanvas-cart" class="offcanvas offcanvas-cart">
-        <div class="inner">
-            <div class="head">
-                <span class="title">Cart</span>
-                <button class="offcanvas-close">x</button>
-            </div>
-            <div class="body customScroll">
-                <ul class="minicart-product-list">
-                    <li>
-                        <a href="single-product.html" class="image"><img
-                                src="{{ asset('assets_pelanggan/images/product-image/1.jpg') }}"
-                                alt="Cart product Image"></a>
-                        <div class="content">
-                            <a href="single-product.html" class="title">Women's Elizabeth Coat</a>
-                            <span class="quantity-price">1 x <span class="amount">$18.86</span></span>
-                            <a href="#" class="remove">x</a>
-                        </div>
-                    </li>
-                    <li>
-                        <a href="single-product.html" class="image"><img
-                                src="{{ asset('assets_pelanggan/images/product-image/2.jpg') }}"
-                                alt="Cart product Image"></a>
-                        <div class="content">
-                            <a href="single-product.html" class="title">Long sleeve knee length</a>
-                            <span class="quantity-price">1 x <span class="amount">$43.28</span></span>
-                            <a href="#" class="remove">x</a>
-                        </div>
-                    </li>
-                    <li>
-                        <a href="single-product.html" class="image"><img
-                                src="{{ asset('assets_pelanggan/images/product-image/3.jpg') }}"
-                                alt="Cart product Image"></a>
-                        <div class="content">
-                            <a href="single-product.html" class="title">Cool Man Wearing Leather</a>
-                            <span class="quantity-price">1 x <span class="amount">$37.34</span></span>
-                            <a href="#" class="remove">x</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="foot">
-                <div class="buttons mt-30px">
-                    <a href="cart.html" class="btn btn-dark btn-hover-primary mb-30px">view cart</a>
-                    <a href="checkout.html" class="btn btn-outline-dark current-btn">checkout</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- OffCanvas Cart End -->
-
     <!-- OffCanvas Menu Start -->
     <div id="offcanvas-mobile-menu" class="offcanvas offcanvas-mobile-menu">
         <button class="offcanvas-close"></button>
@@ -246,25 +142,22 @@
 
             <div class="offcanvas-menu mb-4">
                 <ul>
-                    <li><a href="#"><span class="menu-text">Beranda</span></a>
+                    <li><a href="{{ route('pelanggans.index') }}"><span class="menu-text">Beranda</span></a>
                     </li>
                     <li><a href="#"><span class="menu-text">Reservasi</span></a>
                         <ul class="sub-menu">
                             <li><a href="{{ route('reservasis.pelanggan.create') }}">Buat Reservasi</a></li>
-                            <li><a href="blog-grid-left-sidebar.html">Riwayat Reservasi</a></li>
+                            <li><a href="{{ route('reservasis.riwayatreservasispelanggan.index') }}">Riwayat Reservasi</a></li>
                         </ul>
                     </li>
                     <li><a href="#"><span class="menu-text">Informasi Salon</span></a>
                         <ul class="sub-menu">
-                            <li><a href="blog-grid.html">Perawatan</a></li>
-                            <li><a href="blog-grid-left-sidebar.html">Produk</a></li>
-                            <li><a href="blog-grid-left-sidebar.html">Paket</a></li>
-                            <li><a href="blog-grid-left-sidebar.html">Kategori</a></li>
-                            <li><a href="blog-grid-left-sidebar.html">Merek</a></li>
-                            <li><a href="blog-grid-left-sidebar.html">Diskon</a></li>
+                            <li><a href="{{ route('perawatans.daftarperawatanalluser') }}">Perawatan</a></li>
+                            <li><a href="{{ route("produks.daftarprodukalluser") }}">Produk</a></li>
+                            <li><a href=" {{ route('pakets.daftarpaketalluser') }}">Paket</a></li>
                         </ul>
                     </li>
-                    <li><a href="about.html">Tentang Kami</a></li>
+                    <li><a href="{{ route("users.tentangkami") }}">Tentang Kami</a></li>
                     <li><a href="contact.html">Kontak</a></li>
                 </ul>
             </div>
@@ -311,7 +204,7 @@
                         <div class="col-md-3 col-lg-3 mb-md-30px mb-lm-30px">
                             <div class="single-wedge">
                                 <div class="footer-logo">
-                                    <a href="index.html">
+                                    <a href="{{ route('pelanggans.index') }}">
                                         {{-- <img src="{{ asset('assets_pelanggan/images/logo-serenity/serenity.png') }}"
                                             height="80" alt="Site Logo" /> --}}
                                         <img src="{{ asset('assets_admin/images/logo-serenity/name_serenity.jpeg') }}"
@@ -354,7 +247,7 @@
                                             <li class="li"><a class="single-link"
                                                     href="{{ route('reservasis.pelanggan.create') }}">Buat Reservasi
                                                 </a></li>
-                                            <li class="li"><a class="single-link" href="#">Riwayat
+                                            <li class="li"><a class="single-link" href="{{ route('reservasis.riwayatreservasispelanggan.index') }}">Riwayat
                                                     Reservasi</a>
                                             </li>
                                         </ul>
@@ -370,20 +263,13 @@
                                 <div class="footer-links">
                                     <div class="footer-row">
                                         <ul class="align-items-center">
-                                            <li class="li"><a class="single-link" href="about.html"> Perawatan
+                                            <li class="li"><a class="single-link" href=" {{ route('perawatans.daftarperawatanalluser') }}"> Perawatan
                                                 </a>
                                             </li>
                                             <li class="li"><a class="single-link"
-                                                    href="blog-grid.html">Produk</a>
+                                                    href="{{ route("produks.daftarprodukalluser") }}">Produk</a>
                                             </li>
-                                            <li class="li"><a class="single-link" href="#">Paket</a>
-                                            </li>
-                                            <li class="li"><a class="single-link"
-                                                    href="contact.html">Katgeori</a>
-                                            </li>
-                                            <li class="li"><a class="single-link" href="#">Merek</a>
-                                            </li>
-                                            <li class="li"><a class="single-link" href="#">Diskon</a>
+                                            <li class="li"><a class="single-link" href=" {{ route('pakets.daftarpaketalluser') }}">Paket</a>
                                             </li>
                                         </ul>
                                     </div>

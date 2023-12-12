@@ -2,7 +2,7 @@
     <h6><strong>{{ $paket->kode_paket }} - {{ $paket->nama }}</strong></h6>
 </div>
 <h6>Detail Perawatan</h6>
-@foreach ($paket->perawatans as $perawatan)
+@foreach ($paket->perawatans()->withPivot("urutan")->orderBy("urutan")->get() as $perawatan)
     <p class="card-text">{{ $perawatan->nama }} - {{ $perawatan->durasi }} menit</p>
 @endforeach
 

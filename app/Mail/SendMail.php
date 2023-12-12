@@ -38,6 +38,8 @@ class SendMail extends Mailable
             return $this->subject('Pembatalan Reservasi dari Admin')->view('mail.batalreservasiadminmail');
         }elseif ($this->type == 'kirimusernamepasswordkaryawan') {
             return $this->subject('Data Login Karyawan')->view('mail.tambahdatakaryawanbaru');
+        }elseif($this->type == "kirimpesankaryawansakitizin"){
+            return $this->subject('Informasi Reservasi Salon')->view('mail.karyawanizinsakit');
         }
         
     }

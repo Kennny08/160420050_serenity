@@ -18,7 +18,7 @@ class Paket extends Model
 
     public function perawatans()
     {
-        return $this->belongsToMany(Perawatan::class, 'paket_perawatan', 'paket_id', 'perawatan_id')->withTrashed();
+        return $this->belongsToMany(Perawatan::class, 'paket_perawatan', 'paket_id', 'perawatan_id')->withPivot('urutan')->withTrashed();
     }
 
     public function penjualans()

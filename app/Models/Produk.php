@@ -33,7 +33,7 @@ class Produk extends Model
 
     public function pakets()
     {
-        return $this->belongsToMany(Paket::class, 'paket_produk', 'produk_id', 'paket_id')->withPivot('jumlah');
+        return $this->belongsToMany(Paket::class, 'paket_produk', 'produk_id', 'paket_id')->withPivot('jumlah')->withTrashed();
     }
 
     public function penjualans()

@@ -18,7 +18,8 @@
                                 <div class="hero-slide-content hero-slide-content-2 slider-animated-1">
                                     <span class="category">{{ $tanggalHariIni }}</span>
                                     <h2 class="title-1">Selamat Datang,<br> {{ Auth::user()->pelanggan->nama }}</h2>
-                                    <a href="{{ route('reservasis.pelanggan.create') }}" class="btn btn-lg btn-primary btn-hover-dark">
+                                    <a href="{{ route('reservasis.pelanggan.create') }}"
+                                        class="btn btn-lg btn-primary btn-hover-dark">
                                         Reservasi Sekarang </a>
                                 </div>
                             </div>
@@ -43,7 +44,8 @@
                                 <div class="hero-slide-content hero-slide-content-2 slider-animated-1">
                                     <span class="category">{{ $tanggalHariIni }}</span>
                                     <h2 class="title-1">Selamat Datang,<br> {{ Auth::user()->pelanggan->nama }}</h2>
-                                    <a href="{{ route('reservasis.pelanggan.create') }}" class="btn btn-lg btn-primary btn-hover-dark">
+                                    <a href="{{ route('reservasis.pelanggan.create') }}"
+                                        class="btn btn-lg btn-primary btn-hover-dark">
                                         Reservasi Sekarang </a>
                                 </div>
                             </div>
@@ -148,7 +150,8 @@
                                         <!-- Single Prodect -->
                                         <div class="product">
                                             <div class="thumb">
-                                                <a href="single-product.html" class="image text-center">
+                                                <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
+                                                    class="image text-center">
                                                     <img style="max-height: 100%; width: 260px; height: 310px; max-width: 100%; object-fit: cover;"
                                                         src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
                                                         alt="Product" />
@@ -157,7 +160,8 @@
                                                         src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
                                                         alt="Product" />
                                                 </a>
-                                                <button title="Add To Cart" class=" add-to-cart">Detail</button>
+                                                <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
+                                                    class=" add-to-cart">Detail</a>
                                             </div>
                                             <div class="content">
                                                 <span class="ratings">
@@ -167,7 +171,7 @@
                                                         )</span>
                                                 </span>
                                                 <h5><a class="font-weight-bold text-dark"
-                                                        href="single-product.html">{{ $perawatan->nama }}
+                                                        href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}">{{ $perawatan->nama }}
                                                     </a>
                                                 </h5>
                                                 <span class="price">
@@ -186,7 +190,8 @@
                         <!-- 1st tab end -->
 
                     </div>
-                    <a href="shop-left-sidebar.html" class="btn btn-lg btn-primary btn-hover-dark m-auto"> Lihat Lebih
+                    <a href="{{ route('perawatans.daftarperawatanalluser') }}"
+                        class="btn btn-lg btn-primary btn-hover-dark m-auto"> Lihat Lebih
                         <i class="fa fa-arrow-right ml-15px" aria-hidden="true"></i></a>
                 </div>
             </div>
@@ -251,7 +256,8 @@
                                                 <!-- Single Prodect -->
                                                 <div class="product">
                                                     <div class="thumb">
-                                                        <a href="single-product.html" class="image text-center">
+                                                        <a href="{{ route('produks.detailprodukalluser', $produkPerKategori->id) }}"
+                                                            class="image text-center">
                                                             <img style="max-height: 100%; width: 290px; height: 310px; max-width: 100%;"
                                                                 src="{{ asset('assets_admin/images/produk/' . $produkPerKategori->gambar) }}"
                                                                 alt="Product" />
@@ -260,7 +266,8 @@
                                                                 src="{{ asset('assets_admin/images/produk/' . $produkPerKategori->gambar) }}"
                                                                 alt="Product" />
                                                         </a>
-                                                        <button title="Add To Cart" class=" add-to-cart">Detail</button>
+                                                        <a href="{{ route('produks.detailprodukalluser', $produkPerKategori->id) }}"
+                                                            class=" add-to-cart">Detail</a>
                                                     </div>
                                                     <div class="content">
                                                         <span class="ratings">
@@ -278,7 +285,7 @@
                                                             </span>
                                                         </span>
                                                         <h5 class="title"><a
-                                                                href="single-product.html">{{ $produkPerKategori->nama }}
+                                                                href="{{ route('produks.detailprodukalluser', $produkPerKategori->id) }}">{{ $produkPerKategori->nama }}
                                                             </a>
                                                         </h5>
                                                         <span class="price">
@@ -302,7 +309,8 @@
                                                 <!-- Single Prodect -->
                                                 <div class="product">
                                                     <div class="thumb">
-                                                        <a href="single-product.html" class="image text-center">
+                                                        <a href="{{ route('produks.detailprodukalluser', $produkPerKategori->id) }}"
+                                                            class="image text-center">
                                                             <img style="max-height: 100%; width: 290px; height: 310px; max-width: 100%;"
                                                                 src="{{ asset('assets_admin/images/produk/' . $produkPerKategori->gambar) }}"
                                                                 alt="Product" />
@@ -311,7 +319,8 @@
                                                                 src="{{ asset('assets_admin/images/produk/' . $produkPerKategori->gambar) }}"
                                                                 alt="Product" />
                                                         </a>
-                                                        <button title="Add To Cart" class=" add-to-cart">Detail</button>
+                                                        <a href="{{ route('produks.detailprodukalluser', $produkPerKategori->id) }}"
+                                                            class=" add-to-cart">Detail</a>
                                                     </div>
                                                     <div class="content">
                                                         <span class="ratings">
@@ -329,7 +338,7 @@
                                                             </span>
                                                         </span>
                                                         <h5 class="title"><a
-                                                                href="single-product.html">{{ $produkPerKategori->nama }}
+                                                                href="{{ route('produks.detailprodukalluser', $produkPerKategori->id) }}">{{ $produkPerKategori->nama }}
                                                             </a>
                                                         </h5>
                                                         <span class="price">
@@ -353,7 +362,8 @@
                         <!-- 1st tab end -->
 
                     </div>
-                    <a href="shop-left-sidebar.html" class="btn btn-lg btn-primary btn-hover-dark m-auto"> Lihat Lebih
+                    <a href="{{ route('produks.daftarprodukalluser') }}"
+                        class="btn btn-lg btn-primary btn-hover-dark m-auto"> Lihat Lebih
                         <i class="fa fa-arrow-right ml-15px" aria-hidden="true"></i></a>
                 </div>
             </div>
@@ -389,7 +399,8 @@
                                         <!-- Single Prodect -->
                                         <div class="product">
                                             <div class="thumb">
-                                                <a href="single-product.html" class="image">
+                                                <a href="{{ route('pakets.detailpaketalluser', $paket->id) }}"
+                                                    class="image">
                                                     <img style="max-height: 100%; width: 260px; height: 310px; max-width: 100%;"
                                                         src="{{ asset('assets_admin/images/paket/' . $paket->gambar) }}"
                                                         alt="Product" />
@@ -398,7 +409,8 @@
                                                         src="{{ asset('assets_admin/images/paket/' . $paket->gambar) }}"
                                                         alt="Product" />
                                                 </a>
-                                                <button title="Add To Cart" class=" add-to-cart">Detail</button>
+                                                <a href="{{ route('pakets.detailpaketalluser', $paket->id) }}"
+                                                    class=" add-to-cart">Detail</a>
                                             </div>
                                             <div class="content">
                                                 <span class="ratings">
@@ -419,7 +431,7 @@
                                                     </span>
                                                 </span>
                                                 <h5><a class="font-weight-bold text-dark"
-                                                        href="single-product.html">{{ $paket->nama }}
+                                                        href="{{ route('pakets.detailpaketalluser', $paket->id) }}">{{ $paket->nama }}
                                                     </a>
                                                 </h5>
                                                 <span class="price">
@@ -435,7 +447,8 @@
                         <!-- 1st tab end -->
 
                     </div>
-                    <a href="shop-left-sidebar.html" class="btn btn-lg btn-primary btn-hover-dark m-auto"> Lihat Lebih
+                    <a href=" {{ route('pakets.daftarpaketalluser') }}"
+                        class="btn btn-lg btn-primary btn-hover-dark m-auto"> Lihat Lebih
                         <i class="fa fa-arrow-right ml-15px" aria-hidden="true"></i></a>
                 </div>
             </div>

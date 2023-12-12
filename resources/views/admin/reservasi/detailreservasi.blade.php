@@ -127,7 +127,10 @@
                             <div class="col-6 text-right">
                                 <address>
                                     <strong class="font-weight-bold font-16">Status Reservasi:</strong><br>
-                                    @if ($reservasi->status == 'dibatalkan salon' || $reservasi->status == 'dibatalkan pelanggan')
+                                    @if (
+                                        $reservasi->status == 'dibatalkan salon' ||
+                                            $reservasi->status == 'dibatalkan pelanggan' ||
+                                            $reservasi->status == 'tidak hadir')
                                         <span class="text-danger font-16 font-weight-bold">{{ $reservasi->status }}</span>
                                     @elseif($reservasi->status == 'selesai')
                                         <span class="text-success font-16 font-weight-bold">{{ $reservasi->status }}</span>
@@ -165,6 +168,15 @@
                                         <a class="nav-link" data-toggle="tab" href="#diskon" role="tab">
                                             <span class="d-none d-md-block font-16">Diskon</span><span
                                                 class="d-block d-md-none"><i class="mdi mdi-account h5"></i></span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item waves-effect waves-light">
+                                        <a class="nav-link " data-toggle="tab" href="#ulasan"
+                                            role="tab">
+                                            <span class="d-none d-md-block" style="font-size: 1.1em;">Ulasan</span>
+                                            <span class="d-block d-md-none"><i class="fas fa-star"
+                                                    aria-hidden="true"></i></span>
+
                                         </a>
                                     </li>
 
@@ -390,34 +402,6 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
-                            {{-- <div class="form-group col-md-12">
-                                            <div class="row">
-                                                <div class="col-12 mt-2 text-right">
-                                                    @php
-                                                        $totalHargaPerawatan = 0;
-                                                    @endphp
-                                                    <address>
-                                                        @foreach ($arrKomplemen['perawatans'] as $ps)
-                                                            @php
-                                                                $totalHargaPerawatan += $ps['penjualanperawatankomplemen']->harga;
-                                                            @endphp
-                                                        @endforeach
-                                                        @foreach ($perawatanSlotJamNonKomplemen as $psnk)
-                                                            @php
-                                                                $totalHargaPerawatan += $psnk['penjualanperawatannonkomplemen']->harga;
-                                                            @endphp
-                                                        @endforeach
-                                                        <h6 style="font-weight: normal">Total Harga Perawatan: </h6>
-                                                        <h4><strong>Rp.
-                                                                {{ number_format($totalHargaPerawatan, 2, ',', '.') }}</strong>
-                                                        </h4>
-                                                    </address>
-                                                </div>
-                                            </div>
-                                        </div> --}}
                         </div>
 
                         <div class="tab-pane p-4" id="produk" role="tabpanel">
@@ -586,20 +570,12 @@
                                                             $jumlahPotongan = $reservasi->penjualan->diskon->maksimum_potongan;
                                                         }
                                                     }
-
                                                 @endphp
-                                                {{-- <h4>
-                                                                <strong>
-                                                                    Rp. {{ number_format($jumlahPotongan, 2, ',', '.') }}
-                                                                </strong>
-                                                            </h4> --}}
                                             </address>
                                         </div>
                                     @else
                                         <div class="col-12 text-right">
                                             <address>
-                                                {{-- <h6 class="mt-3" style="font-weight: normal">Total Potongan:
-                                                            </h6> --}}
                                                 @php
                                                     $jumlahPotongan = 0;
                                                     if ($reservasi->penjualan->diskon != null) {
@@ -610,18 +586,70 @@
                                                     }
 
                                                 @endphp
-                                                {{-- <h4>
-                                                                <strong>
-                                                                    Rp. {{ number_format($jumlahPotongan, 2, ',', '.') }}
-                                                                </strong>
-                                                            </h4> --}}
                                             </address>
                                         </div>
                                     @endif
 
                                 </div>
                             </div>
+                        </div>
 
+                        <div class="tab-pane p-4 text-center" id="ulasan" role="tabpanel">
+                            @if ($reservasi->penjualan->status_selesai == 'belum')
+                                <div class="col-md-12 text-center">
+                                    <div class="card text-white bg-danger text-center w-60 mx-auto">
+                                        <div class="card-body">
+                                            <blockquote class="card-bodyquote mb-0">
+                                                <h4>
+                                                    Belum ada Ulasan dari Pelanggan
+                                                </h4>
+                                                <footer class=" text-white font-12">
+                                                    <h5>Silahkan selesaikan reservasi terlebih dahulu, agar
+                                                        pelanggan dapat memberikan ulasan</h5>
+
+                                                </footer>
+                                            </blockquote>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                @if ($reservasi->penjualan->ulasan == null)
+                                    <div class="col-md-12 text-center">
+                                        <div class="card text-white bg-danger text-center w-60 mx-auto">
+                                            <div class="card-body">
+                                                <blockquote class="card-bodyquote mb-0">
+                                                    <h4>
+                                                        Belum ada Ulasan dari Pelanggan
+                                                    </h4>
+                                                    <footer class=" text-white font-12">
+                                                        <h5>Silahkan menunggu pelanggan memberikan ulasan</h5>
+
+                                                    </footer>
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="col-md-12 text-center">
+                                        <div class="card text-white bg-info text-center w-60 mx-auto">
+                                            <div class="card-body">
+                                                <blockquote class="card-bodyquote mb-0">
+                                                    <h4>
+                                                        {{ $reservasi->penjualan->ulasan->ulasan }}
+                                                    </h4>
+                                                    {{-- <footer class=" text-white font-12">
+                                                        <h5>Potongan sebesar
+                                                            {{ $reservasi->penjualan->diskon->jumlah_potongan }}%
+                                                            dengan maksimum potongan sebesar Rp.
+                                                            {{ number_format($reservasi->penjualan->diskon->maksimum_potongan, 2, ',', '.') }}
+                                                        </h5>
+                                                    </footer> --}}
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endif
 
                         </div>
                     </div>
@@ -691,26 +719,59 @@
             role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title mt-0">Konfirmasi Pembatalan Reservasi</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body text-center" id="modalBodyBatalReservasi">
-                        <h6>Apakah Anda yakin ingin membatalkan reservasi ini?</h6>
-                    </div>
-                    <div class="modal-footer">
-                        <form action="{{ route('reservasi.admin.batalkan') }}" method="post">
-                            @csrf
+                    <form action="{{ route('reservasi.admin.batalkan') }}" method="post">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title mt-0">Konfirmasi Pembatalan Reservasi</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center" id="modalBodyBatalReservasi">
+                            <div id="isiKontenKonfirmasiPemabtalan">
+
+                            </div>
+
+                            <br>
+
+                            <p>Jika Ya, silahkan pilih keterangan pembatalan reservasi</p>
+                            <div class="row text-center">
+                                <div class="col-md-1">
+
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="btn-group btn-group-toggle border w-100"
+                                        data-toggle="buttons">
+                                        <label class="btn btn-info waves-effect waves-light"
+                                            id="lblKeteranganBatalPihakSalon">
+                                            <input type="radio" value="pihaksalon"
+                                                name="radioKeteranganBatalReservasi"
+                                                id="optionKeteranganSalon"
+                                                class="radioKeteranganBatalReservasi" checked>
+                                            Keputusan Salon
+                                        </label>
+                                        <label class="btn waves-danger waves-light"
+                                            id="lblKeteranganBatalTidakHadir">
+                                            <input type="radio" value="tidakhadir"
+                                                name="radioKeteranganBatalReservasi"
+                                                id="optionKeteranganTidakHadir"
+                                                class="radioKeteranganBatalReservasi">
+                                            Pelanggan Tidak Hadir
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
                             <input type="hidden" name="idReservasiBatal" value="{{ $reservasi->id }}">
                             <button type="button" class="btn btn-danger waves-effect mr-2"
                                 data-dismiss="modal">Tidak</button>
                             <button type="submit" class="btn btn-info waves-effect">Ya</button>
-                        </form>
-
-
-                    </div>
+                        </div>
+                    </form>
                 </div>
                 <!-- /.modal-content -->
             </div>
@@ -761,7 +822,7 @@
     $('body').on('click', '#btnKonfirmasiBatalkanReservasi', function() {
         var namaPelanggan = $(this).attr('namaPelanggan');
         var nomorNota = $(this).attr('nomorNotaPenjualan');
-        $("#modalBodyBatalReservasi").html(
+        $("#isiKontenKonfirmasiPemabtalan").html(
             "<p class='h6 font-weight-normal'>Apakah Anda yakin untuk membatalkan reservasi dengan nomor nota <span class='text-danger h6'>" +
             nomorNota +
             "</span> atas nama <span class='text-danger h6'>" + namaPelanggan + "</span>?</p>");
@@ -776,6 +837,17 @@
             nomorNota +
             "</span> atas nama <span class='text-danger h6'>" + namaPelanggan + "</span>?</p>");
 
+    });
+
+    $('body').on('change', '.radioKeteranganBatalReservasi', function() {
+        var statusSaatIni = $(this).val();
+        if (statusSaatIni == "tidakhadir") {
+            $("#lblKeteranganBatalPihakSalon").removeClass("btn-info");
+            $("#lblKeteranganBatalTidakHadir").addClass("btn-danger");
+        } else {
+            $("#lblKeteranganBatalPihakSalon").addClass("btn-info");
+            $("#lblKeteranganBatalTidakHadir").removeClass("btn-danger");
+        }
     });
 </script>
 @endsection

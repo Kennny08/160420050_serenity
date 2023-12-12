@@ -14,6 +14,7 @@ use App\Models\Produk;
 use App\Models\Reservasi;
 use App\Models\SlotJam;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PenjualanController extends Controller
 {
@@ -451,7 +452,7 @@ class PenjualanController extends Controller
 
                 if ($penjualan->reservasi != null) {
                     return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with('status', ["message" => ['Berhasil menambah atau mengubah produk yang ingin dibeli!', 'Silahkan mengatur ulang diskon jika tersedia!']]);
-                } 
+                }
             } else {
                 //mengecek ketersediaan stok prouk jika ada produk yang sama seperti sebelumnya namun diubah kuantitasnya
                 $arrayIdProdukDalamDetailPenjualan = [];
@@ -628,14 +629,14 @@ class PenjualanController extends Controller
 
                 if ($penjualan->reservasi != null) {
                     return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with('status', ["message" => ['Berhasil menambah atau mengubah produk yang ingin dibeli!', 'Silahkan mengatur ulang diskon jika tersedia!']]);
-                } 
+                }
             }
         } else {
 
             if ($arrayIdProduk == null && $arrayStokProduk == null) {
                 if ($penjualan->reservasi != null) {
                     return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with('status', ["message" => ['Berhasil menambah atau mengubah produk yang ingin dibeli!', 'Silahkan mengecek diskon jika tersedia!']]);
-                } 
+                }
             } else {
 
                 for ($i = 0; $i < count($arrayIdProduk); $i++) {
@@ -686,7 +687,7 @@ class PenjualanController extends Controller
 
                 if ($penjualan->reservasi != null) {
                     return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with('status', ["message" => ['Berhasil menambah atau mengubah produk yang ingin dibeli!', 'Silahkan mengatur ulang diskon jika tersedia!']]);
-                } 
+                }
             }
         }
     }
@@ -771,7 +772,7 @@ class PenjualanController extends Controller
                 }
             } else {
                 $paketSementara = Paket::where("kode_paket", $kode)->first();
-                foreach ($paketSementara->perawatans as $perawatanPaket) {
+                foreach ($paketSementara->perawatans()->withPivot("urutan")->orderBy("urutan")->get() as $perawatanPaket) {
                     if ($perawatanPaket->status_komplemen == "tidak") {
                         array_push($perawatanNonKomplemen, $perawatanPaket);
                     } else {
@@ -2145,152 +2146,158 @@ class PenjualanController extends Controller
         $idPenjualan = $id;
         $penjualan = Penjualan::find($idPenjualan);
 
-        $penjualanPerawatan = $penjualan->penjualanperawatans->sortBy('id');
-        $jamMulai = $penjualanPerawatan->first()->slotjams->sortBy('slot_jam_id')->first();
-        $slotJamBerubah = $jamMulai;
-
-        $perawatanSlotJamNonKomplemen = [];
-
-        $perawatanNonKomplemen = [];
-        $perawatanKomplemen = [];
-        foreach ($penjualanPerawatan as $pp) {
-            if ($pp->perawatan->status_komplemen == "tidak") {
-                array_push($perawatanNonKomplemen, $pp);
-            } else {
-                array_push($perawatanKomplemen, $pp);
-            }
-        }
-
-        $daftarPaket = [];
-        if (count($penjualan->pakets) > 0) {
-            foreach ($penjualan->pakets as $paket) {
-                array_push($daftarPaket, $paket);
-            }
-        }
-
-        if (count($perawatanNonKomplemen) > 0) {
-            foreach ($perawatanNonKomplemen as $penjualanPerawatanNonKomplemen) {
-                $perawatanPerSlot = [];
-                $perawatanPerSlot["penjualanperawatannonkomplemen"] = $penjualanPerawatanNonKomplemen;
-
-                $perawatanPerSlot["namapaket"] = "null";
-                foreach ($daftarPaket as $paket) {
-                    if ($paket->perawatans->firstWhere('id', $penjualanPerawatanNonKomplemen->perawatan_id) != null) {
-                        $perawatanPerSlot["namapaket"] = $paket->nama;
-                        break;
-                    }
-                }
-
-                $perawatanPerSlot["jammulai"] = $slotJamBerubah->jam;
-
-                $perawatanPerSlot["karyawan"] = $penjualanPerawatanNonKomplemen->karyawan;
-
-                $jumlahSlotTerpakai = $penjualanPerawatanNonKomplemen->slotjams->count();
-                // $jumlahSlotTerpakai = ceil($perawatan->durasi / 30);
-                $perawatanPerSlot["durasi"] = $jumlahSlotTerpakai * 30;
-                $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) . " minutes", strtotime($slotJamBerubah->jam));
-
-                // $jamTerakhir = date('H.i', $intJamTerakhir);
-                // dd($jamTerakhir);
-
-                array_push($perawatanSlotJamNonKomplemen, $perawatanPerSlot);
-
-                //update slotJamBerubah ke slot selanjutnya
-                // $intJamTerakhir = strtotime("+30 minutes", strtotime($jamTerakhir));
-                $jamTerakhir = date('H.i', $intJamTerakhir);
-                $slotJamBerubah = SlotJam::where('jam', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->first();
-            }
-        }
-
-
-
-        $arrKomplemen = [];
-        if (count($perawatanKomplemen) > 0) {
-            // $idPerawatanKomplemen = [];
-            $arrayPerawatanKomplemen = [];
-            $totalSlotPerPerawatanKomplemen = [];
-            foreach ($perawatanKomplemen as $penjualanPerawatanKomplemen) {
-                // array_push($idPerawatanKomplemen, $pk->id);
-                $array = [];
-                $array["namapaket"] = "null";
-                foreach ($daftarPaket as $paket) {
-                    if ($paket->perawatans->firstWhere('id', $penjualanPerawatanKomplemen->perawatan_id) != null) {
-                        $array["namapaket"] = $paket->nama;
-                        break;
-                    }
-                }
-                $array['penjualanperawatankomplemen'] = $penjualanPerawatanKomplemen;
-                $array["karyawan"] = $penjualanPerawatanKomplemen->karyawan;
-
-                array_push($arrayPerawatanKomplemen, $array);
-                array_push($totalSlotPerPerawatanKomplemen, $penjualanPerawatanKomplemen->slotjams->count());
-            }
-            $arrKomplemen['jammulai'] = $slotJamBerubah->jam;
-
-
-            // $penjualanPerawatans = $reservasi->penjualan->penjualanperawatans;
-
-            // $durasiTerlamaPerawatanKomplemen = Perawatan::where('status_komplemen', 'ya')->whereIn('id', $idPerawatanKomplemen)->max('durasi');
-
-            $arrKomplemen['durasiterlama'] = max($totalSlotPerPerawatanKomplemen) * 30;
-            $arrKomplemen['perawatans'] = $arrayPerawatanKomplemen;
-        }
-
-
-        $idDiskonUnikYangSudahPernahDipakai = Penjualan::select("diskon_id")->distinct()->where("pelanggan_id", $penjualan->pelanggan_id)->where("diskon_id", "!=", null)->get();
-        $tanggalHariIni = date("Y-m-d");
-
-        //Pencarian Diskon
-        $diskonAktifBerlaku = [];
-        $daftarPenjualanPaket = $penjualan->pakets;
-        if (count($daftarPenjualanPaket) == 0) {
-            $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
-            $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
-            $diskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $penjualan->total_pembayaran)->get();
+        if ($penjualan == null) {
+            return redirect()->route("penjualans.admin.riwayatpenjualan")->withErrors("Tidak terdapat penjualan dengan ID " . $id);
         } else {
-            $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
-            $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
-            $arrDiskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $penjualan->total_pembayaran)->get();
-            foreach ($arrDiskonAktifBerlaku as $value) {
-                array_push($diskonAktifBerlaku, $value);
+            $penjualanPerawatan = $penjualan->penjualanperawatans->sortBy('id');
+            $jamMulai = $penjualanPerawatan->first()->slotjams->sortBy('slot_jam_id')->first();
+            $slotJamBerubah = $jamMulai;
+
+            $perawatanSlotJamNonKomplemen = [];
+
+            $perawatanNonKomplemen = [];
+            $perawatanKomplemen = [];
+            foreach ($penjualanPerawatan as $pp) {
+                if ($pp->perawatan->status_komplemen == "tidak") {
+                    array_push($perawatanNonKomplemen, $pp);
+                } else {
+                    array_push($perawatanKomplemen, $pp);
+                }
             }
-            $idDiskonDariPaketsPenjualan = $daftarPenjualanPaket->where("diskon_id", "!=", null)->pluck("diskon_id")->unique();
-            foreach ($idDiskonDariPaketsPenjualan as $value) {
-                $diskon = Diskon::find($value);
-                array_push($diskonAktifBerlaku, $diskon);
+
+            $daftarPaket = [];
+            if (count($penjualan->pakets) > 0) {
+                foreach ($penjualan->pakets as $paket) {
+                    array_push($daftarPaket, $paket);
+                }
             }
+
+            if (count($perawatanNonKomplemen) > 0) {
+                foreach ($perawatanNonKomplemen as $penjualanPerawatanNonKomplemen) {
+                    $perawatanPerSlot = [];
+                    $perawatanPerSlot["penjualanperawatannonkomplemen"] = $penjualanPerawatanNonKomplemen;
+
+                    $perawatanPerSlot["namapaket"] = "null";
+                    foreach ($daftarPaket as $paket) {
+                        if ($paket->perawatans->firstWhere('id', $penjualanPerawatanNonKomplemen->perawatan_id) != null) {
+                            $perawatanPerSlot["namapaket"] = $paket->nama;
+                            break;
+                        }
+                    }
+
+                    $perawatanPerSlot["jammulai"] = $slotJamBerubah->jam;
+
+                    $perawatanPerSlot["karyawan"] = $penjualanPerawatanNonKomplemen->karyawan;
+
+                    $jumlahSlotTerpakai = $penjualanPerawatanNonKomplemen->slotjams->count();
+                    // $jumlahSlotTerpakai = ceil($perawatan->durasi / 30);
+                    $perawatanPerSlot["durasi"] = $jumlahSlotTerpakai * 30;
+                    $intJamTerakhir = strtotime("+" . ($jumlahSlotTerpakai * 30) . " minutes", strtotime($slotJamBerubah->jam));
+
+                    // $jamTerakhir = date('H.i', $intJamTerakhir);
+                    // dd($jamTerakhir);
+
+                    array_push($perawatanSlotJamNonKomplemen, $perawatanPerSlot);
+
+                    //update slotJamBerubah ke slot selanjutnya
+                    // $intJamTerakhir = strtotime("+30 minutes", strtotime($jamTerakhir));
+                    $jamTerakhir = date('H.i', $intJamTerakhir);
+                    $slotJamBerubah = SlotJam::where('jam', $jamTerakhir)->where('hari', $slotJamBerubah->hari)->first();
+                }
+            }
+
+
+
+            $arrKomplemen = [];
+            if (count($perawatanKomplemen) > 0) {
+                // $idPerawatanKomplemen = [];
+                $arrayPerawatanKomplemen = [];
+                $totalSlotPerPerawatanKomplemen = [];
+                foreach ($perawatanKomplemen as $penjualanPerawatanKomplemen) {
+                    // array_push($idPerawatanKomplemen, $pk->id);
+                    $array = [];
+                    $array["namapaket"] = "null";
+                    foreach ($daftarPaket as $paket) {
+                        if ($paket->perawatans->firstWhere('id', $penjualanPerawatanKomplemen->perawatan_id) != null) {
+                            $array["namapaket"] = $paket->nama;
+                            break;
+                        }
+                    }
+                    $array['penjualanperawatankomplemen'] = $penjualanPerawatanKomplemen;
+                    $array["karyawan"] = $penjualanPerawatanKomplemen->karyawan;
+
+                    array_push($arrayPerawatanKomplemen, $array);
+                    array_push($totalSlotPerPerawatanKomplemen, $penjualanPerawatanKomplemen->slotjams->count());
+                }
+                $arrKomplemen['jammulai'] = $slotJamBerubah->jam;
+
+
+                // $penjualanPerawatans = $reservasi->penjualan->penjualanperawatans;
+
+                // $durasiTerlamaPerawatanKomplemen = Perawatan::where('status_komplemen', 'ya')->whereIn('id', $idPerawatanKomplemen)->max('durasi');
+
+                $arrKomplemen['durasiterlama'] = max($totalSlotPerPerawatanKomplemen) * 30;
+                $arrKomplemen['perawatans'] = $arrayPerawatanKomplemen;
+            }
+
+
+            $idDiskonUnikYangSudahPernahDipakai = Penjualan::select("diskon_id")->distinct()->where("pelanggan_id", $penjualan->pelanggan_id)->where("diskon_id", "!=", null)->get();
+            $tanggalHariIni = date("Y-m-d");
+
+            //Pencarian Diskon
+            $diskonAktifBerlaku = [];
+            $daftarPenjualanPaket = $penjualan->pakets;
+            if (count($daftarPenjualanPaket) == 0) {
+                $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
+                $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
+                $diskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $penjualan->total_pembayaran)->get();
+            } else {
+                $arrSemuaIdPaketYangAdaDiskonTertentu = Paket::where("status", "aktif")->where("diskon_id", "!=", null)->get();
+                $idUnikPakets = $arrSemuaIdPaketYangAdaDiskonTertentu->pluck("diskon_id")->unique();
+                $arrDiskonAktifBerlaku = Diskon::where("status", "aktif")->whereRaw("DATE(tanggal_mulai) <= '" . $tanggalHariIni . "'")->whereRaw("DATE(tanggal_berakhir) >= '" . $tanggalHariIni . "'")->whereNotIn("id", $idDiskonUnikYangSudahPernahDipakai)->whereNotIn("id", $idUnikPakets)->where("minimal_transaksi", "<=", $penjualan->total_pembayaran)->get();
+                foreach ($arrDiskonAktifBerlaku as $value) {
+                    array_push($diskonAktifBerlaku, $value);
+                }
+                $idDiskonDariPaketsPenjualan = $daftarPenjualanPaket->where("diskon_id", "!=", null)->pluck("diskon_id")->unique();
+                foreach ($idDiskonDariPaketsPenjualan as $value) {
+                    $diskon = Diskon::find($value);
+                    array_push($diskonAktifBerlaku, $diskon);
+                }
+            }
+
+            $keteranganGantiKaryawan = false;
+            $counterTrueGantiKaryawan = 0;
+
+            $karyawansIzinSakit = [];
+            $keteranganKaryawanIzinSakit = [];
+            foreach ($penjualan->penjualanperawatans as $pp) {
+                $karyawanTerpilih = $pp->karyawan;
+                $presensiCheck = PresensiKehadiran::where("karyawan_id", $karyawanTerpilih->id)->where(function ($query) {
+                    $query->where('keterangan', 'sakit')
+                        ->orWhere('keterangan', 'izin');
+                })->where("status", "konfirmasi")->whereRaw("DATE(tanggal_presensi) = '" . date("Y-m-d", strtotime($penjualan->tanggal_penjualan)) . "'")->first();
+
+                if ($presensiCheck != null) {
+                    $counterTrueGantiKaryawan += 1;
+                    array_push($karyawansIzinSakit, $karyawanTerpilih->id);
+
+                    $izinSakit = [];
+                    $izinSakit["idKaryawan"] = $karyawanTerpilih->id;
+                    $izinSakit["keterangan"] = $presensiCheck->keterangan;
+                    array_push($keteranganKaryawanIzinSakit, $izinSakit);
+                }
+            }
+
+            if ($counterTrueGantiKaryawan > 0) {
+                $keteranganGantiKaryawan = true;
+            }
+
+            //dd($diskonAktifBerlaku);
+
+            return view('admin.penjualan.detailpenjualan', compact('penjualan', 'jamMulai', 'arrKomplemen', 'perawatanSlotJamNonKomplemen', 'diskonAktifBerlaku', 'keteranganGantiKaryawan', 'karyawansIzinSakit', 'keteranganKaryawanIzinSakit'));
         }
 
-        $keteranganGantiKaryawan = false;
-        $counterTrueGantiKaryawan = 0;
 
-        $karyawansIzinSakit = [];
-        $keteranganKaryawanIzinSakit = [];
-        foreach ($penjualan->penjualanperawatans as $pp) {
-            $karyawanTerpilih = $pp->karyawan;
-            $presensiCheck = PresensiKehadiran::where("karyawan_id", $karyawanTerpilih->id)->where(function ($query) {
-                $query->where('keterangan', 'sakit')
-                    ->orWhere('keterangan', 'izin');
-            })->where("status", "konfirmasi")->whereRaw("DATE(tanggal_presensi) = '" . date("Y-m-d", strtotime($penjualan->tanggal_penjualan)) . "'")->first();
-
-            if ($presensiCheck != null) {
-                $counterTrueGantiKaryawan += 1;
-                array_push($karyawansIzinSakit, $karyawanTerpilih->id);
-
-                $izinSakit = [];
-                $izinSakit["idKaryawan"] = $karyawanTerpilih->id;
-                $izinSakit["keterangan"] = $presensiCheck->keterangan;
-                array_push($keteranganKaryawanIzinSakit, $izinSakit);
-            }
-        }
-
-        if ($counterTrueGantiKaryawan > 0) {
-            $keteranganGantiKaryawan = true;
-        }
-
-        //dd($diskonAktifBerlaku);
-
-        return view('admin.penjualan.detailpenjualan', compact('penjualan', 'jamMulai', 'arrKomplemen', 'perawatanSlotJamNonKomplemen', 'diskonAktifBerlaku', 'keteranganGantiKaryawan', 'karyawansIzinSakit', 'keteranganKaryawanIzinSakit'));
 
     }
 
@@ -3050,138 +3057,229 @@ class PenjualanController extends Controller
     public function detailNotaReservasiPenjualan($idReservasi)
     {
         $reservasi = Reservasi::find($idReservasi);
+        if ($reservasi == null) {
+            $pesan = "Tidak terdapat reservasi pelanggan dengan ID " . $idReservasi;
+            return redirect()->route("riwayatreservasis.index")->withErrors($pesan);
+        } else {
+            $penjualanPerawatan = $reservasi->penjualan->penjualanperawatans->sortBy('id');
+            $jamMulai = $penjualanPerawatan->first()->slotjams->sortBy('slot_jam_id')->first();
 
-        $penjualanPerawatan = $reservasi->penjualan->penjualanperawatans->sortBy('id');
-        $jamMulai = $penjualanPerawatan->first()->slotjams->sortBy('slot_jam_id')->first();
+            $arrPaket = [];
+            $arrProduk = [];
+            $arrPerawatan = [];
 
-        $arrPaket = [];
-        $arrProduk = [];
-        $arrPerawatan = [];
-
-        $idPaketPerawatan = [];
-        $idPaketProduk = [];
+            $idPaketPerawatan = [];
+            $idPaketProduk = [];
 
 
 
-        if (count($reservasi->penjualan->pakets) > 0) {
-            foreach ($reservasi->penjualan->pakets as $paket) {
-                array_push($arrPaket, $paket);
-                foreach ($paket->perawatans as $perawatan) {
-                    array_push($idPaketPerawatan, $perawatan->id);
-                }
-                foreach ($paket->produks as $produk) {
-                    if (!in_array($produk->id, $idPaketProduk)) {
-                        array_push($idPaketProduk, $produk->id);
-                    }
-
-                }
-            }
-        }
-
-        foreach ($reservasi->penjualan->penjualanperawatans as $p) {
-            if (!in_array($p->perawatan_id, $idPaketPerawatan)) {
-                array_push($arrPerawatan, $p);
-            }
-        }
-
-        foreach ($reservasi->penjualan->produks as $p) {
-            if (!in_array($p->id, $idPaketProduk)) {
-                $produkSementara = [];
-                $produkSementara["object"] = $p;
-                $produkSementara["kuantitas"] = $p->pivot->kuantitas;
-                $produkSementara["harga"] = $p->pivot->harga;
-                $produkSementara["subtotal"] = $p->pivot->kuantitas * $p->pivot->harga;
-                array_push($arrProduk, $produkSementara);
-            } else {
-                $totalKeseluruhan = $p->pivot->kuantitas;
-                $totalDariPaket = 0;
+            if (count($reservasi->penjualan->pakets) > 0) {
                 foreach ($reservasi->penjualan->pakets as $paket) {
-                    if ($paket->produks->firstWhere("id", $p->id) != null) {
-                        $totalDariPaket += $paket->produks->firstWhere("id", $p->id)->pivot->jumlah;
+                    array_push($arrPaket, $paket);
+                    foreach ($paket->perawatans as $perawatan) {
+                        array_push($idPaketPerawatan, $perawatan->id);
+                    }
+                    foreach ($paket->produks as $produk) {
+                        if (!in_array($produk->id, $idPaketProduk)) {
+                            array_push($idPaketProduk, $produk->id);
+                        }
+
                     }
                 }
+            }
 
-                if ($totalKeseluruhan > $totalDariPaket) {
-                    $jumlahSisaDiluarPaket = $totalKeseluruhan - $totalDariPaket;
+            foreach ($reservasi->penjualan->penjualanperawatans as $p) {
+                if (!in_array($p->perawatan_id, $idPaketPerawatan)) {
+                    array_push($arrPerawatan, $p);
+                }
+            }
+
+            foreach ($reservasi->penjualan->produks as $p) {
+                if (!in_array($p->id, $idPaketProduk)) {
                     $produkSementara = [];
                     $produkSementara["object"] = $p;
-                    $produkSementara["kuantitas"] = $jumlahSisaDiluarPaket;
+                    $produkSementara["kuantitas"] = $p->pivot->kuantitas;
                     $produkSementara["harga"] = $p->pivot->harga;
-                    $produkSementara["subtotal"] = $jumlahSisaDiluarPaket * $p->pivot->harga;
+                    $produkSementara["subtotal"] = $p->pivot->kuantitas * $p->pivot->harga;
                     array_push($arrProduk, $produkSementara);
+                } else {
+                    $totalKeseluruhan = $p->pivot->kuantitas;
+                    $totalDariPaket = 0;
+                    foreach ($reservasi->penjualan->pakets as $paket) {
+                        if ($paket->produks->firstWhere("id", $p->id) != null) {
+                            $totalDariPaket += $paket->produks->firstWhere("id", $p->id)->pivot->jumlah;
+                        }
+                    }
+
+                    if ($totalKeseluruhan > $totalDariPaket) {
+                        $jumlahSisaDiluarPaket = $totalKeseluruhan - $totalDariPaket;
+                        $produkSementara = [];
+                        $produkSementara["object"] = $p;
+                        $produkSementara["kuantitas"] = $jumlahSisaDiluarPaket;
+                        $produkSementara["harga"] = $p->pivot->harga;
+                        $produkSementara["subtotal"] = $jumlahSisaDiluarPaket * $p->pivot->harga;
+                        array_push($arrProduk, $produkSementara);
+                    }
                 }
             }
+
+            return view("admin.penjualan.detailnotareservasi", compact("reservasi", "jamMulai", "arrPaket", "arrProduk", "arrPerawatan"));
         }
 
 
-
-        return view("admin.penjualan.detailnotareservasi", compact("reservasi", "jamMulai", "arrPaket", "arrProduk", "arrPerawatan"));
     }
 
     public function detailNotaPenjualan($idPenjualan)
     {
         $penjualan = Penjualan::find($idPenjualan);
 
-        $penjualanPerawatan = $penjualan->penjualanperawatans->sortBy('id');
-        $jamMulai = $penjualanPerawatan->first()->slotjams->sortBy('slot_jam_id')->first();
+        if ($penjualan == null) {
+            return redirect()->route("penjualans.admin.riwayatpenjualan")->withErrors("Tidak terdapat penjualan dengan ID " . $idPenjualan);
+        } else {
+            $penjualanPerawatan = $penjualan->penjualanperawatans->sortBy('id');
+            $jamMulai = $penjualanPerawatan->first()->slotjams->sortBy('slot_jam_id')->first();
 
-        $arrPaket = [];
-        $arrProduk = [];
-        $arrPerawatan = [];
+            $arrPaket = [];
+            $arrProduk = [];
+            $arrPerawatan = [];
 
-        $idPaketPerawatan = [];
-        $idPaketProduk = [];
+            $idPaketPerawatan = [];
+            $idPaketProduk = [];
 
 
 
-        if (count($penjualan->pakets) > 0) {
-            foreach ($penjualan->pakets as $paket) {
-                array_push($arrPaket, $paket);
-                foreach ($paket->perawatans as $perawatan) {
-                    array_push($idPaketPerawatan, $perawatan->id);
-                }
-                foreach ($paket->produks as $produk) {
-                    array_push($idPaketProduk, $produk->id);
-                }
-            }
-        }
-
-        foreach ($penjualan->penjualanperawatans as $p) {
-            if (!in_array($p->perawatan_id, $idPaketPerawatan)) {
-                array_push($arrPerawatan, $p);
-            }
-        }
-
-        foreach ($penjualan->produks as $p) {
-            if (!in_array($p->id, $idPaketProduk)) {
-                $produkSementara = [];
-                $produkSementara["object"] = $p;
-                $produkSementara["kuantitas"] = $p->pivot->kuantitas;
-                $produkSementara["harga"] = $p->pivot->harga;
-                $produkSementara["subtotal"] = $p->pivot->kuantitas * $p->pivot->harga;
-                array_push($arrProduk, $produkSementara);
-            } else {
-                $totalKeseluruhan = $p->pivot->kuantitas;
-                $totalDariPaket = 0;
+            if (count($penjualan->pakets) > 0) {
                 foreach ($penjualan->pakets as $paket) {
-                    if ($paket->produks->firstWhere("id", $p->id) != null) {
-                        $totalDariPaket += $paket->produks->firstWhere("id", $p->id)->pivot->jumlah;
+                    array_push($arrPaket, $paket);
+                    foreach ($paket->perawatans as $perawatan) {
+                        array_push($idPaketPerawatan, $perawatan->id);
+                    }
+                    foreach ($paket->produks as $produk) {
+                        array_push($idPaketProduk, $produk->id);
                     }
                 }
-                
-                if ($totalKeseluruhan > $totalDariPaket) {
-                    $jumlahSisaDiluarPaket = $totalKeseluruhan - $totalDariPaket;
+            }
+
+            foreach ($penjualan->penjualanperawatans as $p) {
+                if (!in_array($p->perawatan_id, $idPaketPerawatan)) {
+                    array_push($arrPerawatan, $p);
+                }
+            }
+
+            foreach ($penjualan->produks as $p) {
+                if (!in_array($p->id, $idPaketProduk)) {
                     $produkSementara = [];
                     $produkSementara["object"] = $p;
-                    $produkSementara["kuantitas"] = $jumlahSisaDiluarPaket;
+                    $produkSementara["kuantitas"] = $p->pivot->kuantitas;
                     $produkSementara["harga"] = $p->pivot->harga;
-                    $produkSementara["subtotal"] = $jumlahSisaDiluarPaket * $p->pivot->harga;
+                    $produkSementara["subtotal"] = $p->pivot->kuantitas * $p->pivot->harga;
                     array_push($arrProduk, $produkSementara);
+                } else {
+                    $totalKeseluruhan = $p->pivot->kuantitas;
+                    $totalDariPaket = 0;
+                    foreach ($penjualan->pakets as $paket) {
+                        if ($paket->produks->firstWhere("id", $p->id) != null) {
+                            $totalDariPaket += $paket->produks->firstWhere("id", $p->id)->pivot->jumlah;
+                        }
+                    }
+
+                    if ($totalKeseluruhan > $totalDariPaket) {
+                        $jumlahSisaDiluarPaket = $totalKeseluruhan - $totalDariPaket;
+                        $produkSementara = [];
+                        $produkSementara["object"] = $p;
+                        $produkSementara["kuantitas"] = $jumlahSisaDiluarPaket;
+                        $produkSementara["harga"] = $p->pivot->harga;
+                        $produkSementara["subtotal"] = $jumlahSisaDiluarPaket * $p->pivot->harga;
+                        array_push($arrProduk, $produkSementara);
+                    }
                 }
+            }
+
+            return view("admin.penjualan.detailnotapenjualan", compact("penjualan", "jamMulai", "arrPaket", "arrProduk", "arrPerawatan"));
+        }
+
+
+    }
+
+    //PELANGGAN
+    public function detailNotaReservasiPenjualanPelanggan($idReservasi)
+    {
+
+        $reservasi = Reservasi::find($idReservasi);
+
+        if ($reservasi == null) {
+            return redirect()->route('pelanggans.index');
+        } else {
+            if ($reservasi->penjualan->pelanggan->id != Auth::user()->pelanggan->id) {
+                return redirect()->route('pelanggans.index');
+            } else {
+                $penjualanPerawatan = $reservasi->penjualan->penjualanperawatans->sortBy('id');
+                $jamMulai = $penjualanPerawatan->first()->slotjams->sortBy('slot_jam_id')->first();
+
+                $arrPaket = [];
+                $arrProduk = [];
+                $arrPerawatan = [];
+
+                $idPaketPerawatan = [];
+                $idPaketProduk = [];
+
+
+
+                if (count($reservasi->penjualan->pakets) > 0) {
+                    foreach ($reservasi->penjualan->pakets as $paket) {
+                        array_push($arrPaket, $paket);
+                        foreach ($paket->perawatans as $perawatan) {
+                            array_push($idPaketPerawatan, $perawatan->id);
+                        }
+                        foreach ($paket->produks as $produk) {
+                            if (!in_array($produk->id, $idPaketProduk)) {
+                                array_push($idPaketProduk, $produk->id);
+                            }
+
+                        }
+                    }
+                }
+
+                foreach ($reservasi->penjualan->penjualanperawatans as $p) {
+                    if (!in_array($p->perawatan_id, $idPaketPerawatan)) {
+                        array_push($arrPerawatan, $p);
+                    }
+                }
+
+                foreach ($reservasi->penjualan->produks as $p) {
+                    if (!in_array($p->id, $idPaketProduk)) {
+                        $produkSementara = [];
+                        $produkSementara["object"] = $p;
+                        $produkSementara["kuantitas"] = $p->pivot->kuantitas;
+                        $produkSementara["harga"] = $p->pivot->harga;
+                        $produkSementara["subtotal"] = $p->pivot->kuantitas * $p->pivot->harga;
+                        array_push($arrProduk, $produkSementara);
+                    } else {
+                        $totalKeseluruhan = $p->pivot->kuantitas;
+                        $totalDariPaket = 0;
+                        foreach ($reservasi->penjualan->pakets as $paket) {
+                            if ($paket->produks->firstWhere("id", $p->id) != null) {
+                                $totalDariPaket += $paket->produks->firstWhere("id", $p->id)->pivot->jumlah;
+                            }
+                        }
+
+                        if ($totalKeseluruhan > $totalDariPaket) {
+                            $jumlahSisaDiluarPaket = $totalKeseluruhan - $totalDariPaket;
+                            $produkSementara = [];
+                            $produkSementara["object"] = $p;
+                            $produkSementara["kuantitas"] = $jumlahSisaDiluarPaket;
+                            $produkSementara["harga"] = $p->pivot->harga;
+                            $produkSementara["subtotal"] = $jumlahSisaDiluarPaket * $p->pivot->harga;
+                            array_push($arrProduk, $produkSementara);
+                        }
+                    }
+                }
+
+                return view("pelanggan.reservasi.detailnotareservasi", compact("reservasi", "jamMulai", "arrPaket", "arrProduk", "arrPerawatan"));
             }
         }
 
-        return view("admin.penjualan.detailnotapenjualan", compact("penjualan", "jamMulai", "arrPaket", "arrProduk", "arrPerawatan"));
+
     }
 
 }

@@ -28,7 +28,8 @@
                         </div>
                     @endif
 
-                    <form id="formStoreProduk" method="POST" action="{{ route('produks.store') }}">
+                    <form id="formStoreProduk" method="POST" action="{{ route('produks.store') }}"
+                        enctype="multipart/form-data">
                         @csrf
                         <div class="form-group col-md-12">
                         </div>
@@ -46,9 +47,11 @@
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Kode Produk</strong></label>
                                 <input type="text" class="form-control" name="kode_produk" id="txtKodeProduk"
-                                    aria-describedby="emailHelp" placeholder="Silahkan masukkan kode produk (awali dengan huruf 'p')" required
+                                    aria-describedby="emailHelp"
+                                    placeholder="Silahkan masukkan kode produk (awali dengan huruf 'p')" required
                                     value="{{ old('kode_produk') }}">
-                                <small id="emailHelp" class="form-text text-muted">Masukkan kode produk disini (awali dengan huruf "<span class="text-danger">p</span>")!</small>
+                                <small id="emailHelp" class="form-text text-muted">Masukkan kode produk disini (awali dengan
+                                    huruf "<span class="text-danger">p</span>")!</small>
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Harga Jual Produk</strong></label>
@@ -80,7 +83,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Stok Produk</strong></label>
                                 <input type="number" class="form-control" name="stokProduk" id="numStok" min="1"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan jumlah stok produk" required
@@ -88,13 +91,20 @@
                                 <small id="emailHelp" class="form-text text-muted">Masukkan jumlah stok produk
                                     disini!</small>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="exampleInputEmail1"><strong>Minimum Stok Produk</strong></label>
                                 <input type="number" class="form-control" name="minimumStok" id="numMinimumStok"
                                     min="1" aria-describedby="emailHelp"
                                     placeholder="Silahkan masukkan harga jual produk" required
                                     value="{{ old('minimumStok') }}">
-                                <small id="emailHelp" class="form-text text-muted">Masukkan harga jual produk
+                                <small id="emailHelp" class="form-text text-muted">Masukkan minimum produk
+                                    disini!</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleInputEmail1"><strong>Gambar Produk</strong></label>
+                                <input type="file" class="form-control" name="gambarProduk" id="fileUpload"
+                                    aria-describedby="emailHelp" value="{{ old('gambarProduk') }}" accept="image/*">
+                                <small id="emailHelp" class="form-text text-muted">Upload file gambar produk
                                     disini!</small>
                             </div>
                         </div>

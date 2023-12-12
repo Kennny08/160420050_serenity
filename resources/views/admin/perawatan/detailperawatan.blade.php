@@ -1,4 +1,11 @@
 <div class="form-group row text-center">
+    
+    <div class="form-group col-md-12">
+        <img src="{{ asset('assets_admin/images/perawatan/') }}/{{ $perawatan->gambar }}" alt="gambarPerawatan" style="max-height: 500px;" class="img-fluid">
+    </div>
+</div>
+<div class="form-group row text-center">
+
     <div class="form-group col-md-6">
         <h6>Tanggal Pembuatan</h6>
         <p>{{ date('d-m-Y H:i:s', strtotime($perawatan->created_at)) }}</p>

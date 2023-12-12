@@ -7,7 +7,7 @@
     <td style="text-align: left;">
         <strong class="font-weight-bold">Detail Perawatan</strong>
         <ul>
-            @foreach ($paket->perawatans as $perawatan)
+            @foreach ($paket->perawatans()->withPivot("urutan")->orderBy("urutan")->get() as $perawatan)
                 <li>* {{ $perawatan->nama }} - {{ $perawatan->durasi }} menit</li>
             @endforeach
         </ul>

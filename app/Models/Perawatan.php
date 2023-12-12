@@ -28,6 +28,6 @@ class Perawatan extends Model
 
     public function pakets()
     {
-        return $this->belongsToMany(Paket::class, 'paket_perawatan', 'perawatan_id', 'paket_id');
+        return $this->belongsToMany(Paket::class, 'paket_perawatan', 'perawatan_id', 'paket_id')->withPivot('urutan')->withTrashed();
     }
 }
