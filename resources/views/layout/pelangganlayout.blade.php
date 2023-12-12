@@ -289,8 +289,7 @@
                                     <p class="mail">Email:<a
                                             href="mailto:serenity160420050@gmail.com">serenity160420050@gmail.com</a>
                                     </p>
-                                    <img src="{{ asset('assets_pelanggan/images/icons/payment.png') }}"
-                                        alt="" class="payment-img img-fulid">
+                                    
 
                                     <!-- News letter area  End -->
                                 </div>
