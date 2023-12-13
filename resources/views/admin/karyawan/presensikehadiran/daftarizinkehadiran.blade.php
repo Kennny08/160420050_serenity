@@ -218,7 +218,7 @@
                 <div class="modal-footer">
                     <button id="btnKonfirmasTutup" type="button" class="btn btn-danger waves-effect"
                         data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-info waves-effect" data-dismiss="modal" idPresensi="0"
+                    <button type="button" class="btn btn-info waves-effect" idPresensi="0"
                         keterangan="" id="btnKonfirmasiSimpanIzin">Ya</button>
                 </div>
 
@@ -356,6 +356,8 @@
                             "<span class='text-success font-weight-bolds'>Telah " +
                             "Dikonfirmasi </span>");
                         $("#modalDetailRiwayatIzin").modal("show");
+                        $("#modalKonfirmasiIzin").modal("hide");
+                        
 
                     } else {
                         if (data.waktu == "hariinikedepan") {
@@ -368,6 +370,7 @@
                             "<span class='text-danger font-weight-bold'>Izin " +
                             "Ditolak </span>");
                         $("#modalDetailRiwayatIzin").modal("show");
+                        $("#modalKonfirmasiIzin").modal("hide");
                     }
 
                 }

@@ -13,6 +13,6 @@ class SlotJam extends Model
 
     public function penjualanserawatans()
     {
-        return $this->belongsToMany(PenjualanPerawatan::class, 'slot_jam_penjualan_perawatan', 'slot_jam_id', 'penjualan_perawatan_id');
+        return $this->belongsToMany(PenjualanPerawatan::class, 'slot_jam_penjualan_perawatan', 'slot_jam_id', 'penjualan_perawatan_id')->withTimestamps();
     }
 }

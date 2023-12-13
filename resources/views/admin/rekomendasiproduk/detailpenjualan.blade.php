@@ -4,7 +4,7 @@
             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead>
                 <tr>
-                    <th >tanggal</th>
+                    <th hidden>tanggal</th>
                     <th>Tanggal Penjualan</th>
                     <th>Item Penjualan</th>
                 </tr>
@@ -13,7 +13,7 @@
             <tbody>
                 @foreach ($dataSet as $data)
                     <tr>
-                        <td >
+                        <td hidden>
                             {{ $data['tanggal'] }}
                         </td>
                         <td>

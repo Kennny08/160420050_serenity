@@ -250,7 +250,7 @@
                                 <a id="btnBatalEditPerawatan" href="{{ route('perawatans.index') }}"
                                     class="btn btn-danger btn-lg waves-effect waves-light mr-3">Batal</a>
                                 <button id="btnEditPerawatan" type="submit"
-                                    class="btn btn-info btn-lg waves-effect waves-light text-right">Edit</button>
+                                    class="btn btn-info btn-lg waves-effect waves-light text-right">Simpan</button>
                             </div>
                         </div>
                     </form>

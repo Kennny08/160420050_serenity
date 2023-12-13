@@ -30,7 +30,7 @@ class Penjualan extends Model
 
     public function produks()
     {
-        return $this->belongsToMany(Produk::class, 'penjualan_produk', 'penjualan_id', 'produk_id')->withPivot('kuantitas', 'harga')->withTrashed();
+        return $this->belongsToMany(Produk::class, 'penjualan_produk', 'penjualan_id', 'produk_id')->withPivot('kuantitas', 'harga')->withTimestamps()->withTrashed();
     }
 
     public function diskon()
@@ -40,7 +40,7 @@ class Penjualan extends Model
 
     public function pakets()
     {
-        return $this->belongsToMany(Paket::class, 'paket_penjualan', 'penjualan_id', 'paket_id')->withPivot('jumlah', 'harga')->withTrashed();
+        return $this->belongsToMany(Paket::class, 'paket_penjualan', 'penjualan_id', 'paket_id')->withPivot('jumlah', 'harga')->withTimestamps()->withTrashed();
     }
 
 }

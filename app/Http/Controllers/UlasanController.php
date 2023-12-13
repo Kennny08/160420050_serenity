@@ -104,4 +104,34 @@ class UlasanController extends Controller
             return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with("status", "Berhasil memberikan ulasan untuk reservasi ini!");
         }
     }
+
+    public function daftarUlasan()
+    {
+        $ulasanAktif = Ulasan::where("status", "aktif")->get();
+
+        $ulasanNonaktif = Ulasan::where("status", "nonaktif")->get();
+
+        return view("admin.ulasan.index", compact("ulasanAktif", "ulasanNonaktif"));
+    }
+
+    public function editStatusUlasan(Request $request)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $idUlasan = $request->get("idUlasan");
+
+        $ulasan = Ulasan::find($idUlasan);
+
+        $statusAkhir = "";
+        if ($ulasan->status == "aktif") {
+            $ulasan->status = "nonaktif";
+            $statusAkhir = "nonaktif";
+        } else {
+            $ulasan->status = "aktif";
+            $statusAkhir = "aktif";
+        }
+        $ulasan->updated_at = date("Y-m-d H:i:s");
+        $ulasan->save();
+
+        return redirect()->route("ulasans.admin.daftarulasan")->with("status", "Berhasil mengubah status ulasan dari " . $ulasan->penjualan->pelanggan->nama . " dengan nomor nota " . $ulasan->penjualan->nomor_nota . " menjadi " . $statusAkhir);
+    }
 }

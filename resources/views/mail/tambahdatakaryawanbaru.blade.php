@@ -71,14 +71,14 @@
 
         <main>
             <div style="text-align: center;">
-                <h2 style="color: whitesmoke;">Data Login Karyawan {{ $details['karyawan'] }}
+                <h2>Data Login Karyawan {{ $details['karyawan'] }}
                 </h2>
             </div>
 
 
-            <h4 style="color: whitesmoke;">Username : <span style="color: #1D79F2">{{ $details['username'] }}</span>
+            <h4>Username : <span style="color: #1D79F2">{{ $details['username'] }}</span>
             </h4>
-            <h4 style="color: whitesmoke;">Password : <span style="color: #cd5c5c">{{ $details['password'] }}</span>
+            <h4>Password : <span style="color: #cd5c5c">{{ $details['password'] }}</span>
             </h4>
             <div style="text-align: center;">
                 <h5>Serenity aplikasi andalan untuk Informasi salon Anda</h5>

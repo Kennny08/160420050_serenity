@@ -11,7 +11,7 @@ class Pembelian extends Model
 
     public function produks()
     {
-        return $this->belongsToMany(Produk::class, 'pembelian_produk', 'pembelian_id', 'produk_id')->withPivot('kuantitas', 'harga')->withTrashed();
+        return $this->belongsToMany(Produk::class, 'pembelian_produk', 'pembelian_id', 'produk_id')->withPivot('kuantitas', 'harga')->withTimestamps()->withTrashed();
     }
 
     public function supplier()

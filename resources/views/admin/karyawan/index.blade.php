@@ -182,7 +182,10 @@
                     $('#tabelDaftarKaryawanPerawatan').DataTable({
                         order: [
                             [1, "desc"]
-                        ]
+                        ],
+                        language: {
+                            emptyTable: "Tidak terdapat data perawatan yang dikuasai!",
+                        }
                     });
                 }
             })

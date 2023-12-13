@@ -53,7 +53,7 @@ Route::get('/', function () {
             return redirect()->route('pelanggans.index');
         }
     }
-});
+})->name("allindex");
 
 Route::get('/serenity', [UserController::class, "halamanUtama"])->name("users.halamanutama");
 Route::get('/serenity/daftarproduk', [ProdukController::class, "daftarProdukAllUser"])->name("produks.daftarprodukalluser");
@@ -122,9 +122,12 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::get('/salon/karyawan/riwayatreservasi', [ReservasiController::class, "daftarRiwayatReservasiKaryawan"])->name("karyawans.daftarriwayatreservasi");
 
         //Penjualan
-        Route::get('/salon/penjualan/karyawan/index', [PenjualanController::class, "index"])->name("penjualans.karyawan.index");
-        Route::get('/salon/penjualan/karyawan/riwayatpenjualan', [PenjualanController::class, "riwayatPenjualan"])->name("penjualans.karyawan.riwayatpenjualan");
-        Route::get('/salon/penjualan/karyawan/penjualankeseluruhan', [PenjualanController::class, "daftarPenjualanKeseluruhan"])->name("penjualans.karyawan.daftarpenjualankeseluruhan");
+        Route::get('/salon/penjualan/karyawan/index', [PenjualanController::class, "indexKaryawanSalon"])->name("penjualans.karyawan.index");
+        Route::get('/salon/penjualan/karyawan/riwayatpenjualan', [PenjualanController::class, "riwayatPenjualanKaryawanSalon"])->name("penjualans.karyawan.riwayatpenjualan");
+        Route::get('/salon/penjualan/karyawan/penjualankeseluruhan', [PenjualanController::class, "daftarPenjualanKeseluruhanKaryawanSalon"])->name("penjualans.karyawan.daftarpenjualankeseluruhan");
+
+        Route::post('/salon/penjualan/karyawan/getdetailriwayatpenjualan', [PenjualanController::class, "getDetailRiwayatPenjualanKaryawanSalon"])->name("penjualans.karyawan.getdetailriwayatpenjualan");
+        Route::post('/salon/penjualan/karyawan/detailpenjualankeseluruhan', [PenjualanController::class, "detailPenjualanKeseluruhanKaryawanSalon"])->name("penjualans.karyawan.detailpenjualankeseluruhan");
 
         //Presensi
         Route::get('/salon/karyawan/presensihariini', [PresensiKehadiranController::class, "presensiHariIniKaryawanSalon"])->name("karyawans.presensihariinikaryawansalon");
@@ -273,6 +276,15 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::put('/salon/diskon/{idPaket}/udpate', [DiskonController::class, "update"])->name("diskons.update");
         Route::get('/salon/diskon/pilihdiskon/{idPenjualan}', [DiskonController::class, 'pilihDiskon'])->name('admin.diskons.pilihdiskon');
         Route::post('/salon/diskon/prosespemakaiandiskon', [DiskonController::class, 'prosesPemakaianDiskon'])->name('admin.diskons.prosespemakaiandiskon');
+
+        //Pelanggan
+        Route::get('/salon/pelanggan/index', [PelangganController::class, "daftarPelanggan"])->name("pelanggans.admin.daftarpelanggan");
+
+        //Ulasan
+        Route::get('/salon/ulasan/index', [UlasanController::class, "daftarUlasan"])->name("ulasans.admin.daftarulasan");
+        Route::post('/salon/ulasan/editstatus', [UlasanController::class, "editStatusUlasan"])->name("ulasans.admin.editStatusUlasan");
+        
+
     });
 
 

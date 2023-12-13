@@ -112,6 +112,8 @@
                                         <div class="form-group row text-center mt-3">
                                             <div class="form-group col-md-12">
                                                 <h5>{{ $titleTabel }}</h5>
+                                                <h4 class="text-danger">(Hasil diurutkan dari yang punya peluang paling
+                                                    besar)</h4>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -136,7 +138,7 @@
                                                     style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                                     <thead class="thead-default">
                                                         <tr class="text-center">
-                                                            <th>Item yang ingin dipromosikan</th>
+                                                            <th>Item yang dipromosikan</th>
                                                             <th>Pasangan Item untuk Promosi</th>
                                                             <th hidden>Confidence </th>
                                                         </tr>
@@ -211,20 +213,31 @@
                 <div class="modal-body overflow-auto">
                     <div class="form-group row">
                         <div class="col-md-12">
+
                             <h5 class="font-weight-normal text-dark">Berikut ini beberapa informasi terkait penggunaan
                                 fitur Rekomendasi Produk:</h5>
                             <div>
+                                <h5>Tujuan Pembuatan Fitur</h5>
+                                <h6 class="font-weight-normal text-dark" style="text-align: justify; color: black">
+                                    Fitur ini dapat diamnfaatkan oleh pihak salon untuk mendapatkan rekomendasi produk item
+                                    penjualan pada salon seperti produk, perawwatan, atau paket berdasarkan pola transaksi
+                                    customer dalam rentang waktu yang dipilih. Selain itu hasil dari fitur ini dapat
+                                    digunakan sebagai pelauang untuk mempertimbangkan pembuatan promo bundling atau paket
+                                    pada penjualan salon.
+                                </h6>
+                                <br>
                                 <h5>Support</h5>
                                 <h6 class="font-weight-normal text-dark" style="text-align: justify; color: black">
-                                    * Support adalah jumlah minimum penjualan item penjualan (paket, perawatan, atau produk)
-                                    yang harus terjadi dalam rentang waktu
+                                    * Support adalah jumlah minimum item-item penjualan (paket, perawatan, atau produk)
+                                    yang harus terjual dalam rentang waktu
                                     tertentu.
                                     {{-- Nilai ini digunakan untuk melihat seberapa sering item penjualan tersebut
                                     dibeli oleh
                                     pelanggan selama periode waktu yang Anda tentukan. --}}
                                     <br>
                                     * Misalnya, jika Anda menetapkan Support sebesar 8, maka hanya akan dipertimbangkan
-                                    item penjualan yang terjual setidaknya 8 kali dalam periode waktu yang Anda tentukan.
+                                    item penjualan tersebut yang terjual setidaknya 8 kali dalam periode waktu yang Anda
+                                    tentukan.
                                 </h6>
                                 <br>
 

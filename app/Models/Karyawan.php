@@ -13,7 +13,7 @@ class Karyawan extends Model
 
     public function perawatans()
     {
-        return $this->belongsToMany(Perawatan::class, 'karyawan_perawatan', 'karyawan_id', 'perawatan_id')->withTrashed();
+        return $this->belongsToMany(Perawatan::class, 'karyawan_perawatan', 'karyawan_id', 'perawatan_id')->withTimestamps()->withTrashed();
     }
 
     public function penjualanperawatans()

@@ -136,7 +136,7 @@ class UserController extends Controller
                 }
                 $penjualansSelesai = Penjualan::where("status_selesai", "selesai")->get();
 
-                $ulasans = Ulasan::where("status", "aktif")->inRandomOrder()->limit(3)->get();
+                $ulasans = Ulasan::where("status", "aktif")->inRandomOrder()->limit(10)->get();
 
                 $pakets = Paket::where("status", "aktif")->inRandomOrder()->limit(4)->get();
 

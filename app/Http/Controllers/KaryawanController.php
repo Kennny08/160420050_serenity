@@ -46,28 +46,66 @@ class KaryawanController extends Controller
     public function store(Request $request)
     {
         date_default_timezone_set("Asia/Jakarta");
-        $validatedData = $request->validate(
-            [
-                'namaKaryawan' => 'required|max:255',
-                'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')],
-                'gajiKaryawan' => 'required|numeric|min:1',
-                'nomor_telepon' => 'required|numeric|unique:karyawans',
-                'arrayperawatanid' => 'required|min:1'
-            ],
-            [
-                'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
-                'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
-                'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
-                'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
-                'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
-                'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
-                'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
-                'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
-                'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
-                'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
-                'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
-            ]
-        );
+
+        if ($request->get('radioJenisKaryawan') == "admin") {
+            $validatedData = $request->validate(
+                [
+                    'namaKaryawan' => 'required|max:255',
+                    'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where(function ($query) {
+                        $query->whereIn('id', function ($subquery) {
+                            $subquery->select('user_id')
+                                ->from('karyawans')
+                                ->whereNull('deleted_at');
+                        });
+                    })],
+                    'gajiKaryawan' => 'required|numeric|min:1',
+                    'nomor_telepon' => 'required|numeric|unique:karyawans',
+                ],
+                [
+                    'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                    'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
+                    'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
+                    'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
+                    'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                    'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                    'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                    'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
+                    'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
+                    'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
+                ]
+            );
+        } else {
+            $validatedData = $request->validate(
+                [
+                    'namaKaryawan' => 'required|max:255',
+                    'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')->where(function ($query) {
+                        $query->whereIn('id', function ($subquery) {
+                            $subquery->select('user_id')
+                                ->from('karyawans')
+                                ->whereNull('deleted_at');
+                        });
+                    })],
+                    'gajiKaryawan' => 'required|numeric|min:1',
+                    'nomor_telepon' => 'required|numeric|unique:karyawans',
+                    'arrayperawatanid' => 'required|min:1'
+                ],
+                [
+                    'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                    'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
+                    'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
+                    'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
+                    'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                    'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                    'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                    'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
+                    'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
+                    'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
+                    'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
+                ]
+            );
+        }
+
+
 
         $namaKaryawan = $request->get("namaKaryawan");
         $emailKaryawan = $request->get('emailKaryawan');
@@ -79,24 +117,20 @@ class KaryawanController extends Controller
         $tanggalLahirKaryawan = $request->get('tanggalLahir');
 
 
-        // MailController::mailUsernamePasswordTambahKaryawan($emailKaryawan, $namaKaryawan, "kenny12345", "123654");
-
-        // dd("berhasil");
-
         $usernameUnik = str_replace(" ", "", strtolower($namaKaryawan)) . date("d") . date("H") . date("i") . date("s");
         $checkUsernameKaryawanUnik = false;
         while ($checkUsernameKaryawanUnik == false) {
             $cariUsername = User::where("username", $usernameUnik)->where("role", "karyawan")->first();
             if ($cariUsername == null) {
                 $checkUsernameKaryawanUnik = true;
-            }else{
+            } else {
                 $usernameUnik = str_replace(" ", "", strtolower($namaKaryawan)) . date("d") . date("H") . date("i") . date("s");
             }
         }
 
         $passwordKaryawan = "";
-        for ($i=0; $i < 9; $i++) { 
-            $passwordKaryawan .= random_int(1,9);
+        for ($i = 0; $i < 9; $i++) {
+            $passwordKaryawan .= random_int(1, 9);
         }
         $newUser = User::create([
             'username' => $usernameUnik,
@@ -119,9 +153,12 @@ class KaryawanController extends Controller
         $newKaryawan->updated_at = date('Y-m-d H:i:s');
         $newKaryawan->save();
 
-        foreach ($arrayperawatanid as $idPerawatan) {
-            $newKaryawan->perawatans()->attach($idPerawatan);
+        if ($request->get('radioJenisKaryawan') != "admin") {
+            foreach ($arrayperawatanid as $idPerawatan) {
+                $newKaryawan->perawatans()->attach($idPerawatan);
+            }
         }
+
 
         MailController::mailUsernamePasswordTambahKaryawan($emailKaryawan, $namaKaryawan, $usernameUnik, $passwordKaryawan);
 
@@ -181,29 +218,67 @@ class KaryawanController extends Controller
             if ($request->get('emailKaryawan') != $karyawan->user->email) {
                 //Mengecek apakah ada pergantian email dan nomor telepon
                 if ($request->get('nomor_telepon') != $karyawan->nomor_telepon) {
-                    
-                    $validatedData = $request->validate(
-                        [
-                            'namaKaryawan' => 'required|max:255',
-                            'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')],
-                            'gajiKaryawan' => 'required|numeric|min:1',
-                            'nomor_telepon' => 'required|numeric|unique:karyawans',
-                            'arrayperawatanid' => 'required|min:1'
-                        ],
-                        [
-                            'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
-                            'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
-                            'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
-                            'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
-                            'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
-                            'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
-                            'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
-                            'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
-                            'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
-                            'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
-                            'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
-                        ]
-                    );
+
+                    if ($jenisKaryawan == "admin") {
+                        $validatedData = $request->validate(
+                            [
+                                'namaKaryawan' => 'required|max:255',
+                                'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')->where(function ($query) {
+                                    $query->whereIn('id', function ($subquery) {
+                                        $subquery->select('user_id')
+                                            ->from('karyawans')
+                                            ->whereNull('deleted_at');
+                                    });
+                                })],
+                                'gajiKaryawan' => 'required|numeric|min:1',
+                                'nomor_telepon' => 'required|numeric|unique:karyawans',
+
+                            ],
+                            [
+                                'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                                'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
+                                'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
+                                'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
+                                'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                                'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                                'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                                'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
+                                'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
+                                'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
+
+                            ]
+                        );
+                    } else {
+                        $validatedData = $request->validate(
+                            [
+                                'namaKaryawan' => 'required|max:255',
+                                'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')->where(function ($query) {
+                                    $query->whereIn('id', function ($subquery) {
+                                        $subquery->select('user_id')
+                                            ->from('karyawans')
+                                            ->whereNull('deleted_at');
+                                    });
+                                })],
+                                'gajiKaryawan' => 'required|numeric|min:1',
+                                'nomor_telepon' => 'required|numeric|unique:karyawans',
+                                'arrayperawatanid' => 'required|min:1'
+                            ],
+                            [
+                                'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                                'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
+                                'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
+                                'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
+                                'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                                'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                                'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                                'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
+                                'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
+                                'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
+                                'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
+                            ]
+                        );
+                    }
+
                     $karyawan->nama = $namaKaryawan;
                     $karyawan->tanggal_lahir = $tanggalLahirKaryawan;
                     $karyawan->gaji = $gajiKaryawan;
@@ -222,31 +297,65 @@ class KaryawanController extends Controller
                         $karyawan->perawatans()->detach($perawatan);
                     }
 
-                    foreach ($arrayperawatanid as $idPerawatan) {
-                        $karyawan->perawatans()->attach($idPerawatan);
+                    if ($jenisKaryawan != "admin") {
+                        foreach ($arrayperawatanid as $idPerawatan) {
+                            $karyawan->perawatans()->attach($idPerawatan);
+                        }
                     }
-
                     return redirect()->route('karyawans.index')->with('status', 'Berhasil mengedit karyawan ' . $namaKaryawan . '!');
                 } else {
                     //Ada pergantian email tapi tidak ada pergantian nomor telepon
-                    $validatedData = $request->validate(
-                        [
-                            'namaKaryawan' => 'required|max:255',
-                            'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')],
-                            'gajiKaryawan' => 'required|numeric|min:1',
-                            'arrayperawatanid' => 'required|min:1'
-                        ],
-                        [
-                            'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
-                            'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
-                            'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
-                            'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
-                            'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
-                            'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
-                            'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
-                            'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
-                        ]
-                    );
+                    if ($jenisKaryawan == "admin") {
+                        $validatedData = $request->validate(
+                            [
+                                'namaKaryawan' => 'required|max:255',
+                                'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')->where(function ($query) {
+                                    $query->whereIn('id', function ($subquery) {
+                                        $subquery->select('user_id')
+                                            ->from('karyawans')
+                                            ->whereNull('deleted_at');
+                                    });
+                                })],
+                                'gajiKaryawan' => 'required|numeric|min:1',
+                            ],
+                            [
+                                'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                                'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
+                                'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
+                                'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
+                                'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                                'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                                'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                            ]
+                        );
+
+                    } else {
+                        $validatedData = $request->validate(
+                            [
+                                'namaKaryawan' => 'required|max:255',
+                                'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')->where(function ($query) {
+                                    $query->whereIn('id', function ($subquery) {
+                                        $subquery->select('user_id')
+                                            ->from('karyawans')
+                                            ->whereNull('deleted_at');
+                                    });
+                                })],
+                                'gajiKaryawan' => 'required|numeric|min:1',
+                                'arrayperawatanid' => 'required|min:1'
+                            ],
+                            [
+                                'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                                'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
+                                'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
+                                'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
+                                'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                                'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                                'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                                'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
+                            ]
+                        );
+                    }
+
                     $karyawan->nama = $namaKaryawan;
                     $karyawan->tanggal_lahir = $tanggalLahirKaryawan;
                     $karyawan->gaji = $gajiKaryawan;
@@ -264,8 +373,10 @@ class KaryawanController extends Controller
                         $karyawan->perawatans()->detach($perawatan);
                     }
 
-                    foreach ($arrayperawatanid as $idPerawatan) {
-                        $karyawan->perawatans()->attach($idPerawatan);
+                    if ($jenisKaryawan != "admin") {
+                        foreach ($arrayperawatanid as $idPerawatan) {
+                            $karyawan->perawatans()->attach($idPerawatan);
+                        }
                     }
 
                     return redirect()->route('karyawans.index')->with('status', 'Berhasil mengedit karyawan ' . $namaKaryawan . '!');
@@ -275,28 +386,65 @@ class KaryawanController extends Controller
             if ($request->get('nomor_telepon') != $karyawan->nomor_telepon) {
                 //Menegecek apakah ada pergantian nomor telepon dan email
                 if ($request->get('emailKaryawan') != $karyawan->user->email) {
-                    $validatedData = $request->validate(
-                        [
-                            'namaKaryawan' => 'required|max:255',
-                            'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')],
-                            'gajiKaryawan' => 'required|numeric|min:1',
-                            'nomor_telepon' => 'required|numeric|unique:karyawans',
-                            'arrayperawatanid' => 'required|min:1'
-                        ],
-                        [
-                            'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
-                            'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
-                            'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
-                            'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
-                            'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
-                            'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
-                            'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
-                            'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
-                            'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
-                            'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
-                            'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
-                        ]
-                    );
+
+                    if ($jenisKaryawan == "admin") {
+                        $validatedData = $request->validate(
+                            [
+                                'namaKaryawan' => 'required|max:255',
+                                'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')->where(function ($query) {
+                                    $query->whereIn('id', function ($subquery) {
+                                        $subquery->select('user_id')
+                                            ->from('karyawans')
+                                            ->whereNull('deleted_at');
+                                    });
+                                })],
+                                'gajiKaryawan' => 'required|numeric|min:1',
+                                'nomor_telepon' => 'required|numeric|unique:karyawans',
+                            ],
+                            [
+                                'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                                'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
+                                'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
+                                'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
+                                'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                                'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                                'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                                'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
+                                'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
+                                'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
+                            ]
+                        );
+                    } else {
+                        $validatedData = $request->validate(
+                            [
+                                'namaKaryawan' => 'required|max:255',
+                                'emailKaryawan' => ['required', 'email:rfc,dns', Rule::unique('users', 'email')->where('role', 'karyawan')->where(function ($query) {
+                                    $query->whereIn('id', function ($subquery) {
+                                        $subquery->select('user_id')
+                                            ->from('karyawans')
+                                            ->whereNull('deleted_at');
+                                    });
+                                })],
+                                'gajiKaryawan' => 'required|numeric|min:1',
+                                'nomor_telepon' => 'required|numeric|unique:karyawans',
+                                'arrayperawatanid' => 'required|min:1'
+                            ],
+                            [
+                                'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                                'emailKaryawan.required' => 'Email karyawan tidak boleh kosong!',
+                                'emailKaryawan.email' => 'Mohon masukkan email dengan format yang benar!',
+                                'emailKaryawan.unique' => 'Email karyawan ' . $request->get('emailKaryawan') . ' sudah pernah dipakai, mohon gunakan email yang lain!',
+                                'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                                'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                                'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                                'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
+                                'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
+                                'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
+                                'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
+                            ]
+                        );
+                    }
+
                     $karyawan->nama = $namaKaryawan;
                     $karyawan->tanggal_lahir = $tanggalLahirKaryawan;
                     $karyawan->gaji = $gajiKaryawan;
@@ -315,31 +463,55 @@ class KaryawanController extends Controller
                         $karyawan->perawatans()->detach($perawatan);
                     }
 
-                    foreach ($arrayperawatanid as $idPerawatan) {
-                        $karyawan->perawatans()->attach($idPerawatan);
+                    if ($jenisKaryawan != "admin") {
+                        foreach ($arrayperawatanid as $idPerawatan) {
+                            $karyawan->perawatans()->attach($idPerawatan);
+                        }
                     }
 
                     return redirect()->route('karyawans.index')->with('status', 'Berhasil mengedit karyawan ' . $namaKaryawan . '!');
                 } else {
                     //Ada  pergantian nomor telepon tetapi tidak ada pergantian email
-                    $validatedData = $request->validate(
-                        [
-                            'namaKaryawan' => 'required|max:255',
-                            'gajiKaryawan' => 'required|numeric|min:1',
-                            'nomor_telepon' => 'required|numeric|unique:karyawans',
-                            'arrayperawatanid' => 'required|min:1'
-                        ],
-                        [
-                            'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
-                            'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
-                            'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
-                            'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
-                            'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
-                            'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
-                            'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
-                            'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
-                        ]
-                    );
+                    if ($jenisKaryawan == "admin") {
+                        $validatedData = $request->validate(
+                            [
+                                'namaKaryawan' => 'required|max:255',
+                                'gajiKaryawan' => 'required|numeric|min:1',
+                                'nomor_telepon' => 'required|numeric|unique:karyawans',
+
+                            ],
+                            [
+                                'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
+                                'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
+                                'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
+                                'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                                'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                                'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                                'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+
+                            ]
+                        );
+                    } else {
+                        $validatedData = $request->validate(
+                            [
+                                'namaKaryawan' => 'required|max:255',
+                                'gajiKaryawan' => 'required|numeric|min:1',
+                                'nomor_telepon' => 'required|numeric|unique:karyawans',
+                                'arrayperawatanid' => 'required|min:1'
+                            ],
+                            [
+                                'nomor_telepon.required' => 'Nomor telepon karyawan tidak boleh kosong!',
+                                'nomor_telepon.numeric' => 'Nomor telepon karyawan harus berupa angka!',
+                                'nomor_telepon.unique' => 'Karyawan dengan nomor telepon ' . $request->get('nomor_telepon') . ' sudah pernah dipakai, mohon gunakan nomor telepon yang lain!',
+                                'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                                'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                                'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                                'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                                'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
+                            ]
+                        );
+                    }
+
                     $karyawan->nama = $namaKaryawan;
                     $karyawan->tanggal_lahir = $tanggalLahirKaryawan;
                     $karyawan->gaji = $gajiKaryawan;
@@ -354,28 +526,46 @@ class KaryawanController extends Controller
                         $karyawan->perawatans()->detach($perawatan);
                     }
 
-                    foreach ($arrayperawatanid as $idPerawatan) {
-                        $karyawan->perawatans()->attach($idPerawatan);
+                    if ($jenisKaryawan != "admin") {
+                        foreach ($arrayperawatanid as $idPerawatan) {
+                            $karyawan->perawatans()->attach($idPerawatan);
+                        }
                     }
 
                     return redirect()->route('karyawans.index')->with('status', 'Berhasil mengedit karyawan ' . $namaKaryawan . '!');
                 }
             }
         } else {
-            $validatedData = $request->validate(
-                [
-                    'namaKaryawan' => 'required|max:255',
-                    'gajiKaryawan' => 'required|numeric|min:1',
-                    'arrayperawatanid' => 'required|min:1'
-                ],
-                [
-                    'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
-                    'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
-                    'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
-                    'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
-                    'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
-                ]
-            );
+            if ($jenisKaryawan == "admin") {
+                $validatedData = $request->validate(
+                    [
+                        'namaKaryawan' => 'required|max:255',
+                        'gajiKaryawan' => 'required|numeric|min:1',
+                    ],
+                    [
+                        'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                        'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                        'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                        'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                    ]
+                );
+            } else {
+                $validatedData = $request->validate(
+                    [
+                        'namaKaryawan' => 'required|max:255',
+                        'gajiKaryawan' => 'required|numeric|min:1',
+                        'arrayperawatanid' => 'required|min:1'
+                    ],
+                    [
+                        'namaKaryawan.required' => 'Nama karyawan tidak boleh kosong!',
+                        'gajiKaryawan.required' => 'Gaji Pokok Karyawan tidak boleh kosong!',
+                        'gajiKaryawan.numeric' => 'Gaji Karyawan harus berupa angka!',
+                        'gajiKaryawan.min' => 'Gaji karyawan harus lebih dari Rp. 0!',
+                        'arrayperawatanid.required' => 'Perawatan tidak boleh kosong, minimal pilih satu perawatan!',
+                    ]
+                );
+            }
+
 
             $karyawan->nama = $namaKaryawan;
             $karyawan->tanggal_lahir = $tanggalLahirKaryawan;
@@ -385,12 +575,15 @@ class KaryawanController extends Controller
             $karyawan->updated_at = date('Y-m-d H:i:s');
             $karyawan->save();
 
+
             foreach ($karyawan->perawatans as $perawatan) {
                 $karyawan->perawatans()->detach($perawatan);
             }
 
-            foreach ($arrayperawatanid as $idPerawatan) {
-                $karyawan->perawatans()->attach($idPerawatan);
+            if ($jenisKaryawan != "admin") {
+                foreach ($arrayperawatanid as $idPerawatan) {
+                    $karyawan->perawatans()->attach($idPerawatan);
+                }
             }
 
             return redirect()->route('karyawans.index')->with('status', 'Berhasil mengedit karyawan ' . $namaKaryawan . '!');

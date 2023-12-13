@@ -98,8 +98,9 @@
 
             $("#tabelDaftarReservasiHariIni").DataTable({
                 order: [
-                    [1, "desc"],
+                    [1, "asc"],
                     [4, "asc"],
+                    [5, "asc"]
                 ],
                 language: {
                     emptyTable: "Tidak terdapat reservasi perawatan untuk hari ini!",

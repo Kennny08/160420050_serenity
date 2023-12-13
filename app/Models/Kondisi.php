@@ -13,6 +13,6 @@ class Kondisi extends Model
 
     public function produks()
     {
-        return $this->belongsToMany(Produk::class, 'kondisi_produk', 'kondisi_id', 'produk_id');
+        return $this->belongsToMany(Produk::class, 'kondisi_produk', 'kondisi_id', 'produk_id')->withTimestamps();
     }
 }

@@ -41,6 +41,7 @@
                         <thead>
                             <tr>
                                 <th>Tanggal Penjualan</th>
+                                <th hidden>TanggalHidden</th>
                                 <th>Jumlah Penjualan</th>
                                 <th>Total Penjualan Perawatan(Rp)</th>
                                 <th>Total Penjualan Produk(Rp)</th>
@@ -54,7 +55,9 @@
                         <tbody>
                             @foreach ($arrDaftarRiwayatPenjualan as $r)
                                 <tr>
+                                    
                                     <td>{{ $r['tanggalpenjualan'] }}</td>
+                                    <td hidden>{{ date("Y-m-d", strtotime($r['tanggalpenjualan'])) }}</td>
                                     <td>{{ $r['jumlahpenjualan'] }}</td>
                                     <td>{{ number_format($r['totalpenjualanperawatan'], 2, ',', '.') }}</td>
                                     <td>
@@ -114,7 +117,9 @@
     <script>
         $(document).ready(function() {
             $('#tabelDaftarReservasi').DataTable({
-                ordering: false,
+                order:[
+                    [1, "desc"]
+                ],
                 language: {
                     emptyTable: "Tidak terdapat data diskon riwayat penjualan!",
                 }

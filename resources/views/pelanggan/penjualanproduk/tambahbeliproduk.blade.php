@@ -180,7 +180,7 @@
                                     style="margin: 0px; width: 100%;">Ya
                                 </button> --}}
                                 <a type="button" style="margin: 0px; width: 100%;"
-                                    href="{{ route('reservasi.admin.detailreservasi', $penjualan->reservasi->id) }}"
+                                    href="{{ route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id) }}"
                                     class="add-cart">Tidak
                                 </a>
                             </div>
@@ -313,9 +313,9 @@
                                                     @foreach ($penjualan->pakets as $paket)
                                                         @if ($paket->produks->firstWhere('id', $p->id) != null)
                                                             <br>
-                                                            <span class="text-info font-weight-bold">*
+                                                            <span class="fw-bold" style="color: #273ED4;">*
                                                                 {{ $paket->nama }} -
-                                                                ({{ $paket->pivot->jumlah }})
+                                                                ({{ $paket->produks->firstWhere('id', $p->id)->pivot->jumlah }})
                                                             </span>
                                                         @endif
                                                     @endforeach

@@ -28,6 +28,6 @@ class PenjualanPerawatan extends Model
 
     public function slotjams()
     {
-        return $this->belongsToMany(SlotJam::class, 'slot_jam_penjualan_perawatan', 'penjualan_perawatan_id', 'slot_jam_id');
+        return $this->belongsToMany(SlotJam::class, 'slot_jam_penjualan_perawatan', 'penjualan_perawatan_id', 'slot_jam_id')->withTimestamps();
     }
 }

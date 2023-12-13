@@ -452,7 +452,7 @@
                                                                     <br>
                                                                     <span class="text-info font-weight-bold">*
                                                                         {{ $paket->nama }} -
-                                                                        ({{ $paket->pivot->jumlah }})
+                                                                        ({{ $paket->produks->firstWhere('id', $produk->id)->pivot->jumlah }})
                                                                     </span>
                                                                 @endif
                                                             @endforeach

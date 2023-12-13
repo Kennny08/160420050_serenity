@@ -1,8 +1,29 @@
 @extends('layout.adminlayout')
 
-@section('title', 'Admin || Komisi Karyawan')
+@section('title', 'Karyawan || Komisi Karyawan')
 
 @section('admincontent')
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+
+            }
+
+            #isiKonten,
+            #isiKonten * {
+                visibility: visible;
+            }
+
+            #isiKonten {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+
+            }
+        }
+    </style>
     <div class="page-title-box">
 
     </div>
@@ -144,6 +165,7 @@
                     </button>
                 </div>
                 <div class="modal-body" id="contentDetailKomisiKaryawan">
+
                     <div class="text-center">
                         <div class="spinner-border text-info" role="status">
                             <span class="sr-only">Loading...</span>
@@ -152,11 +174,28 @@
                 </div>
                 <div class="modal-footer"> <button type="button" class="btn btn-danger waves-effect"
                         data-dismiss="modal">Tutup</button>
+                    <a href="javascript:window.print()" class="btn btn-primary waves-effect waves-light">
+                        <i class="fa fa-print">
+                        </i>
+                        Cetak
+                    </a>
+
                 </div>
             </div>
             <!-- /.modal-content -->
         </div>
         <!-- /.modal-dialog -->
+    </div>
+
+    <div style="visibility: hidden;" id="isiKonten">
+        <div class="row">
+            <div class="col-md-12 mb-4 text-center">
+                <h4 id="namaCetak"></h4>
+            </div>
+            <div class="col-md-12" id="divTabelCetak">
+
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -254,12 +293,33 @@
                 },
                 success: function(data) {
                     $('#contentDetailKomisiKaryawan').html(data.msg);
+
                     $('#tabelDaftarDetailKomisiKaryawan').DataTable({
                         order: [
-                            [1, "desc"]
+                            [1, "asc"]
                         ],
                     });
-                    
+
+                    $('#divTabelCetak').html(data.msg);
+                    if (tahun == "semuaTahun" || bulan == "semuaBulan") {
+                        if (tahun == "semuaTahun" && bulan != "semuaBulan") {
+                            $("#namaCetak").text("Detail Komisi Karyawan " +
+                                namaKaryawan +
+                                " setiap Bulan " + bulanNama);
+                        } else if (tahun != "semuaTahun" && bulan == "semuaBulan") {
+                            $("#namaCetak").text("Detail Komisi Karyawan " +
+                                namaKaryawan +
+                                " pada Tahun " + tahun);
+                        } else {
+                            $("#namaCetak").text("Detail Komisi Karyawan " +
+                                namaKaryawan +
+                                " untuk Keseluruhan Penjualan");
+                        }
+                    } else {
+                        $("#namaCetak").text("Detail Komisi Karyawan " +
+                            namaKaryawan + " pada " +
+                            bulanNama + " " + tahun);
+                    }
                 }
             })
         });

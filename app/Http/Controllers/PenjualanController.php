@@ -1400,6 +1400,7 @@ class PenjualanController extends Controller
                             ->whereIn('slot_jams.id', $arraySlotJam)
                             ->where('penjualans.tanggal_penjualan', $tanggalPenjualan)
                             ->where('karyawans.id', $idKaryawan)
+                            ->where('penjualans.status_selesai', 'belum')
                             ->get();
 
                         if (count($karyawan) > 0) {
@@ -1439,6 +1440,7 @@ class PenjualanController extends Controller
                             ->whereIn('slot_jams.id', $daftarSlotjamFinal)
                             ->where('penjualans.tanggal_penjualan', $tanggalPenjualan)
                             ->where('karyawans.id', $idKaryawan)
+                            ->where('penjualans.status_selesai', 'belum')
                             ->get();
                         if (count($karyawan) > 0) {
                             $karyawanTerpakai = [];
@@ -1795,6 +1797,7 @@ class PenjualanController extends Controller
                 ->whereIn('slot_jams.id', $arraySlotJam)
                 ->where('penjualans.tanggal_penjualan', $tanggalPenjualan)
                 ->where('karyawans.id', $idKaryawan)
+                ->where('penjualans.status_selesai', 'belum')
                 ->get();
 
             if (count($karyawan) > 0) {
@@ -1834,6 +1837,7 @@ class PenjualanController extends Controller
                 ->whereIn('slot_jams.id', $daftarSlotjamFinal)
                 ->where('penjualans.tanggal_penjualan', $tanggalPenjualan)
                 ->where('karyawans.id', $idKaryawan)
+                ->where('penjualans.status_selesai', 'belum')
                 ->get();
             if (count($karyawan) > 0) {
                 $karyawanTerpakai = [];
@@ -2589,6 +2593,7 @@ class PenjualanController extends Controller
                 ->whereIn('slot_jams.id', $arraySlotJam)
                 ->where('penjualans.tanggal_penjualan', $penjualan->tanggal_penjualan)
                 ->where('karyawans.id', $idKaryawan)
+                ->where('penjualans.status_selesai', 'belum')
                 ->get();
 
             if (count($karyawan) > 0) {
@@ -2629,6 +2634,7 @@ class PenjualanController extends Controller
                 ->whereIn('slot_jams.id', $daftarSlotjamFinal)
                 ->where('penjualans.tanggal_penjualan', $penjualan->tanggal_penjualan)
                 ->where('karyawans.id', $idKaryawan)
+                ->where('penjualans.status_selesai', 'belum')
                 ->get();
 
             // $karyawanPerawatanIni = [];
@@ -3280,6 +3286,145 @@ class PenjualanController extends Controller
         }
 
 
+    }
+
+    public function indexKaryawanSalon()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $karyawan = Auth::user()->karyawan;
+        $tanggal = date('Y-m-d');
+        $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+        $nomorHariDalamMingguan = date("w");
+        $tanggalHariIni = $hariIndonesia[$nomorHariDalamMingguan] . ", " . date('d-m-Y');
+        $semuaPenjualanHariIni = Penjualan::whereRaw("DATE(tanggal_penjualan) = '" . $tanggal . "'")->whereHas('penjualanperawatans', function ($query) use ($karyawan) {
+            $query->where('karyawan_id', $karyawan->id);
+        })->orderByRaw("DATE(tanggal_penjualan) asc")->get();
+        $penjualans = [];
+        foreach ($semuaPenjualanHariIni as $penjualan) {
+            if ($penjualan->reservasi == null && $penjualan->penjualanperawatans->firstWhere("karyawan_id", $karyawan->id) != null) {
+                array_push($penjualans, $penjualan);
+            }
+        }
+        return view('karyawansalon.penjualan.index', compact('penjualans', 'tanggalHariIni'));
+    }
+
+    public function riwayatPenjualanKaryawanSalon()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $karyawan = Auth::user()->karyawan;
+        $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+
+        $riwayatPenjualan = [];
+        $tanggalPenjualan = Penjualan::selectRaw("DISTINCT DATE(tanggal_penjualan) as tanggal_penjualan")->whereRaw(" DATE(tanggal_penjualan) < '" . date("Y-m-d") . "'")->orderByRaw('DATE(tanggal_penjualan) desc')->whereHas('penjualanperawatans', function ($query) use ($karyawan) {
+            $query->where('karyawan_id', $karyawan->id);
+        })->get();
+
+        foreach ($tanggalPenjualan as $tanggal) {
+            $penjualanTerpilih = Penjualan::whereRaw("DATE(tanggal_penjualan) = '" . $tanggal->tanggal_penjualan . "'")->orderByRaw("tanggal_penjualan desc")->get();
+            if (count($penjualanTerpilih) > 0) {
+                foreach ($penjualanTerpilih as $penjualan) {
+                    if ($penjualan->reservasi == null) {
+                        $penjualansementara = [];
+
+                        $nomorHariDalamMingguan = date("w", strtotime($tanggal->tanggal_penjualan));
+                        $hariPenjualan = $hariIndonesia[$nomorHariDalamMingguan];
+                        $penjualansementara["hari_penjualan"] = $hariPenjualan;
+                        $penjualansementara["tanggal_penjualan"] = $tanggal->tanggal_penjualan;
+                        $penjualansementara["total_penjualan"] = 0;
+                        foreach ($penjualanTerpilih as $p) {
+                            if ($p->reservasi == null && $p->penjualanperawatans->where("karyawan_id", $karyawan->id)->count() > 0) {
+                                $penjualansementara["total_penjualan"] += 1;
+                            }
+                        }
+                        $penjualansementara["total_pelayanan"] = 0;
+                        foreach ($penjualanTerpilih as $p) {
+                            if ($p->reservasi == null) {
+                                $penjualansementara["total_pelayanan"] += $p->penjualanperawatans->where("karyawan_id", $karyawan->id)->count();
+                            }
+                        }
+                        array_push($riwayatPenjualan, $penjualansementara);
+                    }
+                }
+            }
+        }
+
+        return view("karyawansalon.penjualan.riwayatpenjualan", compact("riwayatPenjualan"));
+
+    }
+
+
+    public function getDetailRiwayatPenjualanKaryawanSalon()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $tanggalPenjualan = $_POST["tanggalPenjualan"];
+        $karyawan = Auth::user()->karyawan;
+        $tanggalHariIni = date('Y-m-d');
+        $allPenjualan = Penjualan::whereRaw("DATE(tanggal_penjualan) = '" . $tanggalPenjualan . "'")->orderBy("tanggal_penjualan", "desc")->whereHas('penjualanperawatans', function ($query) use ($karyawan) {
+            $query->where('karyawan_id', $karyawan->id);
+        })->get();
+
+
+        $penjualans = [];
+        foreach ($allPenjualan as $penjualan) {
+            if ($penjualan->penjualanperawatans->firstWhere("karyawan_id", $karyawan->id) != null && $penjualan->reservasi == null) {
+                array_push($penjualans, $penjualan);
+            }
+        }
+
+
+        return response()->json(array('msg' => view('karyawansalon.penjualan.detailriwayatpenjualan', compact('penjualans'))->render()), 200);
+    }
+
+    public function daftarPenjualanKeseluruhanKaryawanSalon()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $karyawan = Auth::user()->karyawan;
+        $hariIndonesia = array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu');
+
+        $riwayatPenjualan = [];
+        $tanggalPenjualan = Penjualan::selectRaw("DISTINCT DATE(tanggal_penjualan) as tanggal_penjualan")->orderByRaw('DATE(tanggal_penjualan) desc')->whereHas('penjualanperawatans', function ($query) use ($karyawan) {
+            $query->where('karyawan_id', $karyawan->id);
+        })->get();
+
+        foreach ($tanggalPenjualan as $tanggal) {
+            $penjualanTerpilih = Penjualan::whereRaw("DATE(tanggal_penjualan) = '" . $tanggal->tanggal_penjualan . "'")->orderByRaw("tanggal_penjualan desc")->get();
+            if (count($penjualanTerpilih) > 0) {
+                $penjualansementara = [];
+
+                $nomorHariDalamMingguan = date("w", strtotime($tanggal->tanggal_penjualan));
+                $hariPenjualan = $hariIndonesia[$nomorHariDalamMingguan];
+                $penjualansementara["hari_penjualan"] = $hariPenjualan;
+                $penjualansementara["tanggal_penjualan"] = $tanggal->tanggal_penjualan;
+                $penjualansementara["total_penjualan"] = 0;
+                foreach ($penjualanTerpilih as $p) {
+                    if ($p->penjualanperawatans->where("karyawan_id", $karyawan->id)->count() > 0) {
+                        $penjualansementara["total_penjualan"] += 1;
+                    }
+                }
+                $penjualansementara["total_pelayanan"] = 0;
+                foreach ($penjualanTerpilih as $p) {
+                    $penjualansementara["total_pelayanan"] += $p->penjualanperawatans->where("karyawan_id", $karyawan->id)->count();
+                }
+                array_push($riwayatPenjualan, $penjualansementara);
+            }
+        }
+
+        return view("karyawansalon.penjualan.riwayatpenjualankeseluruhan", compact("riwayatPenjualan"));
+
+    }
+
+    public function detailPenjualanKeseluruhanKaryawanSalon()
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $tanggalPenjualan = $_POST["tanggalPenjualan"];
+        $karyawan = Auth::user()->karyawan;
+        $tanggalHariIni = date('Y-m-d');
+        $penjualans = Penjualan::whereRaw("DATE(tanggal_penjualan) = '" . $tanggalPenjualan . "'")->orderBy("tanggal_penjualan", "desc")->whereHas('penjualanperawatans', function ($query) use ($karyawan) {
+            $query->where('karyawan_id', $karyawan->id);
+        })->get();
+
+
+        return response()->json(array('msg' => view('karyawansalon.penjualan.detailriwayatkeseluruhan', compact('penjualans'))->render()), 200);
     }
 
 }

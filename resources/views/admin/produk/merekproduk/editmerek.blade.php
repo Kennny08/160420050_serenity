@@ -48,7 +48,7 @@
                                 <a id="btnBatalEditMerek" href="{{ route('mereks.index') }}"
                                     class="btn btn-danger btn-lg waves-effect waves-light mr-3">Batal</a>
                                 <button id="btnEditMerek" type="submit"
-                                    class="btn btn-info btn-lg waves-effect waves-light">Edit</button>
+                                    class="btn btn-info btn-lg waves-effect waves-light">Simpan</button>
                             </div>
 
                         </div>

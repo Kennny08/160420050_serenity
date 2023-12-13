@@ -433,7 +433,7 @@
                                                                     <br>
                                                                     <span class="text-info font-weight-bold">*
                                                                         {{ $paket->nama }} -
-                                                                        ({{ $paket->pivot->jumlah }})
+                                                                        ({{ $paket->produks->firstWhere('id', $produk->id)->pivot->jumlah }})
                                                                     </span>
                                                                 @endif
                                                             @endforeach
@@ -560,8 +560,6 @@
                                         </div>
                                         <div class="col-6 text-right">
                                             <address>
-                                                {{-- <h6 class="mt-3" style="font-weight: normal">Total Potongan:
-                                                            </h6> --}}
                                                 @php
                                                     $jumlahPotongan = 0;
                                                     if ($reservasi->penjualan->diskon != null) {
@@ -637,13 +635,6 @@
                                                     <h4>
                                                         {{ $reservasi->penjualan->ulasan->ulasan }}
                                                     </h4>
-                                                    {{-- <footer class=" text-white font-12">
-                                                        <h5>Potongan sebesar
-                                                            {{ $reservasi->penjualan->diskon->jumlah_potongan }}%
-                                                            dengan maksimum potongan sebesar Rp.
-                                                            {{ number_format($reservasi->penjualan->diskon->maksimum_potongan, 2, ',', '.') }}
-                                                        </h5>
-                                                    </footer> --}}
                                                 </blockquote>
                                             </div>
                                         </div>

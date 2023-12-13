@@ -23,22 +23,22 @@ class Produk extends Model
 
     public function kondisis()
     {
-        return $this->belongsToMany(Kondisi::class, 'kondisi_produk', 'produk_id', 'kondisi_id')->withTrashed();
+        return $this->belongsToMany(Kondisi::class, 'kondisi_produk', 'produk_id', 'kondisi_id')->withTimestamps()->withTrashed();
     }
 
     public function perawatans()
     {
-        return $this->belongsToMany(Perawatan::class, 'perawatan_produk', 'produk_id', 'perawatan_id');
+        return $this->belongsToMany(Perawatan::class, 'perawatan_produk', 'produk_id', 'perawatan_id')->withTimestamps();
     }
 
     public function pakets()
     {
-        return $this->belongsToMany(Paket::class, 'paket_produk', 'produk_id', 'paket_id')->withPivot('jumlah')->withTrashed();
+        return $this->belongsToMany(Paket::class, 'paket_produk', 'produk_id', 'paket_id')->withPivot('jumlah')->withTimestamps()->withTrashed();
     }
 
     public function penjualans()
     {
-        return $this->belongsToMany(Penjualan::class, 'penjualan_produk', 'produk_id', 'penjualan_id')->withPivot('kuantitas', 'harga');
+        return $this->belongsToMany(Penjualan::class, 'penjualan_produk', 'produk_id', 'penjualan_id')->withPivot('kuantitas', 'harga')->withTimestamps();
     }
 
     public function riwayatpengambilanproduks()
@@ -47,6 +47,6 @@ class Produk extends Model
     }
     public function pembelians()
     {
-        return $this->belongsToMany(Pembelian::class, 'pembelian_produk', 'produk_id', 'pembelian_id')->withPivot('kuantitas', 'harga');
+        return $this->belongsToMany(Pembelian::class, 'pembelian_produk', 'produk_id', 'pembelian_id')->withPivot('kuantitas', 'harga')->withTimestamps();
     }
 }

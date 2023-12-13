@@ -75,7 +75,7 @@ class PelangganController extends Controller
         }
         $penjualansSelesai = Penjualan::where("status_selesai", "selesai")->get();
 
-        $ulasans = Ulasan::where("status", "aktif")->inRandomOrder()->limit(3)->get();
+        $ulasans = Ulasan::where("status", "aktif")->inRandomOrder()->limit(10)->get();
 
         $pakets = Paket::where("status", "aktif")->inRandomOrder()->limit(4)->get();
 
@@ -218,5 +218,12 @@ class PelangganController extends Controller
         $newPelanggan->save();
 
         return redirect()->route("login")->with("status", "Berhasil melakukan regitrasi akun. Silahkan melakukan Login!");
+    }
+
+    public function daftarPelanggan(){
+        $pelanggans = Pelanggan::all();
+        $penjualanSelesai = Penjualan::where("status_selesai", "selesai")->get();
+
+        return view("admin.pelanggan.index", compact("pelanggans", "penjualanSelesai"));
     }
 }

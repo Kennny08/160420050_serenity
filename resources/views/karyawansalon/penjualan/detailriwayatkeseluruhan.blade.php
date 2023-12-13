@@ -1,7 +1,6 @@
-<div class="table-responsive">
-    <div>
-        <table id="tabelDetailReservasiPerTanggal"
-            class="tabelDaftarReservasi table table-bordered dt-responsive nowrap text-center"
+<div class="form-group row">
+    <div class="form-group col-md-12">
+        <table id="tabelDetailDaftarPenjualan" class="table table-bordered dt-responsive nowrap text-center"
             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead>
                 <tr>
@@ -16,22 +15,22 @@
             </thead>
 
             <tbody>
-                @foreach ($reservasis as $r)
-                    @foreach ($r->penjualan->penjualanperawatans as $pp)
+                @foreach ($penjualans as $penjualan)
+                    @foreach ($penjualan->penjualanperawatans as $pp)
                         @if ($pp->karyawan_id == Auth::user()->karyawan->id)
                             <tr>
-                                <td>{{ $r->id }}</td>
-                                <td>{{ $r->penjualan->nomor_nota }}</td>
+                                <td>{{ $penjualan->id }}</td>
+                                <td>{{ $penjualan->nomor_nota }}</td>
                                 <td>
-                                    @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan')
-                                        <span class="text-danger font-16">{{ $r->status }}</span>
-                                    @elseif($r->status == 'selesai')
-                                        <span class="text-success font-16">{{ $r->status }}</span>
+                                    @if ($penjualan->status_selesai == 'batal')
+                                        <span class="text-danger font-16">{{ $penjualan->status_selesai }}</span>
+                                    @elseif($penjualan->status_selesai == 'selesai')
+                                        <span class="text-success font-16">{{ $penjualan->status_selesai }}</span>
                                     @else
-                                        <span class="text-warning font-16">{{ $r->status }}</span>
+                                        <span class="text-warning font-16">{{ $penjualan->status_selesai }}</span>
                                     @endif
                                 </td>
-                                <td>{{ $r->penjualan->pelanggan->nama }}</td>
+                                <td>{{ $penjualan->pelanggan->nama }}</td>
                                 <td>{{ $pp->perawatan->nama }}</td>
                                 <td>{{ $pp->slotjams->count() * 30 }}</td>
                                 <td>

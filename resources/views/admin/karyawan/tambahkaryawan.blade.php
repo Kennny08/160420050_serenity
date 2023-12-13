@@ -172,82 +172,254 @@
 
 
 
-
-                        <div class="form-group row" id="containerKaryawanPerawatan">
-                            <div class="col-md-12">
-                                <label for="exampleInputEmail1"><strong>Perawatan yang Dikuasai</strong></label>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="input-group" style="width: 100%">
-                                    <select style="width: 70%" name="perawatan" id="selectPerawatan"
-                                        class="form-control" aria-label="Default select example" required>
-                                        <option value="null" selected disabled>Pilih Perawatan</option>
-                                        @if (old('arrayperawatanid') == null)
-                                            @foreach ($perawatans as $perawatan)
-                                                <option value="{{ $perawatan->id }}" nama="{{ $perawatan->nama }}">
-                                                    {{ $perawatan->nama }}
-                                                </option>
-                                            @endforeach
-                                        @else
-                                            @foreach ($perawatans as $perawatan)
-                                                @if (!in_array($perawatan->id, old('arrayperawatanid')))
+                        @if (old('radioJenisKaryawan') != null)
+                            @if (old('radioJenisKaryawan') == 'admin')
+                                <div class="form-group row komponenPilihPerawatan" id="containerKaryawanPerawatan" hidden>
+                                    <div class="col-md-12">
+                                        <label for="exampleInputEmail1"><strong>Perawatan yang Dikuasai</strong></label>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="input-group" style="width: 100%">
+                                            <select style="width: 70%" name="perawatan" id="selectPerawatan"
+                                                class="form-control" aria-label="Default select example" required>
+                                                <option value="null" selected disabled>Pilih Perawatan</option>
+                                                @if (old('arrayperawatanid') == null)
+                                                    @foreach ($perawatans as $perawatan)
+                                                        <option value="{{ $perawatan->id }}"
+                                                            nama="{{ $perawatan->nama }}">
+                                                            {{ $perawatan->nama }}
+                                                        </option>
+                                                    @endforeach
+                                                @else
+                                                    @foreach ($perawatans as $perawatan)
+                                                        @if (!in_array($perawatan->id, old('arrayperawatanid')))
+                                                            <option value="{{ $perawatan->id }}"
+                                                                nama="{{ $perawatan->nama }}">
+                                                                {{ $perawatan->nama }}
+                                                            </option>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                            <button style="margin-left: 1%; width: 20%" type="button"
+                                                id="btnTambahPerawatan"
+                                                class="btn btn-info waves-effect waves-light">Tambah
+                                                Perawatan</button>
+                                        </div>
+                                        <small id="emailHelp" class="form-text text-muted">Pilih perawatan yang dikuasai
+                                            disini!</small>
+                                    </div>
+                                    @if (old('arrayperawatanid') != null)
+                                        @foreach (old('arrayperawatanid') as $perawatan)
+                                            <input id='perawatan{{ $perawatan }}' type='hidden'
+                                                class='classarrayperawatanid' value='{{ $perawatan }}'
+                                                name='arrayperawatanid[]' disabled>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            @else
+                                <div class="form-group row komponenPilihPerawatan" id="containerKaryawanPerawatan">
+                                    <div class="col-md-12">
+                                        <label for="exampleInputEmail1"><strong>Perawatan yang Dikuasai</strong></label>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="input-group" style="width: 100%">
+                                            <select style="width: 70%" name="perawatan" id="selectPerawatan"
+                                                class="form-control" aria-label="Default select example" required>
+                                                <option value="null" selected disabled>Pilih Perawatan</option>
+                                                @if (old('arrayperawatanid') == null)
+                                                    @foreach ($perawatans as $perawatan)
+                                                        <option value="{{ $perawatan->id }}"
+                                                            nama="{{ $perawatan->nama }}">
+                                                            {{ $perawatan->nama }}
+                                                        </option>
+                                                    @endforeach
+                                                @else
+                                                    @foreach ($perawatans as $perawatan)
+                                                        @if (!in_array($perawatan->id, old('arrayperawatanid')))
+                                                            <option value="{{ $perawatan->id }}"
+                                                                nama="{{ $perawatan->nama }}">
+                                                                {{ $perawatan->nama }}
+                                                            </option>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                            <button style="margin-left: 1%; width: 20%" type="button"
+                                                id="btnTambahPerawatan"
+                                                class="btn btn-info waves-effect waves-light">Tambah
+                                                Perawatan</button>
+                                        </div>
+                                        <small id="emailHelp" class="form-text text-muted">Pilih perawatan yang dikuasai
+                                            disini!</small>
+                                    </div>
+                                    @if (old('arrayperawatanid') != null)
+                                        @foreach (old('arrayperawatanid') as $perawatan)
+                                            <input id='perawatan{{ $perawatan }}' type='hidden'
+                                                class='classarrayperawatanid' value='{{ $perawatan }}'
+                                                name='arrayperawatanid[]'>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            @endif
+                        @else
+                            <div class="form-group row komponenPilihPerawatan" id="containerKaryawanPerawatan">
+                                <div class="col-md-12">
+                                    <label for="exampleInputEmail1"><strong>Perawatan yang Dikuasai</strong></label>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group" style="width: 100%">
+                                        <select style="width: 70%" name="perawatan" id="selectPerawatan"
+                                            class="form-control" aria-label="Default select example" required>
+                                            <option value="null" selected disabled>Pilih Perawatan</option>
+                                            @if (old('arrayperawatanid') == null)
+                                                @foreach ($perawatans as $perawatan)
                                                     <option value="{{ $perawatan->id }}" nama="{{ $perawatan->nama }}">
                                                         {{ $perawatan->nama }}
                                                     </option>
+                                                @endforeach
+                                            @else
+                                                @foreach ($perawatans as $perawatan)
+                                                    @if (!in_array($perawatan->id, old('arrayperawatanid')))
+                                                        <option value="{{ $perawatan->id }}"
+                                                            nama="{{ $perawatan->nama }}">
+                                                            {{ $perawatan->nama }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                        <button style="margin-left: 1%; width: 20%" type="button"
+                                            id="btnTambahPerawatan" class="btn btn-info waves-effect waves-light">Tambah
+                                            Perawatan</button>
+                                    </div>
+                                    <small id="emailHelp" class="form-text text-muted">Pilih perawatan yang dikuasai
+                                        disini!</small>
+                                </div>
+                                @if (old('arrayperawatanid') != null)
+                                    @foreach (old('arrayperawatanid') as $perawatan)
+                                        <input id='perawatan{{ $perawatan }}' type='hidden'
+                                            class='classarrayperawatanid' value='{{ $perawatan }}'
+                                            name='arrayperawatanid[]'>
+                                    @endforeach
+                                @endif
+                            </div>
+                        @endif
+
+
+                        @if (old('radioJenisKaryawan') != null)
+
+                            @if (old('radioJenisKaryawan') == 'admin')
+                                <div class="form-group text-center komponenPilihPerawatan" hidden>
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">Perawatan</th>
+                                                <th class="text-center">Hapus</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bodyListPerawatan">
+                                            @if (old('arrayperawatanid') == null)
+                                                <tr id="trSilahkan">
+                                                    <td colspan="2">
+                                                        Silahkan pilih Perawatan
+                                                    </td>
+                                                </tr>
+                                            @else
+                                                @foreach ($perawatans as $perawatan)
+                                                    @if (in_array($perawatan->id, old('arrayperawatanid')))
+                                                        <tr>
+                                                            <td>
+                                                                {{ $perawatan->nama }}
+                                                            </td>
+                                                            <td>
+                                                                <button type='button'
+                                                                    class='deletePerawatan btn btn-danger waves-effect waves-light'
+                                                                    idPerawatan="{{ $perawatan->id }}"
+                                                                    namaPerawatan="{{ $perawatan->nama }}">Hapus</button>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="form-group text-center komponenPilihPerawatan">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">Perawatan</th>
+                                                <th class="text-center">Hapus</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bodyListPerawatan">
+                                            @if (old('arrayperawatanid') == null)
+                                                <tr id="trSilahkan">
+                                                    <td colspan="2">
+                                                        Silahkan pilih Perawatan
+                                                    </td>
+                                                </tr>
+                                            @else
+                                                @foreach ($perawatans as $perawatan)
+                                                    @if (in_array($perawatan->id, old('arrayperawatanid')))
+                                                        <tr>
+                                                            <td>
+                                                                {{ $perawatan->nama }}
+                                                            </td>
+                                                            <td>
+                                                                <button type='button'
+                                                                    class='deletePerawatan btn btn-danger waves-effect waves-light'
+                                                                    idPerawatan="{{ $perawatan->id }}"
+                                                                    namaPerawatan="{{ $perawatan->nama }}">Hapus</button>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+                        @else
+                            <div class="form-group text-center komponenPilihPerawatan">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Perawatan</th>
+                                            <th class="text-center">Hapus</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bodyListPerawatan">
+                                        @if (old('arrayperawatanid') == null)
+                                            <tr id="trSilahkan">
+                                                <td colspan="2">
+                                                    Silahkan pilih Perawatan
+                                                </td>
+                                            </tr>
+                                        @else
+                                            @foreach ($perawatans as $perawatan)
+                                                @if (in_array($perawatan->id, old('arrayperawatanid')))
+                                                    <tr>
+                                                        <td>
+                                                            {{ $perawatan->nama }}
+                                                        </td>
+                                                        <td>
+                                                            <button type='button'
+                                                                class='deletePerawatan btn btn-danger waves-effect waves-light'
+                                                                idPerawatan="{{ $perawatan->id }}"
+                                                                namaPerawatan="{{ $perawatan->nama }}">Hapus</button>
+                                                        </td>
+                                                    </tr>
                                                 @endif
                                             @endforeach
                                         @endif
-                                    </select>
-                                    <button style="margin-left: 1%; width: 20%" type="button" id="btnTambahPerawatan"
-                                        class="btn btn-info waves-effect waves-light">Tambah Perawatan</button>
-                                </div>
-                                <small id="emailHelp" class="form-text text-muted">Pilih perawatan yang dikuasai
-                                    disini!</small>
+                                    </tbody>
+                                </table>
                             </div>
-                            @if (old('arrayperawatanid') != null)
-                                @foreach (old('arrayperawatanid') as $perawatan)
-                                    <input id='perawatan{{ $perawatan }}' type='hidden'
-                                        class='classarrayperawatanid' value='{{ $perawatan }}'
-                                        name='arrayperawatanid[]'>
-                                @endforeach
-                            @endif
-                        </div>
+                        @endif
 
-                        <div class="form-group text-center">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">Perawatan</th>
-                                        <th class="text-center">Hapus</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="bodyListPerawatan">
-                                    @if (old('arrayperawatanid') == null)
-                                        <tr id="trSilahkan">
-                                            <td colspan="2">
-                                                Silahkan pilih Perawatan
-                                            </td>
-                                        </tr>
-                                    @else
-                                        @foreach ($perawatans as $perawatan)
-                                            @if (in_array($perawatan->id, old('arrayperawatanid')))
-                                                <tr>
-                                                    <td>
-                                                        {{ $perawatan->nama }}
-                                                    </td>
-                                                    <td>
-                                                        <button type='button'
-                                                            class='deletePerawatan btn btn-danger waves-effect waves-light'
-                                                            idPerawatan="{{ $perawatan->id }}"
-                                                            namaPerawatan="{{ $perawatan->nama }}">Hapus</button>
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
 
                         <div class="form-group row text-right">
                             <div class="col-md-12">
@@ -275,9 +447,13 @@
             if (jenisKaryawanSaatIni == "admin") {
                 $("#lblJenisKaryawanPekerjaSalon").removeClass("btn-info");
                 $("#lblJenisKaryawanAdmin").addClass("btn-info");
+                $(".komponenPilihPerawatan").attr("hidden", true);
+                $(".classarrayperawatanid").attr("disabled", true);
             } else {
                 $("#lblJenisKaryawanPekerjaSalon").addClass("btn-info");
                 $("#lblJenisKaryawanAdmin").removeClass("btn-info");
+                $(".komponenPilihPerawatan").attr("hidden", false);
+                $(".classarrayperawatanid").attr("disabled", false);
             }
         });
 

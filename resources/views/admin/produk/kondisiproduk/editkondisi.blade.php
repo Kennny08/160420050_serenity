@@ -49,7 +49,7 @@
                                 <a id="btnBatalEditKondisi" href="{{ route('kondisis.index') }}"
                                     class="btn btn-danger btn-lg waves-effect waves-light mr-3">Batal</a>
                                 <button id="btnEditKondisi" type="submit"
-                                    class="btn btn-info btn-lg waves-effect waves-light">Edit</button>
+                                    class="btn btn-info btn-lg waves-effect waves-light">Simpan</button>
                             </div>
 
                         </div>

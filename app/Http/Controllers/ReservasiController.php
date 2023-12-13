@@ -811,6 +811,7 @@ class ReservasiController extends Controller
                             ->whereIn('slot_jams.id', $arraySlotJam)
                             ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
                             ->where('karyawans.id', $idKaryawan)
+                            ->where('penjualans.status_selesai', 'belum')
                             ->get();
 
                         if (count($karyawan) > 0) {
@@ -850,6 +851,7 @@ class ReservasiController extends Controller
                             ->whereIn('slot_jams.id', $daftarSlotjamFinal)
                             ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
                             ->where('karyawans.id', $idKaryawan)
+                            ->where('penjualans.status_selesai', 'belum')
                             ->get();
                         if (count($karyawan) > 0) {
                             $karyawanTerpakai = [];
@@ -1206,6 +1208,7 @@ class ReservasiController extends Controller
                 ->whereIn('slot_jams.id', $arraySlotJam)
                 ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
                 ->where('karyawans.id', $idKaryawan)
+                ->where('penjualans.status_selesai', 'belum')
                 ->get();
 
             if (count($karyawan) > 0) {
@@ -1245,6 +1248,7 @@ class ReservasiController extends Controller
                 ->whereIn('slot_jams.id', $daftarSlotjamFinal)
                 ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
                 ->where('karyawans.id', $idKaryawan)
+                ->where('penjualans.status_selesai', 'belum')
                 ->get();
             if (count($karyawan) > 0) {
                 $karyawanTerpakai = [];
@@ -3111,6 +3115,7 @@ class ReservasiController extends Controller
                             ->whereIn('slot_jams.id', $arraySlotJam)
                             ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
                             ->where('karyawans.id', $idKaryawan)
+                            ->where('penjualans.status_selesai', 'belum')
                             ->get();
 
                         if (count($karyawan) > 0) {
@@ -3150,6 +3155,7 @@ class ReservasiController extends Controller
                             ->whereIn('slot_jams.id', $daftarSlotjamFinal)
                             ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
                             ->where('karyawans.id', $idKaryawan)
+                            ->where('penjualans.status_selesai', 'belum')
                             ->get();
                         if (count($karyawan) > 0) {
                             $karyawanTerpakai = [];
@@ -3540,6 +3546,8 @@ class ReservasiController extends Controller
                 ->whereIn('slot_jams.id', $arraySlotJam)
                 ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
                 ->where('karyawans.id', $idKaryawan)
+                ->where('penjualans.status_selesai', 'belum')
+                
                 ->get();
 
             if (count($karyawan) > 0) {
@@ -3579,6 +3587,7 @@ class ReservasiController extends Controller
                 ->whereIn('slot_jams.id', $daftarSlotjamFinal)
                 ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
                 ->where('karyawans.id', $idKaryawan)
+                ->where('penjualans.status_selesai', 'belum')
                 ->get();
             if (count($karyawan) > 0) {
                 $karyawanTerpakai = [];
@@ -4331,6 +4340,7 @@ class ReservasiController extends Controller
                 ->whereIn('slot_jams.id', $arraySlotJam)
                 ->where('penjualans.tanggal_penjualan', $reservasi->tanggal_reservasi)
                 ->where('karyawans.id', $idKaryawan)
+                ->where('penjualans.status_selesai', 'belum')
                 ->get();
 
             if (count($karyawan) > 0) {
@@ -4371,6 +4381,7 @@ class ReservasiController extends Controller
                 ->whereIn('slot_jams.id', $daftarSlotjamFinal)
                 ->where('penjualans.tanggal_penjualan', $reservasi->tanggal_reservasi)
                 ->where('karyawans.id', $idKaryawan)
+                ->where('penjualans.status_selesai', 'belum')
                 ->get();
 
             // $karyawanPerawatanIni = [];

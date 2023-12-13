@@ -13,7 +13,7 @@ class Perawatan extends Model
 
     public function karyawans()
     {
-        return $this->belongsToMany(Karyawan::class, 'karyawan_perawatan', 'perawatan_id', 'karyawan_id')->withTrashed();
+        return $this->belongsToMany(Karyawan::class, 'karyawan_perawatan', 'perawatan_id', 'karyawan_id')->withTrashed()->withTimestamps()->withTimestamps();
     }
 
     public function penjualanperawatans()
@@ -23,11 +23,11 @@ class Perawatan extends Model
 
     public function produks()
     {
-        return $this->belongsToMany(Produk::class, 'perawatan_produk', 'perawatan_id', 'produk_id')->withTrashed();
+        return $this->belongsToMany(Produk::class, 'perawatan_produk', 'perawatan_id', 'produk_id')->withTrashed()->withTimestamps();
     }
 
     public function pakets()
     {
-        return $this->belongsToMany(Paket::class, 'paket_perawatan', 'perawatan_id', 'paket_id')->withPivot('urutan')->withTrashed();
+        return $this->belongsToMany(Paket::class, 'paket_perawatan', 'perawatan_id', 'paket_id')->withPivot('urutan')->withTimestamps()->withTrashed();
     }
 }

@@ -521,10 +521,9 @@
                                                             @foreach ($reservasi->penjualan->pakets as $paket)
                                                                 @if ($paket->produks->firstWhere('id', $produk->id) != null)
                                                                     <br>
-                                                                    <span
-                                                                        class="text-serentity font-weight-bold">*
+                                                                    <span class="text-serentity fw-bold">*
                                                                         {{ $paket->nama }} -
-                                                                        ({{ $paket->pivot->jumlah }})
+                                                                        ({{ $paket->produks->firstWhere('id', $produk->id)->pivot->jumlah }})
                                                                     </span>
                                                                 @endif
                                                             @endforeach
@@ -581,8 +580,8 @@
                             </div>
 
                         </div>
-                        <div class="tab-pane p-3 text-center" id="diskon" role="tabpanel"
-                            style="margin-bottom: 0;">
+                        <div class="tab-pane text-center" id="diskon" role="tabpanel"
+                            style="margin-bottom: 0; padding-left: 50px;padding-right: 50px;">
 
                             @if ($reservasi->penjualan->diskon == null)
                                 <div class="card text-white bg-danger text-center w-60 mx-auto">
@@ -640,7 +639,7 @@
                                 </div>
                             @endif
 
-                            <div class="col-md-12" style="margin-top: 30px;">
+                            <div class="col-md-12" style="margin-top: 45px;">
                                 <div class="row">
                                     @if ($reservasi->penjualan->diskon == null && $jumlahDiskonValid > 0)
                                         <div class="col-md-12 mt-2 text-left">
@@ -707,30 +706,39 @@
                         </div>
 
                         <div class="tab-pane text-center" id="ulasan" role="tabpanel"
-                            style="margin-bottom: 0; padding-left: 50px;padding-right: 50px;">
+                            style="margin-bottom: 0;padding-left: 50px;padding-right: 50px;">
 
                             @if ($reservasi->penjualan->status_selesai == 'belum')
-                                <div class="card text-white bg-danger text-center w-60 mx-auto">
-                                    <div class="card-body">
-                                        <blockquote class="card-bodyquote mb-0" style="color: white;">
-                                            <h4 style="color: white;">
-                                                Belum dapat memberikan Ulasan
-                                            </h4>
-                                            <footer class=" text-white font-12">
-                                                <h5 style="color: white;">Silahkan menunggu pihak salon
-                                                    menyelesaikan reservasi terlebih dahulu
-                                                </h5>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card text-white bg-danger text-center w-60 ">
+                                            <div class="card-body">
+                                                <blockquote class="card-bodyquote mb-0" style="color: white;">
+                                                    <h4 style="color: white;">
+                                                        Belum dapat memberikan Ulasan!
+                                                    </h4>
+                                                    <footer class=" text-white font-12">
+                                                        <h5 style="color: white;">Silahkan menunggu pihak salon
+                                                            menyelesaikan reservasi terlebih dahulu
+                                                        </h5>
 
-                                            </footer>
-                                        </blockquote>
+                                                    </footer>
+                                                </blockquote>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <div class="col-md-12" style="margin-top: 45px;">
+
+                                    </div>
+
                                 </div>
                             @else
                                 @if ($reservasi->penjualan->ulasan == null)
                                     <div class="description-review-wrapper">
                                         <div class="ratting-form-wrapper">
                                             <div class="ratting-form">
-                                                <form action="{{ route("reservasis.ulasan.store") }}" method="POST">
+                                                <form action="{{ route('reservasis.ulasan.store') }}"
+                                                    method="POST">
                                                     @csrf
                                                     <h4 class="fw-bold">
                                                         Silahkan masukkan ulasan Anda!
@@ -739,7 +747,9 @@
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <div class="rating-form-style form-submit">
-                                                                <input type="hidden" value="{{ $reservasi->penjualan->id }}" name="hiddenIdPenjualanReservasi">
+                                                                <input type="hidden"
+                                                                    value="{{ $reservasi->penjualan->id }}"
+                                                                    name="hiddenIdPenjualanReservasi">
                                                                 <textarea rows="8" cols="50" name="ulasan" placeholder="Masukkan ulasan Anda"
                                                                     style="margin-top: 0;border-radius: 5px; margin-bottom: 30px;;"></textarea>
 
@@ -789,69 +799,6 @@
                                 @endif
 
                             @endif
-
-                            <div class="col-md-12" style="margin-top: 30px;">
-                                <div class="row">
-                                    @if ($reservasi->penjualan->diskon == null && $jumlahDiskonValid > 0)
-                                        <div class="col-md-12 mt-2 text-left">
-                                            <address>
-
-                                                @if ($reservasi->penjualan->status_selesai == 'belum')
-                                                    <div class="product-details-content quickview-content">
-                                                        <div class="pro-details-quality"
-                                                            style="padding: 0px;margin: 0px;">
-                                                            <div class="pro-details-cart ml-auto"
-                                                                style="width: 100%;display: flex; gap: 10px;">
-
-
-                                                                <a class="add-cart " type="button"
-                                                                    href="{{ route('diskons.pelanggan.pilihdiskon', $reservasi->penjualan->id) }}"
-                                                                    style="margin: 0px; margin-left: auto;">
-                                                                    <span>
-                                                                        Pilih
-                                                                        Diskon
-                                                                    </span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endif
-
-                                            </address>
-                                        </div>
-                                        <div class="col-6 text-right">
-                                            <address>
-                                                @php
-                                                    $jumlahPotongan = 0;
-                                                    if ($reservasi->penjualan->diskon != null) {
-                                                        $jumlahPotongan = ($reservasi->penjualan->total_pembayaran * $reservasi->penjualan->diskon->jumlah_potongan) / 100;
-                                                        if ($jumlahPotongan > $reservasi->penjualan->diskon->maksimum_potongan) {
-                                                            $jumlahPotongan = $reservasi->penjualan->diskon->maksimum_potongan;
-                                                        }
-                                                    }
-
-                                                @endphp
-                                            </address>
-                                        </div>
-                                    @else
-                                        <div class="col-12 text-right">
-                                            <address>
-                                                @php
-                                                    $jumlahPotongan = 0;
-                                                    if ($reservasi->penjualan->diskon != null) {
-                                                        $jumlahPotongan = ($reservasi->penjualan->total_pembayaran * $reservasi->penjualan->diskon->jumlah_potongan) / 100;
-                                                        if ($jumlahPotongan > $reservasi->penjualan->diskon->maksimum_potongan) {
-                                                            $jumlahPotongan = $reservasi->penjualan->diskon->maksimum_potongan;
-                                                        }
-                                                    }
-
-                                                @endphp
-                                            </address>
-                                        </div>
-                                    @endif
-
-                                </div>
-                            </div>
 
 
                         </div>

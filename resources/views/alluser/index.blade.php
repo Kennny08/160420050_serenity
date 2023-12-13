@@ -93,7 +93,13 @@
                                         <li><a href=" {{ route('pakets.daftarpaketalluser') }}">Paket</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="{{ route("users.tentangkami") }}">Tentang Kami</a></li>
+                                <li><a href="{{ route('users.tentangkami') }}">Tentang Kami</a></li>
+                                @if (Auth::check())
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <li><a href="{{ route('allindex') }}">Halaman Admin</a>
+                                        </li>
+                                    @endif
+                                @endif
                             </ul>
                         </div>
                     </div>
@@ -168,7 +174,12 @@
                             <li><a href=" {{ route('pakets.daftarpaketalluser') }}">Paket</a></li>
                         </ul>
                     </li>
-                    <li><a href="{{ route("users.tentangkami") }}">Tentang Kami</a></li>
+                    <li><a href="{{ route('users.tentangkami') }}">Tentang Kami</a></li>
+                    @if (Auth::check())
+                        @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                            <li><a href="{{ route('allindex') }}">Halaman Admin</a></li>
+                        @endif
+                    @endif
                 </ul>
             </div>
             <!-- OffCanvas Menu End -->
@@ -348,7 +359,8 @@
                                                     <!-- Single Prodect -->
                                                     <div class="product">
                                                         <div class="thumb">
-                                                            <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}" class="image text-center">
+                                                            <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
+                                                                class="image text-center">
                                                                 <img style="max-height: 100%; width: 260px; height: 310px; max-width: 100%; object-fit: cover;"
                                                                     src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
                                                                     alt="Product" />
@@ -786,7 +798,7 @@
                                     <p class="mail">Email:<a
                                             href="mailto:serenity160420050@gmail.com">serenity160420050@gmail.com</a>
                                     </p>
-                                    
+
 
                                     <!-- News letter area  End -->
                                 </div>

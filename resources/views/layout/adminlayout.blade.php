@@ -360,6 +360,21 @@
                                                 Selesai</a></li>
                                     </ul>
                                 </li>
+
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <li>
+                                        <a href="{{ route('pelanggans.admin.daftarpelanggan') }}" class="waves-effect">
+                                            <i class="mdi mdi-account"></i> <span> Pelanggan </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('ulasans.admin.daftarulasan') }}" class="waves-effect">
+                                            <i class="mdi mdi-comment-account"></i> <span>Ulasan</span>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                
                             </ul>
                         </li>
 
@@ -394,9 +409,6 @@
                                                 Karyawan
                                             </a>
                                         </li>
-
-
-
                                     </ul>
                                 </li>
                             @endif

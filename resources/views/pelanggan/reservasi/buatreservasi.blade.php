@@ -49,7 +49,7 @@
                                         disini!</small>
                                 @else
                                     <input type="date" class="form-control" name="tanggalReservasi" id="tanggalReservasi"
-                                        min="{{ $tanggalPertamaDalamMinggu }}" max="2023-12-16"
+                                        min="{{ $tanggalPertamaDalamMinggu }}" max="{{ $tanggalTerakhirDalamMinggu }}"
                                         placeholder="Silahkan Pilih Tanggal Reservasi" required>
                                     <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Reservasi Anda
                                         disini!</small>
