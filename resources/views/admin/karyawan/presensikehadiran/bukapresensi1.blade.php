@@ -94,7 +94,7 @@
                                                                 @else
                                                                     <input type="hidden" name="keteranganPresensi[]"
                                                                         value="absen">
-                                                                    ABSEN
+                                                                    <span class="text-danger">ABSEN</span>
                                                                 @endif
                                                                 {{-- <select name="keteranganPresensi[]"
                                                                     idKaryawan = "{{ $karyawan->id }}"

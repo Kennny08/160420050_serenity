@@ -61,7 +61,7 @@
                 <div class="row">
                     <div class="col-auto align-self-center">
                         <div class="header-logo">
-                            <a href="{{ route('pelanggans.index') }}"><img
+                            <a href="{{ route('users.halamanutama') }}"><img
                                     src="{{ asset('assets_admin/images/logo-serenity/serenity-logo-no-background.png') }}"
                                     height="65" alt="Site Logo" /><img class="ml-5px"
                                     src="{{ asset('assets_admin/images/logo-serenity/name_serenity.jpeg') }}"
@@ -280,8 +280,44 @@
                                         <!-- Right Side End -->
                                     </div>
                                     <!-- Shop Top Area End -->
+                                </div>
 
-                                    <!-- Shop Bottom Area Start -->
+                                <!-- Sidebar Area Start -->
+                                <div class="col-lg-3 order-lg-first col-md-12 order-md-last mb-md-60px mb-lm-60px">
+                                    <div class="shop-sidebar-wrap">
+                                        <!-- Sidebar single item -->
+                                        <div class="sidebar-widget-search">
+                                            <div id="widgets-searchbox">
+                                                @if ($kataKunci == '')
+                                                    <input name="kataKunci" class="input-field" type="text"
+                                                        placeholder="Cari Paket" value="">
+                                                @else
+                                                    <input name="kataKunci" class="input-field" type="text"
+                                                        placeholder="Cari Paket" value="{{ $kataKunci }}">
+                                                @endif
+                                                <button class="widgets-searchbox-btn" type="submit">
+                                                    <i class="fa fa-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="sidebar-widget-image">
+                                            <div class="single-banner">
+                                                <img src="assets/images/banner/2.jpg" alt="">
+                                                <div class="item-disc">
+                                                    <h2 class="title">#bestsellers</h2>
+                                                    <a href="single-product-variable.html" class="shop-link">Shop
+                                                        Now</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Sidebar single item -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 order-lg-last col-md-12 order-md-first">
+                                    
                                     <div class="shop-bottom-area">
 
                                         <!-- Tab Content Area Start -->
@@ -292,7 +328,7 @@
                                                         <div class="row mb-n-30px">
 
                                                             @foreach ($paketsAktif as $paket)
-                                                                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-6 mb-30px"
+                                                                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6 mb-30px"
                                                                     data-aos="fade-up" data-aos-delay="200">
                                                                     <!-- Single Prodect -->
                                                                     <div class="product">
@@ -368,7 +404,7 @@
                                                                             <div class="box-inner">
                                                                                 <span class="price">
                                                                                     <span class="new">
-                                                                                        {{ number_format($paket->harga, 2, ',', '.') }}</span>
+                                                                                        Rp. {{ number_format($paket->harga, 2, ',', '.') }}</span>
                                                                                 </span>
 
                                                                                 <a href="{{ route('pakets.detailpaketalluser', $paket->id) }}"
@@ -387,39 +423,6 @@
                                         <!-- Tab Content Area End -->
                                     </div>
                                     <!-- Shop Bottom Area End -->
-                                </div>
-
-                                <!-- Sidebar Area Start -->
-                                <div class="col-lg-3 order-lg-first col-md-12 order-md-last mb-md-60px mb-lm-60px">
-                                    <div class="shop-sidebar-wrap">
-                                        <!-- Sidebar single item -->
-                                        <div class="sidebar-widget-search">
-                                            <div id="widgets-searchbox">
-                                                @if ($kataKunci == '')
-                                                    <input name="kataKunci" class="input-field" type="text"
-                                                        placeholder="Cari Paket" value="">
-                                                @else
-                                                    <input name="kataKunci" class="input-field" type="text"
-                                                        placeholder="Cari Paket" value="{{ $kataKunci }}">
-                                                @endif
-                                                <button class="widgets-searchbox-btn" type="submit">
-                                                    <i class="fa fa-search"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="sidebar-widget-image">
-                                            <div class="single-banner">
-                                                <img src="assets/images/banner/2.jpg" alt="">
-                                                <div class="item-disc">
-                                                    <h2 class="title">#bestsellers</h2>
-                                                    <a href="single-product-variable.html" class="shop-link">Shop
-                                                        Now</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Sidebar single item -->
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -516,7 +519,7 @@
                                     <p class="mail">Email:<a
                                             href="mailto:serenity160420050@gmail.com">serenity160420050@gmail.com</a>
                                     </p>
-                                    
+
 
                                     <!-- News letter area  End -->
                                 </div>

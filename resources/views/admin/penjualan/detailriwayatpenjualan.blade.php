@@ -10,6 +10,7 @@
                     <th>Status</th>
                     <th>Pelanggan</th>
                     <th>No. Nota Penjualan</th>
+                    <th>Total Pembayaran(Rp)</th>
                     <th>Detail</th>
                 </tr>
             </thead>
@@ -34,6 +35,7 @@
                         </td>
                         <td>{{ $penjualan->pelanggan->nama }}</td>
                         <td>{{ $penjualan->nomor_nota }}</td>
+                        <td>{{ number_format($penjualan->total_pembayaran, 2, ",", ".") }}</td>
                         <td class="text-center"><a href="{{ route('penjualans.admin.detailpenjualan', $penjualan->id) }}"
                                 class="btn btn-info waves-effect waves-light">Detail</a></td>
                     </tr>

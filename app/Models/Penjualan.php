@@ -40,7 +40,7 @@ class Penjualan extends Model
 
     public function pakets()
     {
-        return $this->belongsToMany(Paket::class, 'paket_penjualan', 'penjualan_id', 'paket_id')->withPivot('jumlah', 'harga')->withTimestamps()->withTrashed();
+        return $this->belongsToMany(Paket::class, 'paket_penjualan', 'penjualan_id', 'paket_id')->withPivot('harga')->withTimestamps()->withTrashed();
     }
 
 }

@@ -20,10 +20,11 @@ class ProdukController extends Controller
      */
     public function index()
     {
-        $produksAktifLebihMinimumStok = Produk::where('status', 'aktif')->whereRaw("stok > minimum_stok")->get();
-        $produksAktifMinimumStok = Produk::where('status', 'aktif')->whereRaw("stok <= minimum_stok")->get();
-        $produksNonaktif = Produk::where('status', 'nonaktif')->get();
-        return view("admin.produk.index", compact("produksAktifLebihMinimumStok", "produksAktifMinimumStok", "produksNonaktif"));
+        $produksJualAktif = Produk::where('status', 'aktif')->where("status_jual", "aktif")->get();
+        $produksAktif = Produk::where('status', 'aktif')->where("status_jual", "tidak")->get();
+        $produksJualNonaktif = Produk::where('status', 'nonaktif')->where("status_jual", "aktif")->get();
+        $produksNonaktif = Produk::where('status', 'nonaktif')->where("status_jual", "tidak")->get();
+        return view("admin.produk.index", compact("produksJualAktif", "produksAktif", "produksJualNonaktif", "produksNonaktif"));
     }
 
     /**

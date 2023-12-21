@@ -62,7 +62,13 @@
                         </div>
                     </div>
 
-                    <table id="tabelDaftarProdukAktif"
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <h5>Produk Jual</h5>
+                        </div>
+                    </div>
+
+                    <table id="tabelDaftarProdukJualAktif"
                         class="table table-striped table-bordered dt-responsive wrap text-center"
                         style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
@@ -73,7 +79,6 @@
                                 <th>Harga Beli(Rp)</th>
                                 <th>Stok</th>
                                 <th>Minimum Stok</th>
-                                <th>Status Jual</th>
                                 <th>Merek</th>
                                 <th>Kategori</th>
                                 <th>Kondisi</th>
@@ -90,7 +95,7 @@
                         </thead>
 
                         <tbody>
-                            @foreach ($produksAktifMinimumStok as $p)
+                            @foreach ($produksJualAktif as $p)
                                 <tr id="tr_{{ $p->id }}">
                                     <td>{{ $p->kode_produk }}</td>
                                     <td>{{ $p->nama }}</td>
@@ -103,11 +108,25 @@
                                         <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
                                         <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
                                     @endif
+                                    <td>
+                                        @if ($p->stok <= $p->minimum_stok)
+                                            <span class="text-danger font-weight-bold">
+                                                {{ $p->stok }}
+                                            </span>
+                                        @else
+                                            {{ $p->stok }}
+                                        @endif
 
-
-                                    <td class="text-danger font-weight-bold">{{ $p->stok }}</td>
-                                    <td class="text-danger font-weight-bold">{{ $p->minimum_stok }}</td>
-                                    <td>{{ $p->status_jual }}</td>
+                                    </td>
+                                    <td>
+                                        @if ($p->stok <= $p->minimum_stok)
+                                            <span class="text-danger font-weight-bold">
+                                                {{ $p->minimum_stok }}
+                                            </span>
+                                        @else
+                                            {{ $p->minimum_stok }}
+                                        @endif
+                                    </td>
                                     <td>{{ $p->merek->nama }}</td>
                                     <td>{{ $p->kategori->nama }}</td>
                                     <td class="text-left">
@@ -125,8 +144,7 @@
                                             createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
                                             updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
                                             class=" btn btn-warning waves-effect waves-light btnDetailProduk"
-                                            namaImage="{{ asset('assets_admin/images/produk/') }}/{{ $p->gambar }}"
-                                            >Detail</button>
+                                            namaImage="{{ asset('assets_admin/images/produk/') }}/{{ $p->gambar }}">Detail</button>
                                     </td>
                                     @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                                         <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
@@ -141,7 +159,45 @@
 
                                 </tr>
                             @endforeach
-                            @foreach ($produksAktifLebihMinimumStok as $p)
+
+
+                        </tbody>
+                    </table>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <h5>Produk Tidak Diual</h5>
+                        </div>
+                    </div>
+
+                    <table id="tabelDaftarProdukAktif"
+                        class="table table-striped table-bordered dt-responsive wrap text-center"
+                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Kode Produk</th>
+                                <th>Nama</th>
+                                <th>Harga Jual(Rp)</th>
+                                <th>Harga Beli(Rp)</th>
+                                <th>Stok</th>
+                                <th>Minimum Stok</th>
+                                <th>Merek</th>
+                                <th>Kategori</th>
+                                <th>Kondisi</th>
+                                <th hidden>Tanggal Pembuatan</th>
+                                <th hidden>Tanggal Edit Terakhir</th>
+                                <th hidden>Deskripsi</th>
+                                <th>Detail</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
+                                @endif
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach ($produksAktif as $p)
                                 <tr id="tr_{{ $p->id }}">
                                     <td>{{ $p->kode_produk }}</td>
                                     <td>{{ $p->nama }}</td>
@@ -154,9 +210,24 @@
                                         <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
                                         <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
                                     @endif
-                                    <td>{{ $p->stok }}</td>
-                                    <td>{{ $p->minimum_stok }}</td>
-                                    <td>{{ $p->status_jual }}</td>
+                                    <td>
+                                        @if ($p->stok <= $p->minimum_stok)
+                                            <span class="text-danger font-weight-bold">
+                                                {{ $p->stok }}
+                                            </span>
+                                        @else
+                                            {{ $p->stok }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($p->stok <= $p->minimum_stok)
+                                            <span class="text-danger font-weight-bold">
+                                                {{ $p->minimum_stok }}
+                                            </span>
+                                        @else
+                                            {{ $p->minimum_stok }}
+                                        @endif
+                                    </td>
                                     <td>{{ $p->merek->nama }}</td>
                                     <td>{{ $p->kategori->nama }}</td>
                                     <td class="text-left">
@@ -173,8 +244,8 @@
                                             deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
                                             createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
                                             updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
-                                            namaImage="{{ asset('assets_admin/images/produk/') }}/{{ $p->gambar }}"
-                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk">Detail</button>
+                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk"
+                                            namaImage="{{ asset('assets_admin/images/produk/') }}/{{ $p->gambar }}">Detail</button>
                                     </td>
                                     @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                                         <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
@@ -189,6 +260,7 @@
 
                                 </tr>
                             @endforeach
+
 
                         </tbody>
                     </table>
@@ -211,6 +283,113 @@
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <h5>Produk Jual</h5>
+                        </div>
+                    </div>
+
+                    <table id="tabelDaftarProdukJualNonaktif"
+                        class="table table-striped table-bordered dt-responsive wrap text-center"
+                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Kode Produk</th>
+                                <th>Nama</th>
+                                <th>Harga Jual(Rp)</th>
+                                <th>Harga Beli(Rp)</th>
+                                <th>Stok</th>
+                                <th>Minimum Stok</th>
+                                <th>Merek</th>
+                                <th>Kategori</th>
+                                <th>Kondisi</th>
+                                <th hidden>Tanggal Pembuatan</th>
+                                <th hidden>Tanggal Edit Terakhir</th>
+                                <th hidden>Deskripsi</th>
+                                <th>Detail</th>
+                                @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
+                                @endif
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach ($produksJualNonaktif as $p)
+                                <tr id="tr_{{ $p->id }}">
+                                    <td>{{ $p->kode_produk }}</td>
+                                    <td>{{ $p->nama }}</td>
+                                    @if ($p->harga_beli >= $p->harga_jual)
+                                        <td class="text-danger font-weight-bold">
+                                            {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                        <td class="text-danger font-weight-bold">
+                                            {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                    @else
+                                        <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
+                                        <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
+                                    @endif
+                                    <td>
+                                        @if ($p->stok <= $p->minimum_stok)
+                                            <span class="text-danger font-weight-bold">
+                                                {{ $p->stok }}
+                                            </span>
+                                        @else
+                                            {{ $p->stok }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($p->stok <= $p->minimum_stok)
+                                            <span class="text-danger font-weight-bold">
+                                                {{ $p->minimum_stok }}
+                                            </span>
+                                        @else
+                                            {{ $p->minimum_stok }}
+                                        @endif
+                                    </td>
+                                    <td>{{ $p->merek->nama }}</td>
+                                    <td>{{ $p->kategori->nama }}</td>
+                                    <td class="text-left">
+                                        <ul>
+                                            @foreach ($p->kondisis as $kondisi)
+                                                <li>{{ $kondisi->keterangan }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </td>
+                                    <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
+                                    <td hidden>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
+                                    <td hidden>{{ $p->deskripsi }}</td>
+                                    <td class="text-center"><button data-toggle="modal" data-target="#modalDetailProduk"
+                                            deskripsi="{{ $p->deskripsi }}" namaProduk ="{{ $p->nama }}"
+                                            createdAt="{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}"
+                                            updatedAt="{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}"
+                                            namaImage="{{ asset('assets_admin/images/produk/') }}/{{ $p->gambar }}"
+                                            class=" btn btn-warning waves-effect waves-light btnDetailProduk"
+                                            namaImage="{{ asset('assets_admin/images/produk/') }}/{{ $p->gambar }}">Detail</button>
+                                    </td>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                                        <td class="text-center"><a href="{{ route('produks.edit', $p->id) }}"
+                                                class=" btn btn-info waves-effect waves-light">Edit</a></td>
+                                        <td class="text-center"><button data-toggle="modal"
+                                                data-target="#modalKonfirmasiDeleteProduk"
+                                                idProduk = "{{ $p->id }}" namaProduk="{{ $p->nama }}"
+                                                routeUrl = "{{ route('produks.destroy', $p->id) }}"
+                                                class=" btn btn-danger waves-effect waves-light btnHapusProduk">Hapus</button>
+                                        </td>
+                                    @endif
+
+                                </tr>
+                            @endforeach
+
+                        </tbody>
+                    </table>
+
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <h5>Produk Tidak Dijual</h5>
+                        </div>
+                    </div>
+
                     <table id="tabelDaftarProdukNonaktif"
                         class="table table-striped table-bordered dt-responsive wrap text-center"
                         style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -222,7 +401,6 @@
                                 <th>Harga Beli(Rp)</th>
                                 <th>Stok</th>
                                 <th>Minimum Stok</th>
-                                <th>Status Jual</th>
                                 <th>Merek</th>
                                 <th>Kategori</th>
                                 <th>Kondisi</th>
@@ -252,9 +430,24 @@
                                         <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
                                         <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
                                     @endif
-                                    <td>{{ $p->stok }}</td>
-                                    <td>{{ $p->minimum_stok }}</td>
-                                    <td>{{ $p->status_jual }}</td>
+                                    <td>
+                                        @if ($p->stok <= $p->minimum_stok)
+                                            <span class="text-danger font-weight-bold">
+                                                {{ $p->stok }}
+                                            </span>
+                                        @else
+                                            {{ $p->stok }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($p->stok <= $p->minimum_stok)
+                                            <span class="text-danger font-weight-bold">
+                                                {{ $p->minimum_stok }}
+                                            </span>
+                                        @else
+                                            {{ $p->minimum_stok }}
+                                        @endif
+                                    </td>
                                     <td>{{ $p->merek->nama }}</td>
                                     <td>{{ $p->kategori->nama }}</td>
                                     <td class="text-left">
@@ -356,17 +549,30 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            $('#tabelDaftarProdukAktif').DataTable({
-                
+            $('#tabelDaftarProdukJualAktif').DataTable({
+
                 language: {
-                    emptyTable: "Tidak terdapat data produk aktif!",
-                    infoEmpty: "Tidak terdapat data produk aktif!",
+                    emptyTable: "Tidak terdapat data produk jual aktif!",
+                    infoEmpty: "Tidak terdapat data produk jual aktif!",
+                }
+            });
+            $('#tabelDaftarProdukAktif').DataTable({
+
+                language: {
+                    emptyTable: "Tidak terdapat data produk aktif yang tidak dijual!",
+                    infoEmpty: "Tidak terdapat data produk aktif yang tidak dijual!",
+                }
+            });
+            $('#tabelDaftarProdukJualNonaktif').DataTable({
+                language: {
+                    emptyTable: "Tidak terdapat data produk jual nonaktif!",
+                    infoEmpty: "Tidak terdapat data produk jual nonaktif!",
                 }
             });
             $('#tabelDaftarProdukNonaktif').DataTable({
                 language: {
-                    emptyTable: "Tidak terdapat data produk nonaktif!",
-                    infoEmpty: "Tidak terdapat data produk nonaktif!",
+                    emptyTable: "Tidak terdapat data produk nonaktif yang tidak dijual!",
+                    infoEmpty: "Tidak terdapat data produk nonaktif yang tidak dijual!",
                 }
             });
         });
@@ -379,7 +585,9 @@
             var namaImage = $(this).attr("namaImage");
             $("#modalNamaProduk").text(" Detail Produk " + namaProduk);
             $("#contentDetailProduk").html(
-                "<div class='form-group row text-center'><div class='form-group col-md-12'><img style='max-height:500px;' class='img-fluid' src='" + namaImage + "' alt='gambarProduk'></div> <div class='form-group col-md-6'><h6>Tanggal Pembuatan</h6><p>" +
+                "<div class='form-group row text-center'><div class='form-group col-md-12'><img style='max-height:500px;' class='img-fluid' src='" +
+                namaImage +
+                "' alt='gambarProduk'></div> <div class='form-group col-md-6'><h6>Tanggal Pembuatan</h6><p>" +
                 createdAt + "</p></div><div class='form-group col-md-6'><h6>Tanggal Terakhir Diubah</h6><p>" +
                 updatedAt +
                 "</p></div></div><div class='form-group row text-center'><div class='form-group col-md-12'><h6>Deskripsi Produk</h6><p>" +

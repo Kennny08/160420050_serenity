@@ -241,13 +241,13 @@
                     <ul class="metismenu" id="side-menu">
                         <li class="menu-title">Menu</li>
 
-                        @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
+                        {{-- @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                             <li>
                                 <a href="{{ route('reservasis.index') }}" class="waves-effect">
                                     <i class="mdi mdi-view-dashboard-outline"></i> <span> Dashboard </span>
                                 </a>
                             </li>
-                        @endif
+                        @endif --}}
 
                         <li>
                             <a href="javascript:void(0);" class="waves-effect"><i
@@ -363,7 +363,8 @@
 
                                 @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                                     <li>
-                                        <a href="{{ route('pelanggans.admin.daftarpelanggan') }}" class="waves-effect">
+                                        <a href="{{ route('pelanggans.admin.daftarpelanggan') }}"
+                                            class="waves-effect">
                                             <i class="mdi mdi-account"></i> <span> Pelanggan </span>
                                         </a>
                                     </li>
@@ -374,17 +375,17 @@
                                     </li>
                                 @endif
 
-                                
+
                             </ul>
                         </li>
 
                         @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                             <li>
-                                <a href="{{ route('pembelians.index') }}" class="waves-effect">
+                                <a href="{{ route('pembelians.index') }}" class="waves-effect {{ request()->is('pembelians/create') ? ' mm-active' : '' }}">
                                     <i class="mdi mdi-inbox"></i> <span>Pembelian</span>
                                 </a>
                             </li>
-                        @endif
+                        @endif 
 
                         @if (Auth::user()->role == 'karyawan')
                             @if (Auth::user()->karyawan->jenis_karyawan == 'pekerja salon')
@@ -415,14 +416,14 @@
                         @endif
 
 
-                        <li>
-                            <a href="javascript:void(0);" class="waves-effect"><i
+                        <li >
+                            <a href="javascript:void(0);" class="waves-effect {{ request()->is('salon/reservasi/admin/create') || request()->is('salon/reservasi/admin/selectstaf') || request()->is('salon/reservasi/admin/detailreservasi/*') ? ' mm-active' : '' }}"><i
                                     class="mdi mdi-playlist-edit"></i><span>
                                     Reservasi <span class="float-right menu-arrow"><i
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
-                            <ul class="submenu">
+                            <ul class="submenu ">
                                 @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
-                                    <li><a href="{{ route('reservasis.index') }}"> Reservasi Salon</a></li>
+                                    <li class="{{ request()->is('salon/reservasi/admin/create') || request()->is('salon/reservasi/admin/selectstaf') || request()->is('salon/reservasi/admin/detailreservasi/*')  ? ' mm-active' : '' }}"><a href="{{ route('reservasis.index') }}"> Reservasi Salon</a></li>
                                     <li><a href="{{ route('riwayatreservasis.index') }}">Riwayat Reservasi
                                             Perawatan</a></li>
                                 @else
@@ -442,7 +443,7 @@
 
                         @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
                             <li>
-                                <a href="javascript:void(0);" class="waves-effect"><i
+                                <a href="javascript:void(0);" class="waves-effect {{ request()->is('salon/penjualan/admin/tambahproduk/*')  ? ' mm-active' : '' }}"><i
                                         class="mdi mdi-cash-multiple"></i><span>
                                         Penjualan <span class="float-right menu-arrow"><i
                                                 class="mdi mdi-chevron-right"></i></span> </span></a>
@@ -500,7 +501,7 @@
                             @if (Auth::user()->karyawan->jenis_karyawan == 'pekerja salon')
                                 <li>
                                     <a href="{{ route('karyawans.indexkomisikaryawansalon') }}" class="waves-effect">
-                                        <i class="mdi mdi-cash-multiple"></i> <span>Komisi Karyawan</span>
+                                        <i class="mdi mdi-cash"></i> <span>Komisi Karyawan</span>
                                     </a>
                                 </li>
                             @endif
@@ -519,7 +520,9 @@
                         <li class="menu-title">Lainnya</li>
 
                         <li>
-                            <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-logout"></i>
+                            <a onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();"
+                                class="waves-effect"><i class="mdi mdi-logout"></i>
                                 <span> Logout </span>
                             </a>
 

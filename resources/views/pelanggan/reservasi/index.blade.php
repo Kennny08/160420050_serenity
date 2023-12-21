@@ -98,7 +98,7 @@
 
             $("#tabelDaftarReservasiHariIni").DataTable({
                 order: [
-                    [1, "asc"],
+                    [1, "desc"],
                     [4, "asc"],
                     [5, "asc"]
                 ],

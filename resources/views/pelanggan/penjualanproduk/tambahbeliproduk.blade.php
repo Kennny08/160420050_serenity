@@ -23,6 +23,7 @@
                 <div class="card-body">
 
                     <h3 class="mt-0 header-title fw-bold">Pembelian Tambahan Produk</h3>
+                    <h5 class="text-danger">Silahkan tambah produk dan konfirmasi melalui tombol "KERANJANG" jika Anda ingin membeli produk tambahan. <br> Jika tidak, silahkan tekan tombol "BATAL TAMBAH PRODUK" di bawah ini.</h5>
                     <p class="sub-title">
                     </p>
 

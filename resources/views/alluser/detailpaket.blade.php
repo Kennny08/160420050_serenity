@@ -72,7 +72,7 @@
                 <div class="row">
                     <div class="col-auto align-self-center">
                         <div class="header-logo">
-                            <a href="{{ route('pelanggans.index') }}"><img
+                            <a href="{{ route('users.halamanutama') }}"><img
                                     src="{{ asset('assets_admin/images/logo-serenity/serenity-logo-no-background.png') }}"
                                     height="65" alt="Site Logo" /><img class="ml-5px"
                                     src="{{ asset('assets_admin/images/logo-serenity/name_serenity.jpeg') }}"

@@ -61,7 +61,7 @@
                 <div class="row">
                     <div class="col-auto align-self-center">
                         <div class="header-logo">
-                            <a href="{{ route('pelanggans.index') }}"><img
+                            <a href="{{ route('users.halamanutama') }}"><img
                                     src="{{ asset('assets_admin/images/logo-serenity/serenity-logo-no-background.png') }}"
                                     height="65" alt="Site Logo" /><img class="ml-5px"
                                     src="{{ asset('assets_admin/images/logo-serenity/name_serenity.jpeg') }}"
@@ -110,7 +110,7 @@
                                         <li><a href=" {{ route('pakets.daftarpaketalluser') }}">Paket</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="{{ route("users.tentangkami") }}">Tentang Kami</a></li>
+                                <li><a href="{{ route('users.tentangkami') }}">Tentang Kami</a></li>
                             </ul>
                         </div>
                     </div>
@@ -201,7 +201,7 @@
                             <li><a href=" {{ route('pakets.daftarpaketalluser') }}">Paket</a></li>
                         </ul>
                     </li>
-                    <li><a href="{{ route("users.tentangkami") }}">Tentang Kami</a></li>
+                    <li><a href="{{ route('users.tentangkami') }}">Tentang Kami</a></li>
                 </ul>
             </div>
             <!-- OffCanvas Menu End -->
@@ -236,12 +236,13 @@
                     <div class="shop-category-area pt-100px pb-100px">
                         <div class="container">
                             <div class="row">
+
                                 <div class="col-lg-9 order-lg-last col-md-12 order-md-first">
                                     <!-- Shop Top Area Start -->
                                     <div class="shop-top-bar d-flex">
                                         <!-- Left Side start -->
                                         <p><span>{{ count($perawatansAktif) }}</span>&nbsp; Perawatan ditemukan dari
-                                            &nbsp;<span>{{  $totalPerawatan }}</span></p>
+                                            &nbsp;<span>{{ $totalPerawatan }}</span></p>
                                         <!-- Left Side End -->
                                         <div class="shop-tab nav">
                                             <a href="#shop-grid" data-bs-toggle="tab">
@@ -282,114 +283,7 @@
                                     <!-- Shop Top Area End -->
 
                                     <!-- Shop Bottom Area Start -->
-                                    <div class="shop-bottom-area">
-
-                                        <!-- Tab Content Area Start -->
-                                        <div class="row">
-                                            <div class="col">
-                                                <div class="tab-content">
-                                                    <div class="tab-pane fade " id="shop-grid">
-                                                        <div class="row mb-n-30px">
-
-                                                            @foreach ($perawatansAktif as $perawatan)
-                                                                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-6 mb-30px"
-                                                                    data-aos="fade-up" data-aos-delay="200">
-                                                                    <!-- Single Prodect -->
-                                                                    <div class="product">
-                                                                        <div class="thumb">
-                                                                            <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
-                                                                                class="image">
-                                                                                <img src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
-                                                                                    style="max-height: 100%; width: 290px; height: 310px; max-width: 100%;"
-                                                                                    alt="Product" />
-                                                                                <img class="hover-image"
-                                                                                    src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
-                                                                                    style="max-height: 100%; width: 290px; height: 310px; max-width: 100%;"
-                                                                                    alt="Product" />
-                                                                            </a>
-
-                                                                            <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
-                                                                                class=" add-to-cart">Detail</a>
-                                                                        </div>
-                                                                        <div class="content">
-
-                                                                            <h4 ><a class="text-dark"
-                                                                                    href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}">{{ $perawatan->nama }}
-                                                                                </a>
-                                                                            </h4>
-                                                                            <h6>{{ $perawatan->durasi }} menit
-                                                                            </h6>
-                                                                            <span class="price">
-                                                                                <span class="new">Rp.
-                                                                                    {{ number_format($perawatan->harga, 2, ',', '.') }}</span>
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            @endforeach
-
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="tab-pane fade show active" id="shop-list">
-                                                        @foreach ($perawatansAktif as $perawatan)
-                                                            <div class="shop-list-wrapper">
-                                                                <div class="row">
-                                                                    <div class="col-md-5 col-lg-5 col-xl-4">
-                                                                        <div class="product">
-                                                                            <div class="thumb">
-                                                                                <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
-                                                                                    class="image">
-                                                                                    <img src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
-                                                                                        style="max-height: 100%; width: 290px; height: 310px; max-width: 100%;"
-                                                                                        alt="Product" />
-                                                                                    <img class="hover-image"
-                                                                                        src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
-                                                                                        style="max-height: 100%; width: 290px; height: 310px; max-width: 100%;"
-                                                                                        alt="Product" />
-                                                                                </a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-7 col-lg-7 col-xl-8">
-                                                                        <div class="content-desc-wrap">
-                                                                            <div class="content">
-
-                                                                                </span>
-                                                                                <h4 ><a  class="text-dark"
-                                                                                        href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}">{{ $perawatan->nama }}</a>
-                                                                                </h4>
-                                                                                <h6>{{ $perawatan->durasi }} menit
-                                                                                </h6>
-                                                                                @if (strlen($perawatan->deskripsi) > 150)
-                                                                                    <p>{{ substr($perawatan->deskripsi, 0, 150) }}...
-                                                                                    </p>
-                                                                                @else
-                                                                                    <p>{{ $perawatan->deskripsi }}</p>
-                                                                                @endif
-
-                                                                            </div>
-                                                                            <div class="box-inner">
-                                                                                <span class="price">
-                                                                                    <span class="new">
-                                                                                        {{ number_format($perawatan->harga, 2, ',', '.') }}</span>
-                                                                                </span>
-
-                                                                                <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
-                                                                                    class=" add-to-cart">Detail</a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Tab Content Area End -->
-                                    </div>
+                                
                                     <!-- Shop Bottom Area End -->
                                 </div>
 
@@ -424,6 +318,115 @@
                                         </div>
                                         <!-- Sidebar single item -->
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 order-lg-last col-md-12 order-md-first">
+                                    <div class="shop-bottom-area">
+
+                                        <!-- Tab Content Area Start -->
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade " id="shop-grid">
+                                                <div class="row mb-n-30px">
+
+                                                    @foreach ($perawatansAktif as $perawatan)
+                                                        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6 mb-30px"
+                                                            data-aos="fade-up" data-aos-delay="200">
+                                                            <!-- Single Prodect -->
+                                                            <div class="product">
+                                                                <div class="thumb">
+                                                                    <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
+                                                                        class="image">
+                                                                        <img src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
+                                                                            style="max-height: 100%; width: 290px; height: 310px; max-width: 100%;"
+                                                                            alt="Product" />
+                                                                        <img class="hover-image"
+                                                                            src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
+                                                                            style="max-height: 100%; width: 290px; height: 310px; max-width: 100%;"
+                                                                            alt="Product" />
+                                                                    </a>
+
+                                                                    <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
+                                                                        class=" add-to-cart">Detail</a>
+                                                                </div>
+                                                                <div class="content">
+
+                                                                    <h4><a class="text-dark"
+                                                                            href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}">{{ $perawatan->nama }}
+                                                                        </a>
+                                                                    </h4>
+                                                                    <h6>{{ $perawatan->durasi }} menit
+                                                                    </h6>
+                                                                    <span class="price">
+                                                                        <span class="new">Rp.
+                                                                            {{ number_format($perawatan->harga, 2, ',', '.') }}</span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+
+
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade show active" id="shop-list">
+                                                @foreach ($perawatansAktif as $perawatan)
+                                                    <div class="shop-list-wrapper">
+                                                        <div class="row">
+                                                            <div class="col-md-5 col-lg-5 col-xl-4">
+                                                                <div class="product">
+                                                                    <div class="thumb">
+                                                                        <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
+                                                                            class="image">
+                                                                            <img src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
+                                                                                style="max-height: 100%; width: 290px; height: 310px; max-width: 100%;"
+                                                                                alt="Product" />
+                                                                            <img class="hover-image"
+                                                                                src="{{ asset('assets_admin/images/perawatan/' . $perawatan->gambar) }}"
+                                                                                style="max-height: 100%; width: 290px; height: 310px; max-width: 100%;"
+                                                                                alt="Product" />
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-7 col-lg-7 col-xl-8">
+                                                                <div class="content-desc-wrap">
+                                                                    <div class="content">
+
+                                                                        </span>
+                                                                        <h4><a class="text-dark"
+                                                                                href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}">{{ $perawatan->nama }}</a>
+                                                                        </h4>
+                                                                        <h6>{{ $perawatan->durasi }} menit
+                                                                        </h6>
+                                                                        @if (strlen($perawatan->deskripsi) > 150)
+                                                                            <p>{{ substr($perawatan->deskripsi, 0, 150) }}...
+                                                                            </p>
+                                                                        @else
+                                                                            <p>{{ $perawatan->deskripsi }}</p>
+                                                                        @endif
+
+                                                                    </div>
+                                                                    <div class="box-inner">
+                                                                        <span class="price">
+                                                                            <span class="new">
+                                                                                Rp. {{ number_format($perawatan->harga, 2, ',', '.') }}</span>
+                                                                        </span>
+
+                                                                        <a href="{{ route('perawatans.detailperawatanalluser', $perawatan->id) }}"
+                                                                            class=" add-to-cart">Detail</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+
+                                            </div>
+                                        </div>
+                                        <!-- Tab Content Area End -->
+                                    </div>
+                                    <!-- Shop Bottom Area End -->
                                 </div>
                             </div>
                         </div>
@@ -520,7 +523,7 @@
                                     <p class="mail">Email:<a
                                             href="mailto:serenity160420050@gmail.com">serenity160420050@gmail.com</a>
                                     </p>
-                                    
+
 
                                     <!-- News letter area  End -->
                                 </div>

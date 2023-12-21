@@ -348,7 +348,10 @@ class DiskonController extends Controller
                             $idDiskonDariPaketsPenjualan = $daftarPenjualanPaket->where("diskon_id", "!=", null)->pluck("diskon_id")->unique();
                             foreach ($idDiskonDariPaketsPenjualan as $value) {
                                 $diskon = Diskon::find($value);
-                                array_push($diskonAktifBerlaku, $diskon);
+                                if (strtotime($diskon->tanggal_mulai) <= strtotime(date("Y-m-d")) && strtotime($diskon->tanggal_berakhir) >= strtotime(date("Y-m-d"))) {
+                                    array_push($diskonAktifBerlaku, $diskon);
+                                }
+
                             }
                         }
 

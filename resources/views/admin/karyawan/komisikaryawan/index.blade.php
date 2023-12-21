@@ -114,7 +114,11 @@
                                     <td>{{ $komisiKaryawan['karyawan']->nama }}</td>
                                     <td>
                                         @if ($komisiKaryawan['jumlah_pelayanan'] == 0)
-                                            Belum ada Penjualan yang Selesai
+                                            @if ($komisiKaryawan['karyawan']->jenis_karyawan == 'admin')
+                                                Tidak ada Penjualan(Karyawan Admin)
+                                            @else
+                                                Belum ada Penjualan yang Selesai
+                                            @endif
                                         @else
                                             {{ date('d-m-Y', strtotime($komisiKaryawan['tanggal_awal'])) }}
                                         @endif
@@ -122,7 +126,11 @@
                                     </td>
                                     <td>
                                         @if ($komisiKaryawan['jumlah_pelayanan'] == 0)
-                                            Belum ada Penjualan yang Selesai
+                                            @if ($komisiKaryawan['karyawan']->jenis_karyawan == 'admin')
+                                                Tidak ada Penjualan(Karyawan Admin)
+                                            @else
+                                                Belum ada Penjualan yang Selesai
+                                            @endif
                                         @else
                                             {{ date('d-m-Y', strtotime($komisiKaryawan['tanggal_akhir'])) }}
                                         @endif

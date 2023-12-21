@@ -79,11 +79,11 @@
                                             </td>
                                             <td>
                                                 @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan' || $r->status == 'tidak hadir')
-                                                    <span class="texttext-danger font-16">{{ $r->status }}</span>
+                                                    <span class="text-danger font-16">{{ $r->status }}</span>
                                                 @elseif($r->status == 'selesai')
-                                                    <span class="texttext-success font-16">{{ $r->status }}</span>
+                                                    <span class="text-success font-16">{{ $r->status }}</span>
                                                 @else
-                                                    <span class="texttext-warning font-16">{{ $r->status }}</span>
+                                                    <span class="text-warning font-16">{{ $r->status }}</span>
                                                 @endif
                                             </td>
                                             <td>{{ $r->penjualan->pelanggan->nama }}</td>

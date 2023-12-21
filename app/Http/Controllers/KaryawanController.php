@@ -620,7 +620,7 @@ class KaryawanController extends Controller
 
     public function indexKomisiKaryawan()
     {
-        $karyawans = Karyawan::select("id", "nama")->get();
+        $karyawans = Karyawan::select("id", "nama", "jenis_karyawan")->get();
         $distinctTahun = Penjualan::selectRaw("year(tanggal_penjualan) as tahun")->distinct()->where('status_selesai', 'selesai')->orderByRaw("tahun desc")->get();
         $bulans = [
             ["id" => "01", "nama" => "Januari"],
@@ -663,7 +663,7 @@ class KaryawanController extends Controller
         $tahunPenjualan = $_POST["tahunPenjualan"];
         $bulanPenjualan = $_POST["bulanPenjualan"];
         //dd($tahunPenjualan, $bulanPenjualan);
-        $karyawans = Karyawan::select("id", "nama")->get();
+        $karyawans = Karyawan::select("id", "nama", "jenis_karyawan")->get();
 
         $distinctTahun = Penjualan::selectRaw("year(tanggal_penjualan) as tahun")->distinct()->orderByRaw("tahun desc")->get();
         $bulans = [

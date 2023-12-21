@@ -17,13 +17,13 @@
                     <td>{{ $p->karyawan->nama }}</td>
                     <td>
                         @if (date('H:i:s', strtotime($p->created_at)) == date('H:i:s', strtotime($p->tanggal_presensi)))
-                            @if ($p->keterangan == 'izin')
+                            @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
                                 {{ date('d-m-Y H:i', strtotime($p->created_at)) }}
                             @else
                                 <span class="text-danger">Tidak Presensi</span>
                             @endif
                         @else
-                            @if ($p->keterangan == 'izin')
+                            @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
                                 {{ date('d-m-Y H:i', strtotime($p->created_at)) }}
                             @else
                                 {{ date('H:i', strtotime($p->tanggal_presensi)) }}

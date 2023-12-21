@@ -133,13 +133,12 @@ class AprioriController extends Controller
 
         $Apriori = new Apriori();
 
-        $Apriori->setMaxScan(50); //Scan 2, 3, ...
+        $Apriori->setMaxScan(20); //Scan 2, 3, ...
         $Apriori->setMinSup($minSupport); //Minimum support 1, 2, 3, ...
         $Apriori->setMinConf($minConfidence); //Minimum confidence - Percent 1, 2, ..., 100
         $Apriori->setDelimiter(','); //Delimiter
 
         $Apriori->process($dataSet);
-        $freqItemSets = $Apriori->printFreqItemsets();
         $assocRules = $Apriori->getAssociationRules();
         $keterangan = "Berhasil";
 
@@ -151,7 +150,7 @@ class AprioriController extends Controller
         $tanggalAkhir = date('Y-m-d', strtotime($tanggalAkhir));
 
         
-        return view('admin.rekomendasiproduk.settingrekomendasiproduk', compact('freqItemSets', 'assocRules', 'keterangan', 'tanggalMulai', 'tanggalAkhir', 'titleTabel', 'minSupport', 'minConfidence', 'batasTanggalMulai', 'batasTanggalAkhir'));
+        return view('admin.rekomendasiproduk.settingrekomendasiproduk', compact('assocRules', 'keterangan', 'tanggalMulai', 'tanggalAkhir', 'titleTabel', 'minSupport', 'minConfidence', 'batasTanggalMulai', 'batasTanggalAkhir'));
     }
 
     public function getDetailPenjualan()

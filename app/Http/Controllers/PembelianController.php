@@ -155,6 +155,7 @@ class PembelianController extends Controller
 
     public function updateTanggalPembayaranPembelian(Request $request)
     {
+        date_default_timezone_set("Asia/Jakarta");
         $idpembelian = $request->get("hiddenIdPembelian");
         $tanggalPembayaran = $request->get("tanggalPembayaran");
         $pembelian = Pembelian::find($idpembelian);

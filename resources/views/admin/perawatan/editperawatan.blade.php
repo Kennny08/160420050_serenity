@@ -131,7 +131,7 @@
                                     disini!</small>
                             </div>
                             <div class="col-md-4">
-                                <label for="exampleInputEmail1"><strong>Status Komplemen Perawatan</strong></label>
+                                <label for="exampleInputEmail1"><strong>Status Pengerjaan Perawatan secara Bersamaan</strong></label>
                                 <div class="btn-group btn-group-toggle border w-100" data-toggle="buttons">
                                     @if ($perawatan->status_komplemen == 'ya')
                                         <label class="btn btn-info waves-effect waves-light"
@@ -163,7 +163,7 @@
                                         </label>
                                     @endif
                                 </div>
-                                <small id="emailHelp" class="form-text text-muted">Pilih status komplemen perawatan
+                                <small id="emailHelp" class="form-text text-muted">Pilih status pengerjaan perawatan secara bersamaan
                                     disini!</small>
                             </div>
 

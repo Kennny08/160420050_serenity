@@ -67,8 +67,9 @@
                             <tr>
                                 <th class="align-middle">Nomor Nota</th>
                                 <th class="align-middle">Nama Supplier</th>
+                                <th hidden>TanggalHidden</th>
                                 <th class="align-middle">Tanggal Pembelian</th>
-                                <th class="align-middle">Total Pembelian</th>
+                                <th class="align-middle">Total Pembelian(Rp)</th>
                                 <th class="align-middle">Karyawan Penerima</th>
                                 <th hidden class="align-middle">Tanggal Pembuatan</th>
                                 <th hidden class="align-middle">Tanggal Edit Terakhir</th>
@@ -82,6 +83,7 @@
                                 <tr id="tr_{{ $pb->id }}">
                                     <td>{{ $pb->nomor_nota }}</td>
                                     <td>{{ $pb->supplier->nama }}</td>
+                                    <td hidden>{{ date('Y-m-d', strtotime($pb->tanggal_beli)) }}</td>
                                     <td>{{ date('d-m-Y', strtotime($pb->tanggal_beli)) }}</td>
                                     <td>{{ number_format($pb->total, 2, ',', '.') }}</td>
                                     <td>{{ $pb->karyawan->nama }}</td>
@@ -135,9 +137,10 @@
                             <tr>
                                 <th class="align-middle">Nomor Nota</th>
                                 <th class="align-middle">Nama Supplier</th>
+                                <th hidden>TanggalHidden</th>
                                 <th class="align-middle">Tanggal Pembelian</th>
                                 <th class="align-middle">Tanggal Pembayaran</th>
-                                <th class="align-middle">Total Pembayaran</th>
+                                <th class="align-middle">Total Pembayaran(Rp)</th>
                                 <th class="align-middle">Karyawan Penerima</th>
                                 <th hidden class="align-middle">Tanggal Pembuatan</th>
                                 <th hidden class="align-middle">Tanggal Edit Terakhir</th>
@@ -151,6 +154,7 @@
                                 <tr id="tr_{{ $p->id }}">
                                     <td>{{ $p->nomor_nota }}</td>
                                     <td>{{ $p->supplier->nama }}</td>
+                                    <td hidden>{{ date('Y-m-d', strtotime($p->tanggal_beli)) }}</td>
                                     <td>{{ date('d-m-Y', strtotime($p->tanggal_beli)) }}</td>
                                     <td>{{ date('d-m-Y', strtotime($p->tanggal_bayar)) }}</td>
                                     <td>{{ number_format($p->total, 2, ',', '.') }}</td>
@@ -226,7 +230,7 @@
                             <div class="col-md-12">
                                 <input type="date" class="form-control" name="tanggalPembayaran"
                                     id="tanggalPembayaran" value="{{ date('Y-m-d') }}" aria-describedby="emailHelp"
-                                    min="{{ date('Y-m-d') }}" placeholder="Silahkan Pilih Tanggal Pembayaran" required>
+                                     placeholder="Silahkan Pilih Tanggal Pembayaran" required>
                                 <small id="emailHelp" class="form-text text-muted">Pilih Tanggal Pembayaran
                                     disini!</small>
                             </div>
@@ -302,7 +306,7 @@
                 nomorNota + ")");
 
             $("#hiddenIdPembelian").val(idPembelian);
-            $("#tanggalPembayaran").attr("min", tanggalBeli);
+            //$("#tanggalPembayaran").attr("min", tanggalBeli);
         });
 
 

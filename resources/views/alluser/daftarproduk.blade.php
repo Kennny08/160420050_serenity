@@ -61,7 +61,7 @@
                 <div class="row">
                     <div class="col-auto align-self-center">
                         <div class="header-logo">
-                            <a href="{{ route('pelanggans.index') }}"><img
+                            <a href="{{ route('users.halamanutama') }}"><img
                                     src="{{ asset('assets_admin/images/logo-serenity/serenity-logo-no-background.png') }}"
                                     height="65" alt="Site Logo" /><img class="ml-5px"
                                     src="{{ asset('assets_admin/images/logo-serenity/name_serenity.jpeg') }}"
@@ -369,7 +369,7 @@
                                                                             <div class="box-inner">
                                                                                 <span class="price">
                                                                                     <span class="new">
-                                                                                        {{ number_format($produk->harga_jual, 2, ',', '.') }}</span>
+                                                                                        Rp. {{ number_format($produk->harga_jual, 2, ',', '.') }}</span>
                                                                                 </span>
 
                                                                                 <a href="{{ route('produks.detailprodukalluser', $produk->id) }}"

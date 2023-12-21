@@ -68,13 +68,13 @@
                                                     <td>
                                                         @if ($r->status == 'dibatalkan salon' || $r->status == 'dibatalkan pelanggan')
                                                             <span
-                                                                class="badge badge-danger font-16">{{ $r->status }}</span>
+                                                                class="text-danger font-16">{{ $r->status }}</span>
                                                         @elseif($r->status == 'selesai')
                                                             <span
-                                                                class="badge badge-success font-16">{{ $r->status }}</span>
+                                                                class="text-success font-16">{{ $r->status }}</span>
                                                         @else
                                                             <span
-                                                                class="badge badge-warning font-16">{{ $r->status }}</span>
+                                                                class="text-warning font-16">{{ $r->status }}</span>
                                                         @endif
                                                     </td>
                                                     <td>{{ $r->penjualan->pelanggan->nama }}</td>

@@ -732,6 +732,47 @@
                                     </div>
 
                                 </div>
+                            @elseif($reservasi->penjualan->status_selesai == 'batal')
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card text-white bg-danger text-center w-60 ">
+                                            <div class="card-body">
+                                                <blockquote class="card-bodyquote mb-0" style="color: white;">
+                                                    <h4 style="color: white;">
+                                                        Tidak dapat memberikan Ulasan!
+                                                    </h4>
+                                                    @if ($reservasi->status == 'tidak hadir')
+                                                        <footer class=" text-white font-12">
+                                                            <h5 style="color: white;">Reservasi ini memiliki
+                                                                status dibatalkan karena ketidakhadiran Anda
+                                                            </h5>
+
+                                                        </footer>
+                                                    @elseif($reservasi->status == 'dibatalkan pelanggan')
+                                                        <footer class=" text-white font-12">
+                                                            <h5 style="color: white;">Reservasi ini memiliki
+                                                                status dibatalkan oleh Anda
+                                                            </h5>
+
+                                                        </footer>
+                                                    @else
+                                                        <footer class=" text-white font-12">
+                                                            <h5 style="color: white;">Reservasi ini memiliki
+                                                                status dibatalkan oleh Pihak Salon
+                                                            </h5>
+
+                                                        </footer>
+                                                    @endif
+
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="margin-top: 45px;">
+
+                                    </div>
+
+                                </div>
                             @else
                                 @if ($reservasi->penjualan->ulasan == null)
                                     <div class="description-review-wrapper">
@@ -768,32 +809,41 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                <div class="col-md-12"
+                                                                    style="margin-top: 45px;">
 
+                                                                </div>
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
                                 @else
-                                    <div class="col-md-12 text-center">
-                                        <div class="card text-white text-center w-60 mx-auto"
-                                            style="background-color: #DFCFF9">
-                                            <div class="card-body">
-                                                <blockquote class="card-bodyquote mb-0">
-                                                    <h4 class="fw-bold">
-                                                        {{ $reservasi->penjualan->ulasan->ulasan }}
-                                                    </h4>
-                                                    {{-- <footer class=" text-white font-12">
+                                    <div class="row">
+                                        <div class="col-md-12 text-center">
+                                            <div class="card text-white text-center w-60 mx-auto"
+                                                style="background-color: #DFCFF9">
+                                                <div class="card-body">
+                                                    <blockquote class="card-bodyquote mb-0">
+                                                        <h4 class="fw-bold">
+                                                            {{ $reservasi->penjualan->ulasan->ulasan }}
+                                                        </h4>
+                                                        {{-- <footer class=" text-white font-12">
                                                         <h5 class="">Potongan sebesar
                                                             {{ $reservasi->penjualan->diskon->jumlah_potongan }}%
                                                             dengan maksimum potongan sebesar Rp.
                                                             {{ number_format($reservasi->penjualan->diskon->maksimum_potongan, 2, ',', '.') }}
                                                         </h5>
                                                     </footer> --}}
-                                                </blockquote>
+                                                    </blockquote>
+                                                </div>
                                             </div>
+                                        </div>
+                                        <div class="col-md-12" style="margin-top: 45px;">
+
                                         </div>
                                     </div>
                                 @endif

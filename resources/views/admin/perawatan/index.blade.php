@@ -70,7 +70,7 @@
                                 <th class="align-middle">Harga(Rp)</th>
                                 <th class="align-middle">Durasi (menit)</th>
                                 <th class="align-middle">Persentase Komisi(%)</th>
-                                <th class="align-middle">Status Komplemen</th>
+                                <th class="align-middle">Status Dikerjakan Bersama</th>
                                 <th hidden class="align-middle">Deskripsi</th>
                                 <th hidden class="align-middle">Tanggal Pembuatan</th>
                                 <th hidden class="align-middle">Tanggal Edit Terakhir</th>
@@ -144,7 +144,7 @@
                                 <th class="align-middle">Harga(Rp)</th>
                                 <th class="align-middle">Durasi (menit)</th>
                                 <th class="align-middle">Persentase Komisi(%)</th>
-                                <th class="align-middle">Status Komplemen</th>
+                                <th class="align-middle">Status Dikerjakan Bersama</th>
                                 <th hidden class="align-middle">Deskripsi</th>
                                 <th hidden class="align-middle">Tanggal Pembuatan</th>
                                 <th hidden class="align-middle">Tanggal Edit Terakhir</th>

@@ -106,7 +106,7 @@
                             <br>
 
 
-                            @if (isset($freqItemSets) && isset($assocRules))
+                            @if (isset($assocRules))
                                 <div class="card shadow">
                                     <div class="card-body">
                                         <div class="form-group row text-center mt-3">
@@ -219,7 +219,7 @@
                             <div>
                                 <h5>Tujuan Pembuatan Fitur</h5>
                                 <h6 class="font-weight-normal text-dark" style="text-align: justify; color: black">
-                                    Fitur ini dapat diamnfaatkan oleh pihak salon untuk mendapatkan rekomendasi produk item
+                                    Fitur ini dapat dimanfaatkan oleh pihak salon untuk mendapatkan rekomendasi produk item
                                     penjualan pada salon seperti produk, perawwatan, atau paket berdasarkan pola transaksi
                                     customer dalam rentang waktu yang dipilih. Selain itu hasil dari fitur ini dapat
                                     digunakan sebagai pelauang untuk mempertimbangkan pembuatan promo bundling atau paket

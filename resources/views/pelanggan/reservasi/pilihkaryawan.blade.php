@@ -105,7 +105,7 @@
                                     <tr class="text-center">
                                         <th>Nama Perawatan</th>
                                         <th>Jam Mulai</th>
-                                        <th>Durasi</th>
+                                        <th>Durasi (Menit)</th>
                                         <th>Karyawan</th>
                                     </tr>
                                 </thead>

@@ -23,7 +23,7 @@ class Paket extends Model
 
     public function penjualans()
     {
-        return $this->belongsToMany(Penjualan::class, 'paket_penjualan', 'paket_id', 'penjualan_id')->withTimestamps();
+        return $this->belongsToMany(Penjualan::class, 'paket_penjualan', 'paket_id', 'penjualan_id')->withPivot('harga')->withTimestamps();
     }
 
     public function diskon()

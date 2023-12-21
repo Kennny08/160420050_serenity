@@ -1678,7 +1678,10 @@ class ReservasiController extends Controller
                 $idDiskonDariPaketsPenjualan = $daftarPenjualanPaket->where("diskon_id", "!=", null)->pluck("diskon_id")->unique();
                 foreach ($idDiskonDariPaketsPenjualan as $value) {
                     $diskon = Diskon::find($value);
-                    array_push($diskonAktifBerlaku, $diskon);
+                    if ((strtotime($diskon->tanggal_mulai <= strtotime($tanggalHariIni)) && strtotime($diskon->tanggal_berakhir >= strtotime($tanggalHariIni))) && $diskon->status == "aktif") {
+                        array_push($diskonAktifBerlaku, $diskon);
+                    }
+
                 }
             }
 
@@ -3471,9 +3474,9 @@ class ReservasiController extends Controller
         $pelanggan = Auth::user()->pelanggan;
 
         $tanggalDuaMingguLalu = date("Y-m-d", strtotime('-2 weeks'));
-        $cariReservasiTidakHadir = Reservasi::where("status", "tidak hadir")->whereRaw("DATE(tanggal_reservasi) >= '" . $tanggalDuaMingguLalu . "' and DATE(tanggal_reservasi) <= '" . date("Y-m-d" . "'"))->whereHas('penjualan', function ($query) use ($pelanggan){
-                $query->where('pelanggan_id', $pelanggan->id);
-            })->with("penjualan")->get();
+        $cariReservasiTidakHadir = Reservasi::where("status", "tidak hadir")->whereRaw("DATE(tanggal_reservasi) >= '" . $tanggalDuaMingguLalu . "' and DATE(tanggal_reservasi) <= '" . date("Y-m-d" . "'"))->whereHas('penjualan', function ($query) use ($pelanggan) {
+            $query->where('pelanggan_id', $pelanggan->id);
+        })->with("penjualan")->get();
 
         $hasilReservasi = [];
         $status = "";
@@ -3547,7 +3550,7 @@ class ReservasiController extends Controller
                 ->where('penjualans.tanggal_penjualan', $tanggalReservasi)
                 ->where('karyawans.id', $idKaryawan)
                 ->where('penjualans.status_selesai', 'belum')
-                
+
                 ->get();
 
             if (count($karyawan) > 0) {
@@ -4012,7 +4015,9 @@ class ReservasiController extends Controller
                     $idDiskonDariPaketsPenjualan = $daftarPenjualanPaket->where("diskon_id", "!=", null)->pluck("diskon_id")->unique();
                     foreach ($idDiskonDariPaketsPenjualan as $value) {
                         $diskon = Diskon::find($value);
-                        array_push($diskonAktifBerlaku, $diskon);
+                        if ((strtotime($diskon->tanggal_mulai <= strtotime($tanggalHariIni)) && strtotime($diskon->tanggal_berakhir >= strtotime($tanggalHariIni))) && $diskon->status == "aktif") {
+                            array_push($diskonAktifBerlaku, $diskon);
+                        }
                     }
                 }
 
