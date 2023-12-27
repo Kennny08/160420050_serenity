@@ -39,7 +39,7 @@
                                 <label for="exampleInputEmail1"><strong>Nama Produk</strong></label>
                                 <input type="text" class="form-control" name="namaProduk" id="txtNamaProduk"
                                     aria-describedby="emailHelp" placeholder="Silahkan masukkan nama produk" required
-                                    value="{{ old('namaProduk') }}">
+                                    value="{{ old('namaProduk') }}" empty="isi">
                                 <small id="emailHelp" class="form-text text-muted">Masukkan nama produk disini!</small>
                             </div>
                         </div>

@@ -88,7 +88,11 @@
                                     <td>{{ $pa->kode_paket }}</td>
                                     <td>{{ $pa->nama }}</td>
                                     <td>{{ number_format($pa->harga, 2, ',', '.') }}</td>
-                                    <td>{{ $pa->perawatans->sum('durasi') }}</td>
+                                    @php
+                                        $totalDurasiPerawatanNonKomplemen = $pa->perawatans->where("status_komplemen", "tidak")->sum("durasi");
+                                        $totalDurasiPerawatanKomplemen = $pa->perawatans->where("status_komplemen", "ya")->max("durasi");
+                                    @endphp
+                                    <td>{{ $totalDurasiPerawatanNonKomplemen + $totalDurasiPerawatanKomplemen }}</td>
                                     <td>{{ $pa->deskripsi }}</td>
                                     <td hidden>{{ date('d-m-Y', strtotime($pa->created_at)) }}</td>
                                     <td hidden>{{ date('d-m-Y', strtotime($pa->updated_at)) }}</td>

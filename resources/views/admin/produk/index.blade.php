@@ -166,7 +166,7 @@
 
                     <div class="form-group row">
                         <div class="col-md-6">
-                            <h5>Produk Tidak Diual</h5>
+                            <h5>Produk Tidak Dijual</h5>
                         </div>
                     </div>
 
@@ -177,7 +177,6 @@
                             <tr>
                                 <th>Kode Produk</th>
                                 <th>Nama</th>
-                                <th>Harga Jual(Rp)</th>
                                 <th>Harga Beli(Rp)</th>
                                 <th>Stok</th>
                                 <th>Minimum Stok</th>
@@ -203,11 +202,8 @@
                                     <td>{{ $p->nama }}</td>
                                     @if ($p->harga_beli >= $p->harga_jual)
                                         <td class="text-danger font-weight-bold">
-                                            {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                        <td class="text-danger font-weight-bold">
                                             {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
                                     @else
-                                        <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
                                         <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
                                     @endif
                                     <td>
@@ -397,7 +393,6 @@
                             <tr>
                                 <th>Kode Produk</th>
                                 <th>Nama</th>
-                                <th>Harga Jual(Rp)</th>
                                 <th>Harga Beli(Rp)</th>
                                 <th>Stok</th>
                                 <th>Minimum Stok</th>
@@ -423,11 +418,8 @@
                                     <td>{{ $p->nama }}</td>
                                     @if ($p->harga_beli >= $p->harga_jual)
                                         <td class="text-danger font-weight-bold">
-                                            {{ number_format($p->harga_jual, 2, ',', '.') }}</td>
-                                        <td class="text-danger font-weight-bold">
                                             {{ number_format($p->harga_beli, 2, ',', '.') }}</td>
                                     @else
-                                        <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
                                         <td>{{ number_format($p->harga_beli, 2, ',', '.') }}</td>
                                     @endif
                                     <td>
