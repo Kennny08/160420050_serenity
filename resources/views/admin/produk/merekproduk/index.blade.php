@@ -53,7 +53,7 @@
                                 <tr id="tr_{{ $m->id }}">
                                     <td>{{ $m->id }}</td>
                                     <td>{{ $m->nama }}</td>
-                                    <td>{{ date('d-m-Y H:i:s', strtotime($m->updated_at)) }}</td>
+                                    <td>{{ date('d-m-Y H:i:s', strtotime($m->created_at)) }}</td>
                                     <td>{{ date('d-m-Y H:i:s', strtotime($m->updated_at)) }}</td>
                                     <td class="text-center"><button idMerek="{{ $m->id }}"
                                             namaMerek="{{ $m->nama }}" data-toggle="modal"

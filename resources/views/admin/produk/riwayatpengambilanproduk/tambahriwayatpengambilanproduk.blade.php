@@ -145,6 +145,8 @@
                         </div>
                     </div>
                     <div class="form-group text-right">
+                        <a id="btnBatalTambahKondisi" href="{{ route('riwayatpengambilanproduks.index') }}"
+                                    class="btn btn-danger btn-lg waves-effect waves-light mr-3">Batal</a>
                         <button id="btnKonfirmasiPerawatan" type="button"
                             class="btn btn-primary btn-lg waves-effect waves-light">Konfirmasi</button>
                     </div>

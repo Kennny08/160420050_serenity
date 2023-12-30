@@ -659,7 +659,7 @@
                                             nomorNotaPenjualan = "{{ $penjualan->nomor_nota }}">
                                             Batalkan Penjualan
                                         </button>
-                                        <button class="btn btn-lg btn-primary waves-effect waves-light mt-3"
+                                        <button class="btn btn-lg btn-primary waves-effect waves-light mt-3 mr-3"
                                             data-toggle="modal" data-target="#modalKonfirmasiSelesaiPenjualan"
                                             id="btnKonfirmasiSelesaiReservasi"
                                             namaPelanggan = "{{ $penjualan->pelanggan->nama }}"
@@ -689,14 +689,14 @@
                                     @endif
                                 </address>
                             </div>
-                            {{-- <div class="col-5 text-right">
+                            <div class="col-5 text-right">
                                             <address>
                                                 <h4 style="font-weight: normal;">Total : </h4>
                                                 <h2 class="text-danger fw-bold">Rp.
-                                                    {{ number_format($totalHargaProduk + $totalHargaPerawatan - $jumlahPotongan, 2, ',', '.') }}
+                                                    {{ number_format($penjualan->total_pembayaran, 2, ',', '.') }}
                                                 </h2>
                                             </address>
-                                        </div> --}}
+                                        </div>
                         </div>
                     </div>
                 </div>

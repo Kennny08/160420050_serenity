@@ -53,7 +53,7 @@
                                 <tr id="tr_{{ $k->id }}">
                                     <td>{{ $k->id }}</td>
                                     <td>{{ $k->keterangan }}</td>
-                                    <td>{{ date('d-m-Y H:i:s', strtotime($k->updated_at)) }}</td>
+                                    <td>{{ date('d-m-Y H:i:s', strtotime($k->created_at)) }}</td>
                                     <td>{{ date('d-m-Y H:i:s', strtotime($k->updated_at)) }}</td>
                                     <td class="text-center"><button idKondisi="{{ $k->id }}"
                                             namaKondisi="{{ $k->keterangan }}" data-toggle="modal"

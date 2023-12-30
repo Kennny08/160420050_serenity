@@ -345,7 +345,7 @@
                                                     disabled data-bs-toggle="tooltip" data-bs-placement="right"
                                                     title="Pastikan telah memilih karyawan untuk setiap perawatan!"
                                                     style="margin: 0px; width: 100%; background-color: #273ED4ab;">Konfirmasi
-                                                    Reservasi</button>
+                                                    Karyawan</button>
                                             </div>
                                         </div>
                                     </div>
@@ -380,7 +380,7 @@
             });
             if (count == 0) {
                 $("#divBtnKonfirmasi").html(
-                    "<button id='btnKonfirmasiPerawatan' class='add-cart ' type='submit' data-bs-toggle='tooltip' data-bs-placement='right' title='Pastikan telah memilih karyawan untuk setiap perawatan!' style='margin: 0px; width: 100%; background-color: #273ED4;'>Konfirmasi Reservasi</button> </div>"
+                    "<button id='btnKonfirmasiPerawatan' class='add-cart ' type='submit' data-bs-toggle='tooltip' data-bs-placement='right' title='Pastikan telah memilih karyawan untuk setiap perawatan!' style='margin: 0px; width: 100%; background-color: #273ED4;'>Konfirmasi Karyawan</button> </div>"
                 );
             } else {
                 $("#btnKonfirmasiReservasi").attr('disabled', true);

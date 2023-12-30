@@ -290,7 +290,7 @@
             });
             if (count == 0) {
                 $("#divBtnKonfirmasi").html(
-                    "<button id='btnKonfirmasiReservasi' style='width: 200px' type='submit' class='btn btn-primary btn-lg text-center'>Konfirmasi Reservasi</button>"
+                    "<button id='btnKonfirmasiReservasi' style='width: 200px' type='submit' class='btn btn-primary btn-lg text-center'>Konfirmasi Karyawan</button>"
                 );
             } else {
                 $("#btnKonfirmasiReservasi").attr('disabled', true);
