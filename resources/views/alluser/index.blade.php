@@ -95,9 +95,14 @@
                                 </li>
                                 <li><a href="{{ route('users.tentangkami') }}">Tentang Kami</a></li>
                                 @if (Auth::check())
-                                    @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
-                                        <li><a href="{{ route('allindex') }}">Halaman Admin</a>
-                                        </li>
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->role == 'karyawan')
+                                        @if (Auth::user()->role == 'admin')
+                                            <li><a href="{{ route('allindex') }}">Halaman Admin</a>
+                                            </li>
+                                        @else
+                                            <li><a href="{{ route('allindex') }}">Halaman Karyawan</a>
+                                            </li>
+                                        @endif
                                     @endif
                                 @endif
                             </ul>
@@ -176,8 +181,12 @@
                     </li>
                     <li><a href="{{ route('users.tentangkami') }}">Tentang Kami</a></li>
                     @if (Auth::check())
-                        @if (Auth::user()->role == 'admin' || Auth::user()->karyawan->jenis_karyawan == 'admin')
-                            <li><a href="{{ route('allindex') }}">Halaman Admin</a></li>
+                        @if (Auth::user()->role == 'admin' || Auth::user()->role == 'karyawan')
+                            @if (Auth::user()->role == 'admin')
+                                <li><a href="{{ route('allindex') }}">Halaman Admin</a></li>
+                            @else
+                                <li><a href="{{ route('allindex') }}">Halaman Karyawan</a></li>
+                            @endif
                         @endif
                     @endif
                 </ul>
@@ -224,9 +233,18 @@
                                                 <span class="category">{{ $tanggalHariIni }}</span>
                                                 <h2 class="title-1">Tingkatkan Penampilanmu,<br>
                                                     Rasakan Sendiri Hasilnya</h2>
-                                                <a data-bs-toggle="modal" data-bs-target="#loginActive"
-                                                    class="btn btn-lg btn-primary btn-hover-dark">
-                                                    Reservasi Sekarang </a>
+                                                @if (Auth::check())
+                                                    @if (Auth::user()->role != 'admin' && Auth::user()->role != 'karyawan')
+                                                        <a data-bs-toggle="modal" data-bs-target="#loginActive"
+                                                            class="btn btn-lg btn-primary btn-hover-dark">
+                                                            Reservasi Sekarang </a>
+                                                    @endif
+                                                @else
+                                                    <a data-bs-toggle="modal" data-bs-target="#loginActive"
+                                                        class="btn btn-lg btn-primary btn-hover-dark">
+                                                        Reservasi Sekarang </a>
+                                                @endif
+
                                             </div>
                                         </div>
                                         <div
@@ -252,9 +270,18 @@
                                                 <span class="category">{{ $tanggalHariIni }}</span>
                                                 <h2 class="title-1">Carilah Gayamu Sendiri,<br>
                                                     Percayakan Penampilanmu Disini</h2>
-                                                <a data-bs-toggle="modal" data-bs-target="#loginActive"
-                                                    class="btn btn-lg btn-primary btn-hover-dark">
-                                                    Reservasi Sekarang </a>
+                                                @if (Auth::check())
+                                                    @if (Auth::user()->role != 'admin' && Auth::user()->role != 'karyawan')
+                                                        <a data-bs-toggle="modal" data-bs-target="#loginActive"
+                                                            class="btn btn-lg btn-primary btn-hover-dark">
+                                                            Reservasi Sekarang </a>
+                                                    @endif
+                                                @else
+                                                    <a data-bs-toggle="modal" data-bs-target="#loginActive"
+                                                        class="btn btn-lg btn-primary btn-hover-dark">
+                                                        Reservasi Sekarang </a>
+                                                @endif
+
                                             </div>
                                         </div>
                                         <div
@@ -857,7 +884,7 @@
                                 <input type="password" placeholder="Password" name="password" required>
                                 <div class="remember-forget-wrap">
                                     <div class="forget-wrap">
-                                        <a href="#">Lupa Password?</a>
+                                        <a href="{{ route('lupapassword') }}">Lupa Password?</a>
                                     </div>
                                 </div>
                                 <div class="text-center">

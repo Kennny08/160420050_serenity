@@ -40,6 +40,8 @@ class SendMail extends Mailable
             return $this->subject('Data Login Karyawan')->view('mail.tambahdatakaryawanbaru');
         }elseif($this->type == "kirimpesankaryawansakitizin"){
             return $this->subject('Informasi Reservasi Salon')->view('mail.karyawanizinsakit');
+        } elseif ($this->type == "kirimpesanotplupapassword") {
+            return $this->subject('Kode OTP Lupa Password')->view('mail.kirimotplupapassword');
         }
         
     }

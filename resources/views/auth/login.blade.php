@@ -229,7 +229,7 @@
                                                             style="border-radius: 5px;font-size: 1.1em;"
                                                             placeholder="Masukkan Password" required />
                                                         <div class="button-box">
-                                                            <a class="fw-bold" href="#">Lupa Password?</a>
+                                                            <a class="fw-bold" href="{{ route("lupapassword") }}">Lupa Password?</a>
                                                             <button style="float: right; border-radius: 5px;"
                                                                 type="submit"><span>Login</span></button>
                                                         </div>

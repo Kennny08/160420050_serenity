@@ -77,6 +77,12 @@ Route::get('/serenity/tentangkami', function () {
 Route::get('/pelanggan/register', [PelangganController::class, "bukaRegisterAkun"])->name("pelanggans.bukaregister");
 Route::post('/pelanggan/prosesregister', [PelangganController::class, "registerAkun"])->name("pelanggans.register");
 
+//LUPA PASSWORD
+Route::get('/serenity/lupapassword', [UserController::class, "kirimEmailLupaPassword"])->name("lupapassword");
+Route::post('/serenity/kirimemaillupapassword', [UserController::class, "prosesKirimEmailLupaPassword"])->name("kirimemaillupapassword");
+Route::get('/serenity/newpassword', [UserController::class, "newPassword"])->name("newpassword");
+Route::post('/serenity/prosesnewpassword', [UserController::class, "prosesGantiLupaPassword"])->name("prosesnewpassword");
+
 //ADMIN
 Route::middleware(['auth', 'salon'])->group(function () {
 

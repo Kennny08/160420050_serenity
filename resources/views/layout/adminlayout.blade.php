@@ -195,8 +195,8 @@
                             </a>
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated profile-dropdown">
                                 <!-- item-->
-                                <a class="dropdown-item" href="#"><i class="mdi mdi-account-circle"></i>
-                                    Profile</a>
+                                {{-- <a class="dropdown-item" href="#"><i class="mdi mdi-account-circle"></i>
+                                    Profile</a> --}}
                                 {{-- <a class="dropdown-item" href="#"><i class="mdi mdi-wallet"></i> My Wallet</a>
                                 <a class="dropdown-item d-block" href="#"><span
                                         class="badge badge-success float-right">11</span><i

@@ -10,6 +10,8 @@ use App\Models\Perawatan;
 use App\Models\Produk;
 use App\Models\Reservasi;
 use App\Models\Ulasan;
+use App\Models\User;
+use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -183,13 +185,97 @@ class UserController extends Controller
             }
             $penjualansSelesai = Penjualan::where("status_selesai", "selesai")->get();
 
-            $ulasans = Ulasan::where("status", "aktif")->inRandomOrder()->limit(3)->get();
+            $ulasans = Ulasan::where("status", "aktif")->inRandomOrder()->limit(10)->get();
 
             $pakets = Paket::where("status", "aktif")->inRandomOrder()->limit(4)->get();
 
 
             return view("alluser.index", compact('tanggalHariIni', 'totalReservasi', 'totalPerawatan', 'totalProduk', 'perawatans', 'penjualanPerawatans', 'produks', 'penjualansSelesai', 'ulasans', 'pakets'));
         }
+
+    }
+
+    public function kirimEmailLupaPassword()
+    {
+        if (!Auth::check()) {
+            return view("alluser.lupapassword.kirimemaillupapassword");
+        } else {
+            return redirect()->route("allindex");
+        }
+
+    }
+
+    public function prosesKirimEmailLupaPassword(Request $request)
+    {
+        $username = $request->get("username");
+        $user = User::where("username", $username)->first();
+
+        if ($user == null) {
+            return redirect()->back("Pengguna tidak terdaftar. Mohon periksa username Anda!");
+        } else {
+            $randomOTP = "";
+            for ($i = 0; $i < 4; $i++) {
+                $randomOTP .= random_int(1, 9);
+            }
+
+            session(['otplupapassword' => $randomOTP, 'username' => $username]);
+
+            MailController::mailOTPLupaPassword($user->email, $randomOTP);
+
+            return redirect()->route('newpassword');
+        }
+
+
+    }
+
+    public function newPassword()
+    {
+        if (Auth::check()) {
+            return redirect()->route("allindex");
+        } else {
+            $sessionOTP = session('otplupapassword');
+            $sessionUsername = session("username");
+            if ($sessionOTP != null && $sessionUsername != null) {
+                return view("alluser.lupapassword.passwordbaru");
+            } else {
+                return redirect()->route("allindex");
+            }
+        }
+
+    }
+
+    public function prosesGantiLupaPassword(Request $request)
+    {
+        $password = $request->get("password");
+        $konfirmasiPassword = $request->get("konfirmasipassword");
+        $otp = $request->get("otp");
+        $otpSession = session('otplupapassword');
+
+        $pesan = [];
+        if ($password != $konfirmasiPassword || $otp != $otpSession) {
+            if ($password != $konfirmasiPassword) {
+                array_push($pesan, "Konfirmasi Password tidak sama dengan Password Anda!");
+            }
+
+            if ($otp != $otpSession) {
+                array_push($pesan, "Mohon masukkan Kode OTP sesuai dengan yang Anda terima pada Email!");
+            }
+            array_push($pesan, $otpSession);
+        }
+
+        if (count($pesan) > 0) {
+            return redirect()->route("newpassword")->withErrors($pesan);
+        } else {
+            $user = User::where("username", session('username'))->first();
+            $user->password = Hash::make($password);
+            $user->save();
+            session()->forget('otplupapassword');
+            session()->forget('username');
+            return redirect()->route("login")->with("status", "Password Baru telah disimpan. Silahkan Login dengan Password Baru Anda!");
+
+        }
+
+
 
     }
 }

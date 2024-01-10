@@ -6,7 +6,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="robots" content="index, follow" />
     <title id="titletitle">
-        Serenity
+        Serenity || Lupa Password
     </title>
     <meta name="description" content="Jesco - Fashoin eCommerce HTML Template" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -84,23 +84,6 @@
                                     </li>
                                 @endif
 
-                                @if (Auth::check())
-                                    @if (Auth::user()->role == 'pelanggan')
-                                        <li class="dropdown "><a href="#">Reservasi <i
-                                                    class="pe-7s-angle-down"></i></a>
-                                            <ul class="sub-menu">
-                                                <li><a href="{{ route('reservasis.pelanggan.create') }}">Buat
-                                                        Reservasi</a>
-                                                </li>
-                                                <li><a
-                                                        href="{{ route('reservasis.riwayatreservasispelanggan.index') }}">Riwayat
-                                                        Reservasi</a></li>
-                                            </ul>
-                                        </li>
-                                    @endif
-                                @endif
-
-
                                 <li class="dropdown "><a href="#">Informasi Salon <i
                                             class="pe-7s-angle-down"></i></a>
                                     <ul class="sub-menu">
@@ -138,24 +121,8 @@
                                     @csrf
                                 </form>
                             @else
-                                <a href="login.html" class="header-action-btn login-btn h5" data-bs-toggle="modal"
-                                    data-bs-target="#loginActive">Log In</a>
+                                <a href="{{ route("login") }}" class="header-action-btn login-btn h5" >Log In</a>
                             @endif
-
-
-
-                            <!-- Single Wedge Start -->
-                            <!-- Single Wedge End -->
-                            <!-- Single Wedge Start -->
-                            {{-- <a href="#offcanvas-wishlist" class="header-action-btn offcanvas-toggle">
-                                <i class="pe-7s-like"></i>
-                            </a> --}}
-                            <!-- Single Wedge End -->
-                            {{-- <a href="#offcanvas-cart"
-                                class="header-action-btn header-action-btn-cart offcanvas-toggle pr-0">
-                                <i class="pe-7s-shopbag"></i>
-                                <span class="header-action-num">01</span> --}}
-                            <!-- <span class="cart-amount">€30.00</span> -->
                             </a>
                             <a href="#offcanvas-mobile-menu"
                                 class="header-action-btn header-action-btn-menu offcanvas-toggle d-lg-none">
@@ -192,25 +159,11 @@
                         </li>
                     @endif
 
-                    @if (Auth::check())
-                        @if (Auth::user()->role == 'pelanggan')
-                            <li><a href="#"><span class="menu-text">Reservasi</span></a>
-                                <ul class="sub-menu">
-                                    <li><a href="{{ route('reservasis.pelanggan.create') }}">Buat Reservasi</a></li>
-                                    <li><a href="{{ route('reservasis.riwayatreservasispelanggan.index') }}">Riwayat
-                                            Reservasi</a></li>
-                                </ul>
-                            </li>
-                        @endif
-                    @endif
-
-
                     <li><a href="#"><span class="menu-text">Informasi Salon</span></a>
                         <ul class="sub-menu">
                             <li><a href="{{ route('perawatans.daftarperawatanalluser') }}">Perawatan</a></li>
                             <li><a href="{{ route('produks.daftarprodukalluser') }}">Produk</a></li>
                             <li><a href=" {{ route('pakets.daftarpaketalluser') }}">Paket</a></li>
-
                         </ul>
                     </li>
                     <li><a href="{{ route('users.tentangkami') }}">Tentang Kami</a></li>
@@ -252,76 +205,82 @@
     <div class="content-page">
         <div class="content">
             <div class="container-fluid">
-                <!-- Product Details Area Start -->
-                <div class="product-details-area pt-100px pb-100px">
+                <div class="login-register-area pt-100px pb-100px">
                     <div class="container">
                         <div class="row">
-                            <div class="col-lg-6 col-sm-12 col-xs-12 mb-lm-30px mb-md-30px mb-sm-30px">
-                                <!-- Swiper -->
-                                <div class="swiper-container zoom-top">
-                                    <div class="swiper-wrapper">
-                                        <div class="swiper-slide zoom-image-hover">
-                                            <img class="img-responsive m-auto"
-                                                src="{{ asset('assets_admin/images/produk/' . $produk->gambar) }}"
-                                                alt="">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div hidden class="swiper-container zoom-thumbs mt-3 mb-3">
-                                    <div class="swiper-wrapper">
-                                        <div class="swiper-slide">
-                                            <img class="img-responsive m-auto"
-                                                src="{{ asset('assets_admin/images/produk/' . $produk->gambar) }}"
-                                                alt="">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-sm-12 col-xs-12" data-aos="fade-up" data-aos-delay="200">
-                                <div class="product-details-content quickview-content">
-                                    <h2>{{ $produk->nama }}</h2>
-                                    <div class="pricing-meta">
-                                        <ul>
-                                            <li class="old-price not-cut">Rp.
-                                                {{ number_format($produk->harga_jual, 2, ',', '.') }}</li>
-                                        </ul>
+                            <div class="col-lg-7 col-md-12 ml-auto mr-auto">
+                                <div class="login-register-wrapper">
+                                    <div class="login-register-tab-list nav">
+                                        <a class="active" href="{{ route('lupapassword') }}">
+                                            <h4>Lupa Password</h4>
+                                        </a>
                                     </div>
 
-                                    <p class="mt-30px mb-0">{{ $produk->deskripsi }}</p>
-                                    <br>
-                                    <div class="pro-details-sku-info pro-details-same-style  d-flex">
-                                        <span>Kode Produk: </span>
-                                        <ul class="d-flex">
-                                            <li>
-                                                {{ $produk->kode_produk }}
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="pro-details-categories-info pro-details-same-style d-flex">
-                                        <span>Kategori: </span>
-                                        <ul class="d-flex">
-                                            <li>
-                                                {{ $produk->kategori->nama }}
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="pro-details-social-info pro-details-same-style d-flex">
-                                        <span>Keterangan Kondisi: </span>
-                                        @php
-                                            $arrKondisi = [];
-                                            foreach ($produk->kondisis as $kondisi) {
-                                                array_push($arrKondisi, $kondisi->keterangan);
-                                            }
-                                        @endphp
-                                        {{ implode(', ', $arrKondisi) }}
+                                    @if ($errors->any())
+                                        <input type="hidden" value="errorLogin" class="errorLogin">
+                                        <div class="alert alert-danger alert-dismissible" role="alert">
+                                            <button type="button" class="close text-danger" data-bs-dismiss="alert"
+                                                aria-label="Close"
+                                                style="float: right; position: absolute;top: 0;right: 0;padding: 0.75rem 1.25rem">
+                                                <span class="text-danger" aria-hidden="true">&times;</span>
+                                            </button>
+                                            <p class="mb-0"><strong>Maaf, terjadi kesalahan!</strong></p>
+                                            @foreach ($errors->all() as $error)
+                                                <p class="mt-0 mb-1">- {{ $error }}</p>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    @if (session('status'))
+                                        <div class="alert alert-success alert-dismissible" role="alert">
+                                            <button
+                                                style="float: right; position: absolute;top: 0;right: 0;padding: 0.75rem 1.25rem"
+                                                type="button" class="close text-danger" data-bs-dismiss="alert"
+                                                aria-label="Close">
+                                                <span class="text-danger" aria-hidden="true">&times;</span>
+                                            </button>
+                                            {{ session('status') }}
+                                        </div>
+                                    @endif
+                                    <div class="tab-content">
+
+                                        <div id="lg1" class="tab-pane active">
+
+                                            <div class="login-form-container">
+
+                                                <div class="login-register-form">
+                                                    <form action="{{ route('kirimemaillupapassword') }}"
+                                                        method="POST">
+
+                                                        @csrf
+                                                        <label class="fw-bold h6"
+                                                            style="margin-bottom: 20px;">Username</label>
+                                                        <input type="text" name="username"
+                                                            style="border-radius: 5px;font-size: 1.1em;"
+                                                            placeholder="Masukkan Username" required />
+                                                        <div style="margin-bottom: 20px">
+                                                            <h6 class="text-danger ">
+                                                                * Kode OTP penggantian password akan dikirimkan pada
+                                                                email
+                                                            </h6>
+                                                        </div>
+
+                                                        <div class="button-box">
+
+                                                            <button style="float: right; border-radius: 5px;"
+                                                                type="submit"><span>Kirim</span></button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-
             </div>
 
         </div>
@@ -380,19 +339,17 @@
                                 <div class="footer-links">
                                     <div class="footer-row">
                                         <ul class="align-items-center">
-                                            <ul class="align-items-center">
-                                                <li class="li"><a class="single-link"
-                                                        href=" {{ route('perawatans.daftarperawatanalluser') }}">
-                                                        Perawatan
-                                                    </a>
-                                                </li>
-                                                <li class="li"><a class="single-link"
-                                                        href="{{ route('produks.daftarprodukalluser') }}">Produk</a>
-                                                </li>
-                                                <li class="li"><a class="single-link"
-                                                        href=" {{ route('pakets.daftarpaketalluser') }}">Paket</a>
-                                                </li>
-                                            </ul>
+                                            <li class="li"><a class="single-link"
+                                                    href=" {{ route('perawatans.daftarperawatanalluser') }}">
+                                                    Perawatan
+                                                </a>
+                                            </li>
+                                            <li class="li"><a class="single-link"
+                                                    href="{{ route('produks.daftarprodukalluser') }}">Produk</a>
+                                            </li>
+                                            <li class="li"><a class="single-link"
+                                                    href=" {{ route('pakets.daftarpaketalluser') }}">Paket</a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -436,59 +393,7 @@
     </div>
     <!-- Footer Area End -->
 
-    <!-- Login Modal Start -->
-    <div class="modal popup-login-style" id="loginActive">
-        <button type="button" class="close-btn" data-bs-dismiss="modal"><span
-                aria-hidden="true">&times;</span></button>
-        <div class="modal-overlay">
-            <div class="modal-dialog p-0" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div class="login-content">
-                            <h2>Login</h2>
-                            <h3>Login ke Akun Anda</h3>
-                            @if ($errors->any())
-                                <input type="hidden" value="errorLogin" class="errorLogin">
-                                <div class="alert alert-danger alert-dismissible" role="alert">
-                                    <button type="button" class="close text-danger" data-bs-dismiss="alert"
-                                        aria-label="Close"
-                                        style="float: right; position: absolute;top: 0;right: 0;padding: 0.75rem 1.25rem">
-                                        <span class="text-danger" aria-hidden="true">&times;</span>
-                                    </button>
-                                    <p class="mb-0"><strong>Maaf, terjadi kesalahan!</strong></p>
-                                    @foreach ($errors->all() as $error)
-                                        <p class="mt-0 mb-1">- {{ $error }}</p>
-                                    @endforeach
-                                </div>
-                            @else
-                                <input type="hidden" value="tidakLogin" class="errorLogin">
-                            @endif
-                            <form method="POST" action="{{ route('login') }}">
-                                @csrf
-                                <input type="text" placeholder="Username" name="username"
-                                    value="{{ old('username') }}" required>
-                                <input type="password" placeholder="Password" name="password" required>
-                                <div class="remember-forget-wrap">
-                                    <div class="forget-wrap">
-                                        <a href="{{ route('lupapassword') }}">Lupa Password?</a>
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <button type="submit" style="width: 50%">Log in</button>
-                                </div>
 
-                                <div class="member-register">
-                                    <p> Belum punya Akun? <a id="btnModalRegister" style="cursor: pointer;"
-                                            href="{{ route('pelanggans.bukaregister') }}">
-                                            Register Sekarang</a></p>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Login Modal End -->
     <!-- Modal -->
 

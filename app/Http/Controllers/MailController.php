@@ -29,4 +29,11 @@ class MailController extends Controller
         $details = ['nomor_nota' => $nomorNota];
         Mail::to($email)->send(new SendMail('kirimpesankaryawansakitizin', $details));
     }
+
+    public static function mailOTPLupaPassword($email, $kodeOTP)
+    {
+
+        $details = ['kode_otp' => $kodeOTP];
+        Mail::to($email)->send(new SendMail('kirimpesanotplupapassword', $details));
+    }
 }

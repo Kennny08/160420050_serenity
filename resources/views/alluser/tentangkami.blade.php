@@ -111,6 +111,17 @@
                                     </ul>
                                 </li>
                                 <li><a href="{{ route('users.tentangkami') }}">Tentang Kami</a></li>
+                                @if (Auth::check())
+                                    @if (Auth::user()->role == 'admin' || Auth::user()->role == 'karyawan')
+                                        @if (Auth::user()->role == 'admin')
+                                            <li><a href="{{ route('allindex') }}">Halaman Admin</a>
+                                            </li>
+                                        @else
+                                            <li><a href="{{ route('allindex') }}">Halaman Karyawan</a>
+                                            </li>
+                                        @endif
+                                    @endif
+                                @endif
                             </ul>
                         </div>
                     </div>
@@ -202,6 +213,15 @@
                         </ul>
                     </li>
                     <li><a href="{{ route('users.tentangkami') }}">Tentang Kami</a></li>
+                    @if (Auth::check())
+                        @if (Auth::user()->role == 'admin' || Auth::user()->role == 'karyawan')
+                            @if (Auth::user()->role == 'admin')
+                                <li><a href="{{ route('allindex') }}">Halaman Admin</a></li>
+                            @else
+                                <li><a href="{{ route('allindex') }}">Halaman Karyawan</a></li>
+                            @endif
+                        @endif
+                    @endif
                 </ul>
             </div>
             <!-- OffCanvas Menu End -->
@@ -345,7 +365,7 @@
                                     <p class="mail">Email:<a
                                             href="mailto:serenity160420050@gmail.com">serenity160420050@gmail.com</a>
                                     </p>
-                                    
+
 
                                     <!-- News letter area  End -->
                                 </div>
@@ -404,7 +424,7 @@
                                 <input type="password" placeholder="Password" name="password" required>
                                 <div class="remember-forget-wrap">
                                     <div class="forget-wrap">
-                                        <a href="#">Lupa Password?</a>
+                                        <a href="{{ route('lupapassword') }}">Lupa Password?</a>
                                     </div>
                                 </div>
                                 <div class="text-center">

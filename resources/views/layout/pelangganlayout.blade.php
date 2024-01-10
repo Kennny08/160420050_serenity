@@ -330,7 +330,7 @@
                                 <input type="password" placeholder="Password">
                                 <div class="remember-forget-wrap">
                                     <div class="forget-wrap">
-                                        <a href="#">Lupa Password?</a>
+                                        <a href="{{ route("lupapassword") }}">Lupa Password?</a>
                                     </div>
                                 </div>
                                 <div class="text-center">
