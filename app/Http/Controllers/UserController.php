@@ -260,7 +260,6 @@ class UserController extends Controller
             if ($otp != $otpSession) {
                 array_push($pesan, "Mohon masukkan Kode OTP sesuai dengan yang Anda terima pada Email!");
             }
-            array_push($pesan, $otpSession);
         }
 
         if (count($pesan) > 0) {
