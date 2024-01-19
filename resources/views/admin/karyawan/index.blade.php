@@ -31,7 +31,7 @@
                     @endif
 
                     <div>
-                        <table id="tabelDaftarKaryawan" class="table table-bordered dt-responsive nowrap text-center w-100"
+                        <table id="tabelDaftarKaryawan" class="table table-bordered dt-responsive table-striped nowrap text-center w-100"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>

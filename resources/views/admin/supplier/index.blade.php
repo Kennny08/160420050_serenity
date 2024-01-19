@@ -29,7 +29,7 @@
                     @endif
 
                     <div>
-                        <table id="tabelDaftarSupplier" class="table table-bordered dt-responsive wrap text-center w-100"
+                        <table id="tabelDaftarSupplier" class="table table-bordered table-striped dt-responsive wrap text-center w-100"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>

@@ -25,7 +25,7 @@
                     @endif
 
                     <div>
-                        <table id="tabelDaftarSupplier" class="table table-bordered dt-responsive nowrap text-center w-100"
+                        <table id="tabelDaftarSupplier" class="table table-bordered table-striped dt-responsive wrap text-center w-100"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -48,15 +48,15 @@
                                     <tr class="align-middle" id="tr_{{ $p->id }}">
                                         <td>{{ $p->id }}</td>
                                         <td>{{ $p->nama }}</td>
-                                        <td>{{ date('d-m-Y H:i:s', strtotime($p->tanggal_lahir)) }}</td>
+                                        <td>{{ date('d-m-Y', strtotime($p->tanggal_lahir)) }}</td>
                                         <td>{{ $p->alamat }}</td>
                                         <td>{{ $p->nomor_telepon }}</td>
                                         <td>{{ $p->gender }}</td>
                                         <td>{{ $p->user->email }}</td>
                                         <td>{{ number_format($penjualanSelesai->where('pelanggan_id', $p->id)->sum('total_pembayaran'), 2, ',', '.') }}
                                         </td>
-                                        <td>{{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}</td>
-                                        <td>{{ date('d-m-Y H:i:s', strtotime($p->updated_at)) }}</td>
+                                        <td>{{ date('d-m-Y H:i', strtotime($p->created_at)) }}</td>
+                                        <td>{{ date('d-m-Y H:i', strtotime($p->updated_at)) }}</td>
                                         {{-- <td class="text-center"><button data-toggle="modal"
                                                     data-target="#modalDetailPembelianSupplier" nama ="{{ $s->nama }}"
                                                     idSupplier = "{{ $s->id }}"
