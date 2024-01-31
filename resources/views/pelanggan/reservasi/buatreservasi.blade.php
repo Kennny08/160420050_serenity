@@ -275,7 +275,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <small id="emailHelp" class="form-text text-muted">Pilih Layanan Perawatan disini!</small>
+                                <small id="emailHelp" class="form-text text-muted">Pilih Paket Layanan disini!</small>
                             </div>
 
                             @if (session('arrPaketObject'))
