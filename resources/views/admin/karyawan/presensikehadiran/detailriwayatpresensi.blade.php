@@ -20,7 +20,12 @@
                             @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
                                 {{ date('d-m-Y H:i', strtotime($p->created_at)) }}
                             @else
-                                <span class="text-danger">Tidak Presensi</span>
+                                @if ($p->status == 'konfirmasi')
+                                    {{ date('H:i', strtotime($p->updated_at)) }} <br> <span class="text-danger">*oleh
+                                        Admin</span>
+                                @else
+                                    <span class="text-danger">Tidak Presensi</span>
+                                @endif
                             @endif
                         @else
                             @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')

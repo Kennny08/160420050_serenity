@@ -171,8 +171,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item waves-effect waves-light">
-                                        <a class="nav-link " data-toggle="tab" href="#ulasan"
-                                            role="tab">
+                                        <a class="nav-link " data-toggle="tab" href="#ulasan" role="tab">
                                             <span class="d-none d-md-block" style="font-size: 1.1em;">Ulasan</span>
                                             <span class="d-block d-md-none"><i class="fas fa-star"
                                                     aria-hidden="true"></i></span>
@@ -586,6 +585,12 @@
                                                 @endphp
                                             </address>
                                         </div>
+
+                                        <div class="col-12 text-right">
+                                            <button id="btnBatalkanDiskon" data-toggle="modal" data-target="#modalKonfirmasiBatalkanDiskon"
+                                                class="btn btn-lg btn-danger waves-effect waves-light mb-2">Batalkan
+                                                Diskon</button>
+                                        </div>
                                     @endif
 
                                 </div>
@@ -798,6 +803,42 @@
             </div>
             <!-- /.modal-dialog -->
         </div>
+
+        @if ($reservasi->penjualan->diskon != null)
+            <div id="modalKonfirmasiBatalkanDiskon" class="modal fade bs-example-modal-center" tabindex="-1"
+                role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title mt-0">Konfirmasi Batalkan Diskon</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center" id="modalBodyBatalkanDiskon">
+
+                            <h6>Apakah Anda yakin ingin membatalkan diskon <br> <span class="text-danger">{{ $reservasi->penjualan->diskon->nama }}</span>?
+                            </h6>
+                        </div>
+                        <div class="modal-footer">
+                            <form action="{{ route('admin.diskons.bataldiskon') }}" method="post">
+                                @csrf
+                                <input type="hidden" name="idPenjualan"
+                                    value="{{ $reservasi->penjualan->id }}">
+                                <button type="button" class="btn btn-danger waves-effect mr-2"
+                                    data-dismiss="modal">Tidak</button>
+                                <button type="submit" class="btn btn-info waves-effect">Ya</button>
+                            </form>
+
+
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+        @endif
+
 
 
 

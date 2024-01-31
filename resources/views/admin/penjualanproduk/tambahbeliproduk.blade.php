@@ -364,6 +364,32 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+
+    <div id="modalBerhasilTambahProduk" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="modalJudulBerhasilTambahProduk" class="modal-title mt-0">Keterangan Penambahan Produk </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center d-flex align-items-center justify-content-center"
+                    style="overflow-y: auto; height: 150px">
+                    <h5 id="textModalBerhasilTambahProduk">Berhasil menambahkan produk ke Keranjang
+                    </h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger waves-effect" id="btnBerhasilTambahProduk"
+                        data-dismiss="modal">Tutup</button>
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @endsection
 
 @section('javascript')
@@ -492,6 +518,8 @@
                             "' id='stokproduk_" + idProduk + "' name='arraystokproduk[]'>");
                     }
                     $("#modalDetailProduk").modal('hide');
+                    $("#textModalBerhasilTambahProduk").html("Berhasil menambahkan produk <span class='text-success'>" + namaProduk + "</span> berjumlah <span  class='text-success'>" + stokDiambil + "</span> ke dalam Keranjang!");
+                    $("#modalBerhasilTambahProduk").modal('show');
                 }
             } else {
                 $("#setNumberJumlahProduk").val("1");

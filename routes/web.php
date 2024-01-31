@@ -177,6 +177,7 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::get('/salon/penjualan/admin/tambahproduk/{id}', [ProdukController::class, "penjualanTambahProduk"])->name("penjualan.admin.penjualantambahproduk");
         Route::post('/salon/penjualan/admin/tambahproduk/konfirmasiproduk', [PenjualanController::class, "konfirmasiPenambahanProduk"])->name("penjualans.admin.konfirmasipenambahanproduk");
         Route::get('/salon/reservasi/admin/detailreservasi/{idReservasi}', [ReservasiController::class, "detailReservasi"])->name("reservasi.admin.detailreservasi");
+        
         Route::post('/salon/reservasi/admin/batalkan', [ReservasiController::class, "adminBatalkanReservasi"])->name("reservasi.admin.batalkan");
         Route::post('/salon/reservasi/admin/selesai', [ReservasiController::class, "adminSelesaiReservasi"])->name("reservasi.admin.selesai");
 
@@ -282,6 +283,7 @@ Route::middleware(['auth', 'salon'])->group(function () {
         Route::put('/salon/diskon/{idPaket}/udpate', [DiskonController::class, "update"])->name("diskons.update");
         Route::get('/salon/diskon/pilihdiskon/{idPenjualan}', [DiskonController::class, 'pilihDiskon'])->name('admin.diskons.pilihdiskon');
         Route::post('/salon/diskon/prosespemakaiandiskon', [DiskonController::class, 'prosesPemakaianDiskon'])->name('admin.diskons.prosespemakaiandiskon');
+        Route::post('/salon/diskon/batalkandiskon', [DiskonController::class, "adminBatalkanDiskon"])->name("admin.diskons.bataldiskon");
 
         //Pelanggan
         Route::get('/salon/pelanggan/index', [PelangganController::class, "daftarPelanggan"])->name("pelanggans.admin.daftarpelanggan");
@@ -353,6 +355,7 @@ Route::middleware(['auth', 'pelanggan'])->group(function () {
 
     Route::get('/pelanggan/diskon/pilihdiskon/{idPenjualan}', [DiskonController::class, 'pilihDiskonPelanggan'])->name('diskons.pelanggan.pilihdiskon');
     Route::post('/pelanggan/diskon/prosespemakaiandiskon', [DiskonController::class, 'prosesPemakaianDiskonPelanggan'])->name('diskons.pelanggan.prosespemakaiandiskon');
+    Route::post('/pelanggan/diskon/batalkandiskon', [DiskonController::class, 'batalkanDiskonPelanggan'])->name('diskons.pelanggan.batalkandiskon');
 
     Route::post('/pelanggan/reservasi/batalkan', [ReservasiController::class, "pelangganBatalkanReservasi"])->name("reservasis.pelanggan.batalkan");
 

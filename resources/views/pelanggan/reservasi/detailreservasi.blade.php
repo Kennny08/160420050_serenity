@@ -617,29 +617,7 @@
                                         </blockquote>
                                     </div>
                                 </div>
-                            @else
-                                <div class="col-md-12 text-center">
-                                    <div class="card text-white text-center w-60 mx-auto"
-                                        style="background-color: #DFCFF9">
-                                        <div class="card-body">
-                                            <blockquote class="card-bodyquote mb-0">
-                                                <h4 class="">
-                                                    {{ $reservasi->penjualan->diskon->nama }}
-                                                </h4>
-                                                <footer class=" text-white font-12">
-                                                    <h5 class="">Potongan sebesar
-                                                        {{ $reservasi->penjualan->diskon->jumlah_potongan }}%
-                                                        dengan maksimum potongan sebesar Rp.
-                                                        {{ number_format($reservasi->penjualan->diskon->maksimum_potongan, 2, ',', '.') }}
-                                                    </h5>
-                                                </footer>
-                                            </blockquote>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-
-                            <div class="col-md-12" style="margin-top: 45px;">
+                                <div class="col-md-12" style="margin-top: 45px;">
                                 <div class="row">
                                     @if ($reservasi->penjualan->diskon == null && $jumlahDiskonValid > 0)
                                         <div class="col-md-12 mt-2 text-left">
@@ -701,6 +679,53 @@
 
                                 </div>
                             </div>
+                            @else
+                                <div class="col-md-12 text-center">
+                                    <div class="card text-white text-center w-60 mx-auto"
+                                        style="background-color: #DFCFF9">
+                                        <div class="card-body">
+                                            <blockquote class="card-bodyquote mb-0">
+                                                <h4 class="">
+                                                    {{ $reservasi->penjualan->diskon->nama }}
+                                                </h4>
+                                                <footer class=" text-white font-12">
+                                                    <h5 class="">Potongan sebesar
+                                                        {{ $reservasi->penjualan->diskon->jumlah_potongan }}%
+                                                        dengan maksimum potongan sebesar Rp.
+                                                        {{ number_format($reservasi->penjualan->diskon->maksimum_potongan, 2, ',', '.') }}
+                                                    </h5>
+                                                </footer>
+                                            </blockquote>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="text-align: 'right'">
+                                    <div class="col-md-10">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="product-details-content quickview-content">
+                                            <div class="pro-details-quality">
+                                                <div class="pro-details-cart"
+                                                    style="width: 100%; text-align: 'right';">
+                                                    <button class="add-cart"
+                                                        style="margin: 0px;margin-left: auto;"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalKonfirmasiBatalkanDiskon"
+                                                        id="btnKonfirmasiBatalkanDiskon">
+                                                        Batalkan Diskon</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                            @endif
+
+                            
 
 
                         </div>
@@ -986,6 +1011,59 @@
             </div>
             <!-- /.modal-dialog -->
         </div>
+
+        @if ($reservasi->penjualan->diskon != null)
+            <div id="modalKonfirmasiBatalkanDiskon" class="modal fade bs-example-modal-center"
+                tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title mt-0">Konfirmasi Batalkan Diskon</h4>
+                            <button type="button" class="close" data-bs-dismiss="modal"
+                                aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center" id="modalTextKonfirmasiBatalkanDiskon">
+                            <h5>Apakah Anda yakin ingin membatalkan diskon <br> <span
+                                    class="text-danger">{{ $reservasi->penjualan->diskon->nama }}</span>?
+                            </h5>
+                        </div>
+                        <div class="modal-footer">
+                            <form action="{{ route('diskons.pelanggan.batalkandiskon') }}" method="post">
+                                @csrf
+                                <div style="display: flex; gap: 10px;">
+                                    <div class="product-details-content quickview-content">
+                                        <div class="pro-details-quality" style="padding: 0px;margin: 0px;">
+                                            <div class="pro-details-cart ml-auto" style="width: 100%;">
+                                                <button type="button" data-bs-dismiss="modal"
+                                                    class="btn close add-cart "
+                                                    style="margin: 0px; width: 100%; ">Tidak</button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="product-details-content quickview-content">
+                                        <div class="pro-details-quality" style="padding: 0px;margin: 0px;">
+                                            <div class="pro-details-cart ml-auto" style="width: 100%;">
+                                                <button type="submit" class="add-cart "
+                                                    style="margin: 0px; width: 100%; background-color: #273ED4;">Ya</button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="idPenjualan"
+                                    value="{{ $reservasi->penjualan->id }}">
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+        @endif
+
 
 
 

@@ -186,7 +186,7 @@
                             <div class="table-responsive">
 
                                 <table id="tabelDaftarPresensiKaryawan"
-                                    class="table table-bordered dt-responsive nowrap text-center w-100"
+                                    class="table table-bordered table-striped dt-responsive nowrap text-center w-100"
                                     style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead>
                                         <tr>
@@ -234,12 +234,21 @@
                                                 </td>
                                                 <td>
                                                     @if (date('H:i:s', strtotime($p->created_at)) == date('H:i:s', strtotime($p->tanggal_presensi)))
-                                                        Menunggu Karyawan Presensi
+                                                        @if ($p->status == 'konfirmasi')
+                                                            {{ date('H:i', strtotime($p->updated_at)) }} <br> <span
+                                                                class="text-danger">*oleh Admin</span>
+                                                        @else
+                                                            Menunggu Karyawan Presensi
+                                                        @endif
                                                     @else
                                                         @if ($p->keterangan == 'izin' || $p->keterangan == 'sakit')
                                                             {{ date('d-m-Y H:i:s', strtotime($p->created_at)) }}
                                                         @else
-                                                            {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                                                            @if ($p->status == 'konfirmasi')
+                                                                {{ date('H:i', strtotime($p->tanggal_presensi)) }}
+                                                            @else
+                                                                Menunggu Karyawan Presensi
+                                                            @endif
                                                         @endif
                                                     @endif
                                                 </td>

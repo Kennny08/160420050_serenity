@@ -28,7 +28,7 @@
 
                     <div class="table-responsive">
                         <table id="tabelDaftarRiwayatPresensiKaryawan"
-                            class="table table-bordered dt-responsive nowrap text-center w-100"
+                            class="table table-bordered table-striped dt-responsive nowrap text-center w-100"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>

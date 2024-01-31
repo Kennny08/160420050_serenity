@@ -41,7 +41,7 @@
                                 </h5>
                                 @if (
                                     $presensiKaryawan != null &&
-                                        ($presensiKaryawan->keterangan != 'izin' || $presensiKaryawan->keterangan != 'sakit') &&
+                                        ($presensiKaryawan->keterangan != 'izin' && $presensiKaryawan->keterangan != 'sakit' && $presensiKaryawan->keterangan != 'hadir') &&
                                         date('H:i:s', strtotime($presensiKaryawan->created_at)) ==
                                             date('H:i:s', strtotime($presensiKaryawan->tanggal_presensi)))
                                     <h6 class="text-danger">Silahkan lakukan presensi dengan memastikan kehadiran Anda pada
@@ -51,7 +51,7 @@
                             </div>
                             @if (date('H:i:s', strtotime($presensiKaryawan->created_at)) ==
                                     date('H:i:s', strtotime($presensiKaryawan->tanggal_presensi)) &&
-                                    ($presensiKaryawan->keterangan != 'izin' || $presensiKaryawan->keterangan != 'sakit'))
+                                    ($presensiKaryawan->keterangan != 'izin' && $presensiKaryawan->keterangan != 'sakit' && $presensiKaryawan->keterangan != 'hadir'))
                                 <div class="col-md-4 text-right">
                                     <button class="btn btn-info waves-effect waves-light mt-3 btn-lg" style="width: 250px;"
                                         id="btnModalKonfirmasiPresensi" data-toggle="modal"
@@ -134,28 +134,42 @@
 
                                         @if (date('H:i:s', strtotime($presensiKaryawan->created_at)) ==
                                                 date('H:i:s', strtotime($presensiKaryawan->tanggal_presensi)))
-                                            <td>
-                                                <form method="POST" id="formKonfirmasiPresensi"
-                                                    action="{{ route('karyawans.prosespresensihariinikaryawansalon') }}"
-                                                    enctype="multipart/form-data">
-                                                    @csrf
-                                                    <div class="btn-group btn-group-toggle border w-100"
-                                                        data-toggle="buttons">
-                                                        <input type="hidden" name="idPresensiKaryawan"
-                                                            value="{{ $presensiKaryawan->id }}">
+                                            @if (
+                                                $presensiKaryawan->keterangan == 'izin' ||
+                                                    $presensiKaryawan->keterangan == 'sakit' ||
+                                                    $presensiKaryawan->keterangan == 'hadir')
+                                                @if ($presensiKaryawan->keterangan == 'hadir')
+                                                    <td class="text-success">HADIR</td>
+                                                @elseif($presensiKaryawan->keterangan == 'izin')
+                                                    <td class="text-warning">IZIN</td>
+                                                @elseif($presensiKaryawan->keterangan == 'sakit')
+                                                    <td class="text-info">SAKIT</td>
+                                                @endif
+                                            @else
+                                                <td>
+                                                    <form method="POST" id="formKonfirmasiPresensi"
+                                                        action="{{ route('karyawans.prosespresensihariinikaryawansalon') }}"
+                                                        enctype="multipart/form-data">
+                                                        @csrf
+                                                        <div class="btn-group btn-group-toggle border w-100"
+                                                            data-toggle="buttons">
+                                                            <input type="hidden" name="idPresensiKaryawan"
+                                                                value="{{ $presensiKaryawan->id }}">
 
-                                                        <label class="btn btn-primary waves-effect waves-light"
-                                                            id="lblKeteranganHadir">
-                                                            <input type="radio" value="hadir"
-                                                                name="radioKeteranganPresensi" id="optionKeteranganHadir"
-                                                                class="radioKeteranganPresensi" checked>
-                                                            Hadir
-                                                        </label>
-                                                    </div>
+                                                            <label class="btn btn-primary waves-effect waves-light"
+                                                                id="lblKeteranganHadir">
+                                                                <input type="radio" value="hadir"
+                                                                    name="radioKeteranganPresensi"
+                                                                    id="optionKeteranganHadir"
+                                                                    class="radioKeteranganPresensi" checked>
+                                                                Hadir
+                                                            </label>
+                                                        </div>
 
-                                                </form>
+                                                    </form>
 
-                                            </td>
+                                                </td>
+                                            @endif
                                         @else
                                             @if ($presensiKaryawan->keterangan == 'hadir')
                                                 <td class="text-success">HADIR</td>

@@ -620,6 +620,12 @@
                                                             </h4> --}}
                                             </address>
                                         </div>
+                                        <div class="col-12 text-right">
+                                            <button id="btnBatalkanDiskon" data-toggle="modal"
+                                                data-target="#modalKonfirmasiBatalkanDiskon"
+                                                class="btn btn-lg btn-danger waves-effect waves-light mb-2">Batalkan
+                                                Diskon</button>
+                                        </div>
                                     @endif
 
 
@@ -659,7 +665,8 @@
                                             nomorNotaPenjualan = "{{ $penjualan->nomor_nota }}">
                                             Batalkan Penjualan
                                         </button>
-                                        <button class="btn btn-lg btn-primary waves-effect waves-light mt-3 mr-3"
+                                        <button
+                                            class="btn btn-lg btn-primary waves-effect waves-light mt-3 mr-3"
                                             data-toggle="modal" data-target="#modalKonfirmasiSelesaiPenjualan"
                                             id="btnKonfirmasiSelesaiReservasi"
                                             namaPelanggan = "{{ $penjualan->pelanggan->nama }}"
@@ -690,13 +697,13 @@
                                 </address>
                             </div>
                             <div class="col-5 text-right">
-                                            <address>
-                                                <h4 style="font-weight: normal;">Total : </h4>
-                                                <h2 class="text-danger fw-bold">Rp.
-                                                    {{ number_format($penjualan->total_pembayaran, 2, ',', '.') }}
-                                                </h2>
-                                            </address>
-                                        </div>
+                                <address>
+                                    <h4 style="font-weight: normal;">Total : </h4>
+                                    <h2 class="text-danger fw-bold">Rp.
+                                        {{ number_format($penjualan->total_pembayaran, 2, ',', '.') }}
+                                    </h2>
+                                </address>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -763,6 +770,41 @@
             <!-- /.modal-dialog -->
         </div>
 
+        @if ($penjualan->diskon != null)
+            <div id="modalKonfirmasiBatalkanDiskon" class="modal fade bs-example-modal-center" tabindex="-1"
+                role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title mt-0">Batalkan Diskon</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center" id="modalBodyBatalkanDiskon">
+
+                            <h6>Apakah Anda yakin ingin membatalkan diskon <br> <span
+                                    class="text-danger">{{ $penjualan->diskon->nama }}</span>?
+                            </h6>
+                        </div>
+                        <div class="modal-footer">
+                            <form action="{{ route('admin.diskons.bataldiskon') }}" method="post">
+                                @csrf
+                                <input type="hidden" name="idPenjualan"
+                                    value="{{ $penjualan->id }}">
+                                <button type="button" class="btn btn-danger waves-effect mr-2"
+                                    data-dismiss="modal">Tidak</button>
+                                <button type="submit" class="btn btn-info waves-effect">Ya</button>
+                            </form>
+
+
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+        @endif
 
 
     </div>

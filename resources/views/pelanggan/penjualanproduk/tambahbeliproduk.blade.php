@@ -80,7 +80,7 @@
                                     style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead class="">
                                         <tr>
-                                            <th class="align-middle">Kode Produk</th>
+                                            <th hidden class="align-middle">Kode Produk</th>
                                             <th class="align-middle">Nama</th>
                                             <th class="align-middle">Merek</th>
                                             <th class="align-middle">Harga(Rp)</th>
@@ -95,7 +95,7 @@
                                     <tbody>
                                         @foreach ($produks as $p)
                                             <tr id="tr_{{ $p->id }}" class="align-middle">
-                                                <td>{{ $p->kode_produk }}</td>
+                                                <td hidden>{{ $p->kode_produk }}</td>
                                                 <td>{{ $p->nama }}</td>
                                                 <td>{{ $p->merek->nama }}</td>
                                                 <td>{{ number_format($p->harga_jual, 2, ',', '.') }}</td>
@@ -480,6 +480,38 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+
+    <div id="modalBerhasilTambahProduk" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="modalJudulBerhasilTambahProduk" class="modal-title mt-0">Keterangan Penambahan Produk</h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center d-flex align-items-center justify-content-center"
+                    style="overflow-y: auto; height: 150px">
+                    <h5 id="textModalBerhasilTambahProduk" >Berhasil menambahkan produk ke Keranjang
+                    </h5>
+                </div>
+                <div class="modal-footer">
+                    <div class="product-details-content quickview-content">
+                        <div class="pro-details-quality" style="padding: 0px;margin: 0px;">
+                            <div class="pro-details-cart ml-auto" style="width: 100%;">
+                                <button type="button" data-bs-dismiss="modal" class="btn close add-cart"
+                                    id="btnMBerhasilTambahProduk" style="margin: 0px; width: 100%; ">Tutup</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 @endsection
 
 @section('javascript')
@@ -609,6 +641,8 @@
                             "' id='stokproduk_" + idProduk + "' name='arraystokproduk[]'>");
                     }
                     $("#modalDetailProduk").modal('hide');
+                    $("#textModalBerhasilTambahProduk").html("Berhasil menambahkan produk <span class='text-success'>" + namaProduk + "</span> berjumlah <span  class='text-success'>" + stokDiambil + "</span> ke dalam Keranjang!");
+                    $("#modalBerhasilTambahProduk").modal('show');
                 }
             } else {
                 $("#setNumberJumlahProduk").val("1");

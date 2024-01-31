@@ -182,8 +182,7 @@
                 "%</span> berjumlah <span class='text-danger'>" + totalPotongan.toLocaleString('id-ID', {
                     style: 'currency',
                     currency: 'IDR'
-                }) +
-                "</span>?</h6><br><p class='text-danger'>*Diskon yang telah dipakai tidak bisa diubah</p>");
+                }));
         });
     </script>
 @endsection

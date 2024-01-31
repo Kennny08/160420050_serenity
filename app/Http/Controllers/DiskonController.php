@@ -282,6 +282,34 @@ class DiskonController extends Controller
         }
     }
 
+    public function adminBatalkanDiskon(Request $request){
+        $idPenjualan = $request->get("idPenjualan");
+
+        $penjualan = Penjualan::find($idPenjualan);
+        $totalPembayaran = $penjualan->total_pembayaran;
+        $diskon = $penjualan->diskon;
+        $totalPembayaranFinal = 0;
+
+        $totalAwal = $totalPembayaran / ((100 - $diskon->jumlah_potongan) / 100);
+
+        if ($totalAwal - $totalPembayaran > $diskon->maksimum_potongan) {
+            $totalPembayaranFinal = $totalPembayaran + $diskon->maksimum_potongan;
+        }else{
+            $totalPembayaranFinal = $totalAwal;
+        }
+
+        $penjualan->diskon_id = null;
+        $penjualan->total_pembayaran = $totalPembayaranFinal;
+
+        $penjualan->save();
+
+        if ($penjualan->reservasi != null) {
+            return redirect()->route('reservasi.admin.detailreservasi', $penjualan->reservasi->id)->with('status', 'Berhasil membatalkan diskon ' . $diskon->nama . '!');
+        } else {
+            return redirect()->route('penjualans.admin.detailpenjualan', $penjualan->id)->with('status', 'Berhasil membatalkan diskon ' . $diskon->nama . '!');
+        }
+    }
+
     public function getDetailDiskon()
     {
         $idDiskon = $_POST["idDiskon"];
@@ -390,6 +418,31 @@ class DiskonController extends Controller
         $penjualanHargaBaru->save();
 
         return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualanHargaBaru->reservasi->id)->with('status', 'Berhasil meggunakan diskon ' . $diskon->nama . '!');
+    }
+
+    public function batalkanDiskonPelanggan(Request $request)
+    {
+        $idPenjualan = $request->get("idPenjualan");
+
+        $penjualan = Penjualan::find($idPenjualan);
+        $totalPembayaran = $penjualan->total_pembayaran;
+        $diskon = $penjualan->diskon;
+        $totalPembayaranFinal = 0;
+
+        $totalAwal = $totalPembayaran / ((100 - $diskon->jumlah_potongan) / 100);
+
+        if ($totalAwal - $totalPembayaran > $diskon->maksimum_potongan) {
+            $totalPembayaranFinal = $totalPembayaran + $diskon->maksimum_potongan;
+        } else {
+            $totalPembayaranFinal = $totalAwal;
+        }
+
+        $penjualan->diskon_id = null;
+        $penjualan->total_pembayaran = $totalPembayaranFinal;
+
+        $penjualan->save();
+
+        return redirect()->route('reservasis.pelanggan.detailreservasi', $penjualan->reservasi->id)->with('status', 'Berhasil membatalkan diskon ' . $diskon->nama . '!');
     }
 
 }

@@ -64,11 +64,11 @@
                                             </td>
                                             <td>
                                                 @if ($penjualan->status_selesai == "batal")
-                                                    <span class="badge badge-danger font-16">Dibatalkan </span>
+                                                    <span class="text-danger font-16">Dibatalkan </span>
                                                 @elseif($penjualan->status_selesai == 'selesai')
-                                                    <span class="badge badge-success font-16">Selesai</span>
+                                                    <span class="text-success font-16">Selesai</span>
                                                 @else
-                                                    <span class="badge badge-warning font-16">Belum Diselesaikan</span>
+                                                    <span class="text-warning font-16">Belum Diselesaikan</span>
                                                 @endif
                                             </td>
                                             <td>{{ $penjualan->pelanggan->nama }}</td>
